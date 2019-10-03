@@ -18,6 +18,7 @@ rozvrh, obdy, mhd - data citaju z db. tam sa to bude plnit skriptami (tiez mozno
 -mhd-cely [frontend] - celkovy prehlad co/kedy ide
 -hra-... [frontend] - ovladanie musi reagovat na mqtt spravy
 -firmy [frontend] - reklama, oznamy ze niekoho hladaju, ...
+-pocuvanie hovorenych povelov (pomocou google sluzby)
 3) bc/mgr prace
 -osoba-poloha [backend] - posle spravu, ze na definovanej pozicii (napr. pred kazdym monitorom) stoji nejaka osoba
 -osoba-gesto [backend] - posle spravu, ze nejaka osoba spravila na kinect nejake gesto
@@ -28,8 +29,13 @@ rozvrh, obdy, mhd - data citaju z db. tam sa to bude plnit skriptami (tiez mozno
 
 
 FRAMEWORK
--musi bezat mqtt (mosquitto)
--nastavit AP na rpi4; ale pripojene bude cez ethernet. pricom neroutovat!
+-rpi4:
+	-nainstalovat a spustit mqtt (mosquitto)
+	-pripojit ethernetom na internet, wifi nastavit ako AP (ale neroutovat!)
+	-nainstalovat OpenCV
+	-nastavit kameru
+	-pripojit a nastavit senzor teploty a vlhkosti
+	-pripojit a nastavit mikrofon
 -kazda appka by mala vediet dat info (ako odpoved na mqtt spravu!), ze ake topicy zverejnuje a na ake pocuva. cisto koli dokumentacii
 -spustenie frameworku sposobi spustenie backend appiek
 	-budu bezat stale
@@ -37,16 +43,15 @@ FRAMEWORK
 	-budu reagovat na spravy
 	-asi by mala byt moznost urcit, na ktorom rpi ma bezat (3 moznosti: na konkretnom/na vsetkych/na lubovolnom). definuje si sama appka
 	-podla potreby mozu spustat frontend appky (ale len tak, ze poslu spravu - prikaz na spustenie frontend appky)
-	-jedna specialna backend apka bude spustat frontend appky (t.j. bude cakat na spravy, ktore povedia ze sa ma spustit frontend appka)
+	-jedna specialna backend appka bude spustat frontend appky (t.j. bude cakat na spravy, ktore povedia ze sa ma spustit frontend appka)
 	 podla toho, ci je daky live user by ju spustilo bud na viac monitorov alebo len na jeden. resp. ak je vedla seba volnych (neobsadenych live
 	 userom) tolko monitorov, kolko vyzaduje, tak ich spusti; inac len na 1
 	 tato specialna backend appka bude vlastne bezat na kazdom rpi
-	-dalsia specialna backend appka bude nahodne spustat apky (aby tam stale nieco bezalo). a bude reagovat na spravy ukoncenia frontend appky
-	 (hned spusti nahodne daco dalsie)
+	-dalsia specialna backend appka bude nahodne spustat frontend appky (aby tam stale nieco bezalo). a bude reagovat na spravy ukoncenia
+	 frontend appky (hned spusti nahodne daco dalsie)
 -spustena frontend appka
 	-pocuva na spravy
-	-moze byt ukoncena (=>ako? jedna z moznosti ze po urcitom case)
-	-mala by vediet bezat 
+	-moze byt ukoncena (spravou)
 	-moze podporovat 2 mody: 1 obrazovkova / viac obrazovkova. pricom sama oznami, kolko obrazoviek v tom multi mode vyzaduje (0=nepodporuje)
 	 podla toho by na tych 8 monitoroch mohlo ist naraz niekolko viac-obrazovkovych aplikacii (napr. 3 a 5, alebo 3 a 3 a 2, a pod.)
 	-pri ukonceni by tiez mala poslat spravu, ze konci
@@ -58,6 +63,20 @@ FRAMEWORK
 	-tiez by si mal mat moznost nastavit aprobaciu (napr. pre rozvrh, ale aj pre oznamy a pod.)
 	-musi informovat (rovno umoznit?), ze ked chce user s tym pracovat, musi sa prihlasit na lokalnu rpi wifi
 -moznost instalovania dalsich apiek studentami (brat to rovno s gitu?)
+
+=> kazda aplikacia:
+	*odpoved na mqtt spravu, ze na ake temy zverejnuje a na ake pocuva
+	*reaguje na spravu - ziadost o ukoncenie
+	*pri konceni posle spravu, ze konci
+	*kazda aplikacia by teda mala otvorit kanal s nazvom rovnakym, ako je sama (alebo daco podobne)
+=> spustenie backend aplikacii
+	-kazda si urci, na ktorom rpi ma bezat (3 moznosti: na konkretnom[n]/na vsetkych[*]/na lubovolnom[?])
+=> backend appky
+	-specialna backend appka na spustanie a vypinanie frontend appiek (bude bezat na kazdom rpi)
+	-backend appka, ktora bude planovat (nahodne) frontend appky. a reagovat na ukoncovanie frontend appiek
+	-db backend appka
+=> demo frontend appka
+	-2 mody: 1 obrazovka / viac obrazoviek (dakym sposobom oznami, kolko obrazok v multi mode podporuje)
 
 
 KONFIGURACIA (HW)

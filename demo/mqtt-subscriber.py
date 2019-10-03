@@ -13,7 +13,7 @@ client.connect(broker_url, broker_port)
 
 # odoberanie z kanala 'pokus'
 def on_message(client, userdata, message):
-       print("prijata sprava: " + message.payload.decode())
+       print("prijata sprava: " + message.topic + ", " + message.payload.decode())
 client.on_message = on_message
 client.subscribe("pokus")
 client.loop_forever()
