@@ -1,0 +1,63 @@
+
+noc vyskumnikov mozaika. spravit slideshow pre celu mozaiku (rozselat obrazok); omxplayer --crop '0 0 320 347' http://192.168.0.20:8080
+
+
+TEMY
+-nase oznamy (nastenka) [v sirokom mode pekne spravit ze 1. monitor bude rocnik, 2. oznamy pren, 3. dalsi rocnik, 4. dalsie oznamy, atd.]; 
+-firmy reklama
+-hry (ovladanie mobilom cez wifi)
+-mhd (aj celkovy rozpis, aj aktualne co ide najblizsich N minut)
+-obedy
+-rozvrh (aj celkovy, aj aktualne co sa kde uci/ide ucit o par minut)
+-z dlhodobeho hladiska naucenie sa kedy je tam plno (dotazovat sa na apku, ktora pocita ludi) a potom varovne hlasenie dopredu
+
+ARCHITEKTURA
+-zasielanie sprav, napr.:
+	-teplota stupla/klesla na daku hodnotu
+	-niekto presiel cez chodbu, alebo sa niekde nachadza
+	-niekto spravil nejake gesto na kinect
+	-tak isto sprava z ovladania mobilom
+-sluzby, napr.:
+	-databaza - aby kazda aplikacia vedela lahko ukladat co chce
+	-dotaz, ze kolko ludi je na chodbe
+	-dotaz, ze ktory clovek kde stoji
+-qr kod, ktory si hocikto nacita do mobilu a umozni mu to ovladat. idealne jedno univerzalne, co nainstaluje univerzalnu aplikaciu
+-appky by mohli rovno podporovat 2 mody: 1 obrazovkova / viac obrazovkova. pricom by sama appka oznamila, kolko obrazoviek v tom multi mode vyzaduje. podla toho by na tych 8 monitoroch mohlo ist naraz niekolko viac-obrazovkovych aplikacii (napr. 3 a 5, alebo 3 a 3 a 2, a pod.)
+-ovladanie mobilom cez wifi. asi tou univerzalnou apkou, cize by to posielalo daku standardnu sadu ovladani. pocitat ale aj s multiplayerom, cize viac mobilov pripojenych naraz
+-moznost pustenia rezimu streamovania videa. to by mala mat appka pod kontrolou; resp. spravit appku, ktora pusti stream a bude zobrazovat jeho patricne casti na prislusnej obrazovke. pricom nemusi byt zrovna na vsetkych 8
+-docker??
+
+=> 2 typy aplikacii?
+	-frontend (robi zobrazovanie). budu bezat len ked ich nieco/niekto spusti. moze ich spustit pouzivatel mobilom (cize realne zaslanim spravy?) alebo ich moze spustit aj backend aplikacia
+	-backend (sluzby a generatory sprav - rovnaky typ aplikacie). budu bezat stale
+
+FRAMEWORK
+-musi bezat mqtt (mosquitto)
+-spustenie frameworku sposobi spustenie backend appiek
+	-budu bezat stale
+	-budu generovat spravy (napr. v casovom intervale merat teplotu, alebo sledovat kameru a signalizovat, ze sa nieco deje)
+	-budu reagovat na spravy
+	-podla potreby mozu spustat frontend appky (ale len tak, ze poslu spravu - prikaz na spustenie frontend appky)
+	-jedna specialna backend apka bude spustat frontend appky (t.j. bude cakat na spravy, ktore povedia ze sa ma spustit frontend appka)
+-spustena frontend appka
+	-pocuva na spravy
+	-moze byt ukoncena (=>ako?)
+-mobilna appka, ktora zobrazi daky predefinovany screen a na jeho zaklade (akcii pouzivatela) bude posielat mqtt spravy
+
+
+
+
+
+KONFIGURACIA (HW)
+-mozaika zo starych monitorov (asi vsetko v riadku)
+-projektor+rpi4 (kamera, kinect, mikrofon, teplomer, vlhkomer)
+
+TODO
+-farebne ovladatelne svetla
+-automaticke otvaranie okna von
+-detekcia otvorenych dveri na ucebnu
+-polievanie kvetu, fontanka???
+-home automation (milan!)
+-mysliet na nase temy (pv, robotika, vysokovykonne pocitanie, iot, ...)
+
+
