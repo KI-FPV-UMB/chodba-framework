@@ -30,6 +30,7 @@ rozvrh, obdy, mhd - data citaju z db. tam sa to bude plnit skriptami (tiez mozno
 FRAMEWORK
 -musi bezat mqtt (mosquitto)
 -nastavit AP na rpi4; ale pripojene bude cez ethernet. pricom neroutovat!
+-kazda appka by mala vediet dat info (ako odpoved na mqtt spravu!), ze ake topicy zverejnuje a na ake pocuva. cisto koli dokumentacii
 -spustenie frameworku sposobi spustenie backend appiek
 	-budu bezat stale
 	-budu generovat spravy (napr. v casovom intervale merat teplotu, alebo sledovat kameru a signalizovat, ze sa nieco deje)
