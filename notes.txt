@@ -1,63 +1,77 @@
 
-noc vyskumnikov mozaika. spravit slideshow pre celu mozaiku (rozselat obrazok); omxplayer --crop '0 0 320 347' http://192.168.0.20:8080
-
-
 TEMY
--nase oznamy (nastenka) [v sirokom mode pekne spravit ze 1. monitor bude rocnik, 2. oznamy pren, 3. dalsi rocnik, 4. dalsie oznamy, atd.]; 
--firmy reklama
--hry (ovladanie mobilom cez wifi)
--mhd (aj celkovy rozpis, aj aktualne co ide najblizsich N minut)
--obedy
--rozvrh (aj celkovy, aj aktualne co sa kde uci/ide ucit o par minut)
--z dlhodobeho hladiska naucenie sa kedy je tam plno (dotazovat sa na apku, ktora pocita ludi) a potom varovne hlasenie dopredu
+rozvrh, obdy, mhd - data citaju z db. tam sa to bude plnit skriptami (tiez moznost robit na mac), alebo rucne
+1) top priority
+-databaza [backend] - na zaklade danej spravy zapise udaj do db (asi key/value pary, ale pri kazdom aj zdroj - ze kto to poslal)
+-qr kod pre mobilnu appku [frontend]
+2) meet-and-code
+-oznamy [frontend] - info aj spolocne (ked sa to spusti len automaticky), ale aj podla aprobacie (ked to niekto spusti mobilom)
+-teplomer [backend] - posle nameranu teplotu kazdych n minut
+-teplomer-range [backend] - prijima spravy s nameranou teplotou; ak klesne/stupne cez daku hodnotu, tak spusti teplomer-alert
+-teplomer-alert [frontend] - zobrazi (vtipnu?) spravu, ze teplota je prilis vysoka/nizka
+-rozvrh-prestavky [backend] - sleduje cas, a vzdy cez prestavku vysle signal na spustenie rozvrh-teraz
+-rozvrh-teraz [frontend] - zobrazi co sa prave kde uci, + co bude najblizsie kde nasledovat (asi podla ucebni)
+-rozvrh-cely [frontend] - zobrazi cely rozvrh. user by mal v mobile mat nastavenu aj aprobaciu, tak mu zobrazi len tu
+-obedy-dnes [frontend] - zobrazi len, ze co je dnes na obed
+-obedy-tyzden [frontend] - zobrazi obedy na cely tyzden
+-mhd-teraz [frontend] - zobrazi, co ide najblizsich N minut (od skoly, ale aj od tajaku)
+-mhd-cely [frontend] - celkovy prehlad co/kedy ide
+-hra-... [frontend] - ovladanie musi reagovat na mqtt spravy
+-firmy [frontend] - reklama, oznamy ze niekoho hladaju, ...
+3) bc/mgr prace
+-osoba-poloha [backend] - posle spravu, ze na definovanej pozicii (napr. pred kazdym monitorom) stoji nejaka osoba
+-osoba-gesto [backend] - posle spravu, ze nejaka osoba spravila na kinect nejake gesto
+-osoby-pozicie [backend] - ked pride sprava (poziadavka) tak zisti kde ktora osoba stoji a posle to inou spravou
+-osoby-zapcha [backend] - dotazuje sa na pocty ludi a zaznamenava to do db. po dlhsom case bude vediet, kedy tam byva plno. potom bude dopredu
+ vysielat spravu, ze sa blizi zapcha
+-osoby-zapcha-alert [frontend] - zobrazi varovanie, ze bude plno...
 
-ARCHITEKTURA
--zasielanie sprav, napr.:
-	-teplota stupla/klesla na daku hodnotu
-	-niekto presiel cez chodbu, alebo sa niekde nachadza
-	-niekto spravil nejake gesto na kinect
-	-tak isto sprava z ovladania mobilom
--sluzby, napr.:
-	-databaza - aby kazda aplikacia vedela lahko ukladat co chce
-	-dotaz, ze kolko ludi je na chodbe
-	-dotaz, ze ktory clovek kde stoji
--qr kod, ktory si hocikto nacita do mobilu a umozni mu to ovladat. idealne jedno univerzalne, co nainstaluje univerzalnu aplikaciu
--appky by mohli rovno podporovat 2 mody: 1 obrazovkova / viac obrazovkova. pricom by sama appka oznamila, kolko obrazoviek v tom multi mode vyzaduje. podla toho by na tych 8 monitoroch mohlo ist naraz niekolko viac-obrazovkovych aplikacii (napr. 3 a 5, alebo 3 a 3 a 2, a pod.)
--ovladanie mobilom cez wifi. asi tou univerzalnou apkou, cize by to posielalo daku standardnu sadu ovladani. pocitat ale aj s multiplayerom, cize viac mobilov pripojenych naraz
--moznost pustenia rezimu streamovania videa. to by mala mat appka pod kontrolou; resp. spravit appku, ktora pusti stream a bude zobrazovat jeho patricne casti na prislusnej obrazovke. pricom nemusi byt zrovna na vsetkych 8
--docker??
-
-=> 2 typy aplikacii?
-	-frontend (robi zobrazovanie). budu bezat len ked ich nieco/niekto spusti. moze ich spustit pouzivatel mobilom (cize realne zaslanim spravy?) alebo ich moze spustit aj backend aplikacia
-	-backend (sluzby a generatory sprav - rovnaky typ aplikacie). budu bezat stale
 
 FRAMEWORK
 -musi bezat mqtt (mosquitto)
+-nastavit AP na rpi4; ale pripojene bude cez ethernet. pricom neroutovat!
 -spustenie frameworku sposobi spustenie backend appiek
 	-budu bezat stale
 	-budu generovat spravy (napr. v casovom intervale merat teplotu, alebo sledovat kameru a signalizovat, ze sa nieco deje)
 	-budu reagovat na spravy
+	-asi by mala byt moznost urcit, na ktorom rpi ma bezat (3 moznosti: na konkretnom/na vsetkych/na lubovolnom). definuje si sama appka
 	-podla potreby mozu spustat frontend appky (ale len tak, ze poslu spravu - prikaz na spustenie frontend appky)
 	-jedna specialna backend apka bude spustat frontend appky (t.j. bude cakat na spravy, ktore povedia ze sa ma spustit frontend appka)
+	 podla toho, ci je daky live user by ju spustilo bud na viac monitorov alebo len na jeden. resp. ak je vedla seba volnych (neobsadenych live
+	 userom) tolko monitorov, kolko vyzaduje, tak ich spusti; inac len na 1
+	 tato specialna backend appka bude vlastne bezat na kazdom rpi
+	-dalsia specialna backend appka bude nahodne spustat apky (aby tam stale nieco bezalo). a bude reagovat na spravy ukoncenia frontend appky
+	 (hned spusti nahodne daco dalsie)
 -spustena frontend appka
 	-pocuva na spravy
-	-moze byt ukoncena (=>ako?)
--mobilna appka, ktora zobrazi daky predefinovany screen a na jeho zaklade (akcii pouzivatela) bude posielat mqtt spravy
-
-
-
+	-moze byt ukoncena (=>ako? jedna z moznosti ze po urcitom case)
+	-mala by vediet bezat 
+	-moze podporovat 2 mody: 1 obrazovkova / viac obrazovkova. pricom sama oznami, kolko obrazoviek v tom multi mode vyzaduje (0=nepodporuje)
+	 podla toho by na tych 8 monitoroch mohlo ist naraz niekolko viac-obrazovkovych aplikacii (napr. 3 a 5, alebo 3 a 3 a 2, a pod.)
+	-pri ukonceni by tiez mala poslat spravu, ze konci
+-mobilna appka, ktora zobrazi daky predefinovany screen
+	-posielanie sprav ovladania (dola/doprava/...)
+	-posielanie sprav na spustenie frontend appky (zoznam dostane zo servera!)
+	-instalovana pomocou qr kodu
+	-vzdy musi poslat aj dake svoje id (povedzme ze v appke si kazdy vyplni nick); aby bolo mozne rozlisit viac hracov
+	-tiez by si mal mat moznost nastavit aprobaciu (napr. pre rozvrh, ale aj pre oznamy a pod.)
+	-musi informovat (rovno umoznit?), ze ked chce user s tym pracovat, musi sa prihlasit na lokalnu rpi wifi
+-moznost instalovania dalsich apiek studentami (brat to rovno s gitu?)
 
 
 KONFIGURACIA (HW)
 -mozaika zo starych monitorov (asi vsetko v riadku)
 -projektor+rpi4 (kamera, kinect, mikrofon, teplomer, vlhkomer)
 
+
 TODO
+-moznost pustenia rezimu streamovania videa. to by mala mat appka pod kontrolou; resp. spravit appku, ktora pusti stream a bude zobrazovat jeho patricne casti na prislusnej obrazovke. pricom nemusi byt zrovna na vsetkych 8.  omxplayer --crop '0 0 320 347' http://192.168.0.20:8080
 -farebne ovladatelne svetla
 -automaticke otvaranie okna von
 -detekcia otvorenych dveri na ucebnu
 -polievanie kvetu, fontanka???
 -home automation (milan!)
 -mysliet na nase temy (pv, robotika, vysokovykonne pocitanie, iot, ...)
+-docker??
 
 
