@@ -8,7 +8,7 @@ public class MqttPublisher {
 
 	public static void main(String[] args) throws MqttException {
 		// pripojenie k brokeru
-		MqttClient client = new MqttClient("tcp://localhost:1883", "moj_klient");
+		MqttClient client = new MqttClient("tcp://localhost:1883", "moj_klient-pub");
 		client.connect();
 		// publikovanie do kanala 'pokus'
 		MqttMessage message = new MqttMessage();

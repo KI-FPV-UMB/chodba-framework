@@ -13,7 +13,7 @@ public class MqttSubscriber implements MqttCallback {
 	}
 
 	public void pracuj() throws MqttException {
-		client = new MqttClient("tcp://localhost:1883", "moj_klient");
+		client = new MqttClient("tcp://localhost:1883", "moj_klient-sub");
 		client.connect();
 		client.setCallback(this);
 		client.subscribe("pokus");
