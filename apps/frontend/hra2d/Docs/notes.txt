@@ -1,0 +1,5 @@
+nazov: Hra2D
+studenti: ?, ?
+
+kontrola kolizii a priklad animacie
+
