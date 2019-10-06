@@ -72,12 +72,17 @@ FRAMEWORK
 => spustenie backend aplikacii
 	-kazda si urci, na ktorom rpi ma bezat (3 moznosti: na konkretnom[n]/na vsetkych[*]/na lubovolnom[?])
 => backend appky
-	-specialna backend appka na spustanie a vypinanie frontend appiek (bude bezat na kazdom rpi)
+	-specialna backend appka na spustanie a vypinanie appiek (bude bezat na kazdom rpi)
 	-backend appka, ktora bude planovat (nahodne) frontend appky. a reagovat na ukoncovanie frontend appiek
 	-db backend appka
 => demo frontend appka
 	-2 mody: 1 obrazovka / viac obrazoviek (dakym sposobom oznami, kolko obrazok v multi mode podporuje)
-
+=> dobre opisat cely system kanalov
+	mosquitto_sub -d -t master
+	mosquitto_pub -t apps/frontend_runner -m "info"
+	mosquitto_pub -t apps/frontend_runner -m "status"
+	mosquitto_pub -t apps/frontend_runner -m "quit"
+	mosquitto_pub -t run_frontend/1 -m "asd"
 
 KONFIGURACIA (HW)
 -mozaika zo starych monitorov (asi vsetko v riadku)

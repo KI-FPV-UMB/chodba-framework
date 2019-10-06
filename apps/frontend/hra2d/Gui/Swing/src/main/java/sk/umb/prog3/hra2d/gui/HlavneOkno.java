@@ -12,6 +12,7 @@ import java.io.File;
 
 import javax.swing.JPanel;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.paho.client.mqttv3.*;
 import sk.umb.prog3.hra2d.bludisko.BludiskoGrafika;
 
@@ -22,6 +23,8 @@ import sk.umb.prog3.hra2d.bludisko.BludiskoGrafika;
  *
  */
 public class HlavneOkno extends JPanel implements WindowListener, Runnable, KeyListener, MqttCallback {
+
+	private static final String CONST_KLAVESNICA_TOPIC = "klavesnica";
 
 	// rozmery okna
 	private static final int CONST_ZVACSENIE = 2;
@@ -41,6 +44,9 @@ public class HlavneOkno extends JPanel implements WindowListener, Runnable, KeyL
 
 	// mqtt
 	private MqttClient client;
+
+	// json
+	ObjectMapper mapper = new ObjectMapper();
 
 	public HlavneOkno() {
 		super();
@@ -62,10 +68,10 @@ public class HlavneOkno extends JPanel implements WindowListener, Runnable, KeyL
 		vlakno.start();
 		// prijimaj mqtt spravy
 		try {
-			client = new MqttClient("tcp://localhost:1883", "moj_klient");
+			client = new MqttClient("tcp://localhost:1883", "moj_klient-sub");
 			client.connect();
 			client.setCallback(this);
-			client.subscribe("pokus");	//TODO topic na ovladanie
+			client.subscribe(CONST_KLAVESNICA_TOPIC);
 		} catch (MqttException e) {
 			e.printStackTrace();
 		}
@@ -159,9 +165,36 @@ public class HlavneOkno extends JPanel implements WindowListener, Runnable, KeyL
 	public void connectionLost(Throwable throwable) {
 	}
 
+	private int keyMsg2Awt(String msgkey) {
+		if ("DOLAVA".equals(msgkey)) {
+			return KeyEvent.VK_LEFT;
+		}
+		if ("DOPRAVA".equals(msgkey)) {
+			return KeyEvent.VK_RIGHT;
+		}
+		if ("HORE".equals(msgkey)) {
+			return KeyEvent.VK_UP;
+		}
+		if ("DOLE".equals(msgkey)) {
+			return KeyEvent.VK_DOWN;
+		}
+		return -1;
+	}
+
 	@Override
 	public void messageArrived(String s, MqttMessage mqttMessage) throws Exception {
-		//TODO mqtt sprava
+		String jsonStr = mqttMessage.toString();
+		System.out.println(jsonStr);
+		KlavesaSprava result = mapper.readValue(jsonStr, KlavesaSprava.class);
+		int key = keyMsg2Awt(result.getKlavesa());
+		if (key != -1) {
+			if ("STLACENA".equals(result.getStav())) {
+				bludisko.klavesaStlacena(key);
+			}
+			if ("PUSTENA".equals(result.getStav())) {
+				bludisko.klavesaPustena(key);
+			}
+		}
 	}
 
 	@Override

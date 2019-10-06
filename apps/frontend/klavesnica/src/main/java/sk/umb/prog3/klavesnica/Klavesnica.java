@@ -1,4 +1,4 @@
-package sk.umb.prog3.hra2d.gui;
+package sk.umb.prog3.klavesnica;
 
 import javax.swing.JFrame;
 
