@@ -95,7 +95,7 @@ public class Bludisko {
 		// priprav prostredie na spustanie skriptov
 		ScriptEngineManager manager = new ScriptEngineManager();
 		ScriptEngine engine = manager.getEngineByName("js");
-		if (System.getProperty("java.version").startsWith("1.8.")) {
+		if (System.getProperty("java.version").startsWith("1.8.") || System.getProperty("java.version").startsWith("11.0.")) {
 			engine.eval("load(\"nashorn:mozilla_compat.js\");");
 		}
 		// spristupni instanciu bludiska v skripte

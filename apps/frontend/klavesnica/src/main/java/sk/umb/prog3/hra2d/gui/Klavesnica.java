@@ -8,7 +8,7 @@ import javax.swing.JFrame;
  * @author mvagac
  *
  */
-public class HraSwing {
+public class Klavesnica {
 
 	public static void main(String[] args) {
 		javax.swing.SwingUtilities.invokeLater(new Runnable(){
@@ -19,7 +19,7 @@ public class HraSwing {
 	}
 
 	private static void vytvorAZobrazHlavneOkno() {
-		JFrame window = new JFrame("Hra 2D");
+		JFrame window = new JFrame("Klavesnica");
 		HlavneOkno okno = new HlavneOkno();
 		window.setContentPane(okno);
 		window.addWindowListener(okno);

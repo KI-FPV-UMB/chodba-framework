@@ -73,7 +73,7 @@ public class Hrac extends AktivnyPrvok {
 		// kolizie aktivne prvky
 		AktivnyPrvok ap = bludisko.kolizia(this);
 		if (ap!=null) {
-			System.out.println("mam ho: " + ap);
+//TODO kolizia s aktivnym prvkom
 		}
 	}
 
