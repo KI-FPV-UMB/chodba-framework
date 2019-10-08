@@ -20,15 +20,14 @@
 	applications-request, applications-response	-zoznam aplikacii
 	workspaces-request, workspaces-response		-zoznam workspaces
 
-appka si povie:
-	typy aplikacii: game, app, system
-	typ ovladania:
-		dynamicke ovladanie/staticke (pri dynamickom sa pri kazdom odoslani vyziada novy layout)
-		list komponentov, pri kazdom komponente: id, x, y, w, h, title, typ (button/button_submit/input_text/input_number/kreslenie)
 
 TODO:
-	pripravit priklad TkInter frontendu
-	frontend aplikacia by mala este vediet poslat layout klavesnice (+oznamit, ci je dynamicky/staticky)
+	pripravit priklad TkInter frontendu. bude podporovat 2 mody: 1 obrazovkova / viac obrazovkova. pricom sama oznami, kolko obrazoviek v tom
+		multi mode vyzaduje (0=nepodporuje) podla toho by na tych 8 monitoroch mohlo ist naraz niekolko viac-obrazovkovych aplikacii
+		(napr. 3 a 5, alebo 3 a 3 a 2, a pod.)
+	frontend aplikacia by mala este vediet poslat layout klavesnice:
+		dynamicke ovladanie/staticke (pri dynamickom sa pri kazdom odoslani vyziada novy layout)
+		list komponentov, pri kazdom komponente: id, x, y, w, h, title, typ (button/button_submit/input_text/input_number/kreslenie)
 	do dokumentu zhrnut podmienky na appku (na ake spravy ma ako reagovat)
 	upravit hra2d-java, aby splnalo podmienky na appku. klavesnica-java sa zrusi, ked bude mobil
 	pridat aj hra2d-python; spravit pomocou base kniznice
@@ -69,22 +68,12 @@ FRAMEWORK
 -rpi4:
 	-nainstalovat a spustit mqtt (mosquitto)
 	-pripojit ethernetom na internet, wifi nastavit ako AP (ale neroutovat!)
-	-nainstalovat OpenCV
-	-nastavit kameru
-	-pripojit a nastavit senzor teploty a vlhkosti
-	-pripojit a nastavit mikrofon
-	-na hlavnom spustit master
-	-na vsetkych spustit node_manager
-	-po urcitom case posli spravu na spustenie backend appiek. resp. to by sa mohlo spustat v pravidelnych intervaloch (ak sa napr. niektory
-	 uzol pusti neskor, alebo sa jednoducho restartne, tak takto sa odpovedajuce backendappky len spustia nanovo)
--spustenie frameworku sposobi spustenie backend appiek
-	-pri spustani frontend appky sa zisti, ci je daky live user. ak nie, tak by ju spustilo na viac monitorov; ak je tak len na jeden
-	 resp. ak je vedla seba volnych (neobsadenych live userom) tolko monitorov, kolko vyzaduje, tak ich spusti; inac len na 1
-	-dalsia specialna backend appka bude nahodne spustat frontend appky (aby tam stale nieco bezalo). a bude reagovat na spravy ukoncenia
-	 frontend appky (hned spusti nahodne daco dalsie) => frontend_planner
--spustena frontend appka
-	-moze podporovat 2 mody: 1 obrazovkova / viac obrazovkova. pricom sama oznami, kolko obrazoviek v tom multi mode vyzaduje (0=nepodporuje)
-	 podla toho by na tych 8 monitoroch mohlo ist naraz niekolko viac-obrazovkovych aplikacii (napr. 3 a 5, alebo 3 a 3 a 2, a pod.)
+	-nainstalovat OpenCV, nastavit kameru
+	-pripojit a nastavit senzor teploty a vlhkosti, mikrofon
+	-pri starte:
+		-na hlavnom uzle spustit app master
+		-na vsetkych spustit node_manager
+		-na hlavnom uzle cronom opakovane posielat mastrovi spravu run_backends
 -mobilna appka, ktora zobrazi daky predefinovany screen
 	-posielanie sprav ovladania (dola/doprava/...)
 	-posielanie sprav na spustenie frontend appky (zoznam dostane zo servera!)
@@ -94,13 +83,6 @@ FRAMEWORK
 	-musi informovat (rovno umoznit?), ze ked chce user s tym pracovat, musi sa prihlasit na lokalnu rpi wifi
 -moznost instalovania dalsich apiek studentami (brat to rovno s gitu?)
 
-=> kazda aplikacia:
-	*odpoved na mqtt spravu, ze na ake temy zverejnuje a na ake pocuva
-	*reaguje na spravu - ziadost o ukoncenie
-	*pri konceni posle spravu, ze konci
-	*kazda aplikacia by teda mala otvorit kanal s nazvom rovnakym, ako je sama (alebo daco podobne)
-=> spustenie backend aplikacii
-	-kazda si urci, na ktorom rpi ma bezat (3 moznosti: na konkretnom[n]/na vsetkych[*]/na lubovolnom[?])
 => backend appky
 	-specialna backend appka na spustanie a vypinanie appiek (bude bezat na kazdom rpi)
 	-backend appka, ktora bude planovat (nahodne) frontend appky. a reagovat na ukoncovanie frontend appiek

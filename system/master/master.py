@@ -230,7 +230,7 @@ class Master(base_app.BaseApp):
             if app.name == APP_NAME:
                 continue
             msg = {"msg": "quit"}
-            print("apps/" + app.name + " <= " + json.dumps(msg))         #TODO
+            print("[" + APP_NAME + "] vypinam apps/" + app.name)
             self.client.publish(topic="apps/" + app.name, payload=json.dumps(msg), qos=0, retain=False)
         # skonci
         self.client.disconnect()
