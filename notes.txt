@@ -1,17 +1,31 @@
 
 -standardne mqtt topicy:
-	master		-spravy pre master uzol (aplikaciu)
+	master -spravy pre master uzol (aplikaciu)
+		msg=lifecycle => udrziava zoznam beziacich aplikacii
+		msg=log => zaloguje danu spravu do konzoly
+		msg=info => do konzoly zaloguje ziskane informacie o aplikacii
+		msg=applications => zoznam podla filter=[running|all], type=[frontend|backend], posle na response_topic=<nazov_topicu>
+			odpoved bude mat tiez nastavene msg=applications
+		msg=workspaces => podla zoznamu "node_manager"-ov, posle na response_topic=<nazov_topicu>
+		msg=approbations => zatial napevno, posle na response_topic=<nazov_topicu>
 	node/<hostname>	-spravy pre dany uzol
+		TODO spustanie/vypinanie aplikacii
 	apps/<nazov>	-ovladanie kazdej aplikacie
+		msg=quit => mastrovi posle "lifecycle" spravu, ze konci
+		msg=info => mastrovi posle "info" spravu o type aplikacie a topicoch, na ktore posiela/pocuva
+		msg=status => mastrovi posle "lifecycle" spravu, ze je ok
+		ostatne => mastrovi posle "log" spravu ze dostal neznamu spravu
+
 	approbations-request, approbations-response	-zoznam vsetkych aprobacii
 	applications-request, applications-response	-zoznam aplikacii
 	workspaces-request, workspaces-response		-zoznam workspaces
 
 appka si povie:
-	typy aplikacii: game, app, ?
+	typy aplikacii: game, app, system
 	typ ovladania:
 		dynamicke ovladanie/staticke (pri dynamickom sa pri kazdom odoslani vyziada novy layout)
 		list komponentov, pri kazdom komponente: id, x, y, w, h, title, typ (button/button_submit/input_text/input_number/kreslenie)
+TkInter klient!
 
 
 TEMY

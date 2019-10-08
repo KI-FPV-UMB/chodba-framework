@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import sys
+import socket
 import paho.mqtt.client as mqtt
 import json
 
@@ -15,6 +16,10 @@ class BaseApp:
         # musi vratit nazov (identifikator) aplikacie
         raise NotImplementedError()
 
+    def get_app_type(self):
+        # musi vratit typ aplikacie (system/app/game)
+        raise NotImplementedError()
+
     def info_pub(self):
         # musi vratit retazec s informaciami o topicoch, do ktorych posiela spravy
         raise NotImplementedError()
@@ -23,17 +28,21 @@ class BaseApp:
         # musi vratit retazec s informaciami o topicoch, na ktore sa prihlasuje
         raise NotImplementedError()
 
-    def on_apps_message(self, client, userdata, message):
+    def on_app_message(self, client, userdata, message):
         sprava = json.loads(message.payload.decode())
-        if sprava["prikaz"] == "quit":
+        if not "msg" in sprava:
+            log = { 'msg': 'log', 'app': self.get_app_name(), 'log': 'neznamy typ spravy: ' + str(sprava) }
+            self.client.publish(topic="master", payload=json.dumps(log), qos=0, retain=True)
+            return
+
+        if sprava["msg"] == "quit":
             self.stop()
-        elif sprava["prikaz"] == "info":
-            info = "pub: " + self.info_pub() + "\nsub: " + self.info_sub()
-            self.client.publish(topic="master", payload=info, qos=0, retain=False)
-        elif sprava["prikaz"] == "status":
-            self.client.publish(topic="master", payload="ok", qos=0, retain=False)
-        else:
-            print("neznama sprava: " + sprava)
+        elif sprava["msg"] == "info":
+            info = { 'msg': 'info', 'app': self.get_app_name(), 'type': self.get_app_type(), 'pub': self.info_pub(), 'sub': self.info_sub() }
+            self.client.publish(topic="master", payload=json.dumps(info), qos=0, retain=True)
+        elif sprava["msg"] == "status":
+            status = { 'msg': 'lifecycle', 'app': self.get_app_name(), 'status': 'ok' }
+            self.client.publish(topic="master", payload=json.dumps(status), qos=0, retain=True)
 
     def start(self):
         # priprava klienta
@@ -42,15 +51,23 @@ class BaseApp:
         # pripojenie k brokeru
         self.client.connect(BROKER_URL, BROKER_PORT)
 
+        # posli spravu o startovani
+        status = { 'msg': 'lifecycle', 'app': self.get_app_name(), 'type': self.get_app_type(), 'node': socket.gethostname(),'status': 'starting' }
+        self.client.publish(topic="master", payload=json.dumps(status), qos=0, retain=True)
+
         # spracovanie systemovych sprav
-        self.client.message_callback_add('apps/' + self.get_app_name(), self.on_apps_message)
+        self.client.message_callback_add('apps/' + self.get_app_name(), self.on_app_message)
         self.client.subscribe("apps/" + self.get_app_name())
 
+        # posli spravu o uspesnom nastartovani
+        status = { 'msg': 'lifecycle', 'app': self.get_app_name(), 'status': 'ok' }
+        self.client.publish(topic="master", payload=json.dumps(status), qos=0, retain=True)
+
+
     def stop(self):
-        print("koncim...")
         # posli spravu o ukoncovani
-        self.client.publish(topic="master", payload="quitting", qos=0, retain=False)     #TODO sprava dako nedojde...
+        status = { 'msg': 'lifecycle', 'app': self.get_app_name(), 'status': 'quitting' }
+        self.client.publish(topic="master", payload=json.dumps(status), qos=0, retain=True)
         self.client.disconnect()
-        sys.exit(0)
 
 
