@@ -13,11 +13,15 @@ BROKER_PORT = 1883
 class BaseApp:
 
     def get_app_name(self):
-        # musi vratit nazov (identifikator) aplikacie
+        # musi vratit nazov aplikacie
         raise NotImplementedError()
 
     def get_app_type(self):
         # musi vratit typ aplikacie (system/app/game)
+        raise NotImplementedError()
+
+    def get_app_id(self):
+        # musi vratit unikatny identifikator aplikacie
         raise NotImplementedError()
 
     def info_pub(self):
@@ -28,20 +32,23 @@ class BaseApp:
         # musi vratit retazec s informaciami o topicoch, na ktore sa prihlasuje
         raise NotImplementedError()
 
+    def get_status_msg(self, status):
+        return { 'msg': 'lifecycle', 'name': self.get_app_name(), 'type': self.get_app_type(), 'id': self.get_app_id(), 'node': socket.gethostname(),'status': status }
+
     def on_app_message(self, client, userdata, message):
         sprava = json.loads(message.payload.decode())
         if not "msg" in sprava:
-            log = { 'msg': 'log', 'app': self.get_app_name(), 'log': 'neznamy typ spravy: ' + str(sprava) }
+            log = { 'msg': 'log', 'name': self.get_app_name(), 'log': 'neznamy typ spravy: ' + str(sprava) }
             self.client.publish(topic="master", payload=json.dumps(log), qos=0, retain=True)
             return
 
         if sprava["msg"] == "quit":
             self.stop()
         elif sprava["msg"] == "info":
-            info = { 'msg': 'info', 'app': self.get_app_name(), 'type': self.get_app_type(), 'pub': self.info_pub(), 'sub': self.info_sub() }
+            info = { 'msg': 'info', 'name': self.get_app_name(), 'type': self.get_app_type(), 'id': self.get_app_id(), 'pub': self.info_pub(), 'sub': self.info_sub() }
             self.client.publish(topic="master", payload=json.dumps(info), qos=0, retain=True)
         elif sprava["msg"] == "status":
-            status = { 'msg': 'lifecycle', 'app': self.get_app_name(), 'status': 'ok' }
+            status = self.get_status_msg('ok')
             self.client.publish(topic="master", payload=json.dumps(status), qos=0, retain=True)
 
     def start(self):
@@ -52,7 +59,7 @@ class BaseApp:
         self.client.connect(BROKER_URL, BROKER_PORT)
 
         # posli spravu o startovani
-        status = { 'msg': 'lifecycle', 'app': self.get_app_name(), 'type': self.get_app_type(), 'node': socket.gethostname(),'status': 'starting' }
+        status = self.get_status_msg('starting')
         self.client.publish(topic="master", payload=json.dumps(status), qos=0, retain=True)
 
         # spracovanie systemovych sprav
@@ -60,13 +67,13 @@ class BaseApp:
         self.client.subscribe("apps/" + self.get_app_name())
 
         # posli spravu o uspesnom nastartovani
-        status = { 'msg': 'lifecycle', 'app': self.get_app_name(), 'status': 'ok' }
+        status = self.get_status_msg('ok')
         self.client.publish(topic="master", payload=json.dumps(status), qos=0, retain=True)
 
 
     def stop(self):
         # posli spravu o ukoncovani
-        status = { 'msg': 'lifecycle', 'app': self.get_app_name(), 'status': 'quitting' }
+        status = self.get_status_msg('quitting')
         self.client.publish(topic="master", payload=json.dumps(status), qos=0, retain=True)
         self.client.disconnect()
 
