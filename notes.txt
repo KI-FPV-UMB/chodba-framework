@@ -1,9 +1,25 @@
 
+-standardne mqtt topicy:
+	master		-spravy pre master uzol (aplikaciu)
+	node/<hostname>	-spravy pre dany uzol
+	apps/<nazov>	-ovladanie kazdej aplikacie
+	approbations-request, approbations-response	-zoznam vsetkych aprobacii
+	applications-request, applications-response	-zoznam aplikacii
+	workspaces-request, workspaces-response		-zoznam workspaces
+
+appka si povie:
+	typy aplikacii: game, app, ?
+	typ ovladania:
+		dynamicke ovladanie/staticke (pri dynamickom sa pri kazdom odoslani vyziada novy layout)
+		list komponentov, pri kazdom komponente: id, x, y, w, h, title, typ (button/button_submit/input_text/input_number/kreslenie)
+
+
 TEMY
 rozvrh, obdy, mhd - data citaju z db. tam sa to bude plnit skriptami (tiez moznost robit na mac), alebo rucne
 1) top priority
 -databaza [backend] - na zaklade danej spravy zapise udaj do db (asi key/value pary, ale pri kazdom aj zdroj - ze kto to poslal)
 -qr kod pre mobilnu appku [frontend]
+-daky python frontend ukazku (tkinter)
 2) meet-and-code
 -oznamy [frontend] - info aj spolocne (ked sa to spusti len automaticky), ale aj podla aprobacie (ked to niekto spusti mobilom)
 -teplomer [backend] - posle nameranu teplotu kazdych n minut
@@ -16,7 +32,7 @@ rozvrh, obdy, mhd - data citaju z db. tam sa to bude plnit skriptami (tiez mozno
 -obedy-tyzden [frontend] - zobrazi obedy na cely tyzden
 -mhd-teraz [frontend] - zobrazi, co ide najblizsich N minut (od skoly, ale aj od tajaku)
 -mhd-cely [frontend] - celkovy prehlad co/kedy ide
--hra-... [frontend] - ovladanie musi reagovat na mqtt spravy
+-hra-... [frontend] - ovladanie musi reagovat na mqtt spravy; jackbox: https://www.youtube.com/watch?v=UZfNc_kbxKQ
 -firmy [frontend] - reklama, oznamy ze niekoho hladaju, ...
 -pocuvanie hovorenych povelov (pomocou google sluzby)
 3) bc/mgr prace
