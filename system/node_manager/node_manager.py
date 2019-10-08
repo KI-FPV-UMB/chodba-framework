@@ -32,7 +32,7 @@ if len(sys.argv) == 2 and sys.argv[1]=="runon":
 
 # ako parameter sa ocakava nazov uzla, kde sa backend spusta
 NODE_NAME = socket.gethostname()
-print("nazov uzla: " + NODE_NAME)
+print("[" + APP_NAME + "] nazov uzla: " + NODE_NAME)
 
 class NodeManager(base_app.BaseApp):
 
@@ -55,7 +55,7 @@ class NodeManager(base_app.BaseApp):
         sprava = json.loads(message.payload.decode())
         if not "msg" in sprava:
             log = { 'msg': 'log', 'app': self.get_app_name(), 'log': 'neznamy typ spravy: ' + str(sprava) }
-            self.client.publish(topic="master", payload=json.dumps(log), qos=0, retain=True)
+            self.client.publish(topic="master", payload=json.dumps(log), qos=0, retain=False)
             return
 
         if sprava["msg"] == "run":

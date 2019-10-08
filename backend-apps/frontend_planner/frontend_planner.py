@@ -25,13 +25,12 @@ if len(sys.argv) == 2 and sys.argv[1]=="type":
 # na poziadnie oznam, kde sa ma spustit: * na vsetkych, ? na lubovolnom, <nazov> na konkretnom
 if len(sys.argv) == 2 and sys.argv[1]=="runon":
     # zobraz informaciu, na ktorych uzloch sa ma backend spustat
-    #print("mvagac-X230")        # nazov master uzla
-    print("*")
+    print("mvagac-X230")        # nazov master uzla
     sys.exit(1)
 
 # ako parameter sa ocakava nazov uzla, kde sa backend spusta
 NODE_NAME = socket.gethostname()
-print("nazov uzla: " + NODE_NAME)
+print("[" + APP_NAME + "] nazov uzla: " + NODE_NAME)
 
 class FrontendPlanner(base_app.BaseApp):
 

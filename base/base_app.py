@@ -39,17 +39,17 @@ class BaseApp:
         sprava = json.loads(message.payload.decode())
         if not "msg" in sprava:
             log = { 'msg': 'log', 'name': self.get_app_name(), 'log': 'neznamy typ spravy: ' + str(sprava) }
-            self.client.publish(topic="master", payload=json.dumps(log), qos=0, retain=True)
+            self.client.publish(topic="master", payload=json.dumps(log), qos=0, retain=False)
             return
 
         if sprava["msg"] == "quit":
             self.stop()
         elif sprava["msg"] == "info":
             info = { 'msg': 'info', 'name': self.get_app_name(), 'type': self.get_app_type(), 'id': self.get_app_id(), 'pub': self.info_pub(), 'sub': self.info_sub() }
-            self.client.publish(topic="master", payload=json.dumps(info), qos=0, retain=True)
+            self.client.publish(topic="master", payload=json.dumps(info), qos=0, retain=False)
         elif sprava["msg"] == "status":
             status = self.get_status_msg('ok')
-            self.client.publish(topic="master", payload=json.dumps(status), qos=0, retain=True)
+            self.client.publish(topic="master", payload=json.dumps(status), qos=0, retain=False)
 
     def start(self):
         # priprava klienta
@@ -60,7 +60,7 @@ class BaseApp:
 
         # posli spravu o startovani
         status = self.get_status_msg('starting')
-        self.client.publish(topic="master", payload=json.dumps(status), qos=0, retain=True)
+        self.client.publish(topic="master", payload=json.dumps(status), qos=0, retain=False)
 
         # spracovanie systemovych sprav
         self.client.message_callback_add('apps/' + self.get_app_name(), self.on_app_message)
@@ -68,13 +68,13 @@ class BaseApp:
 
         # posli spravu o uspesnom nastartovani
         status = self.get_status_msg('ok')
-        self.client.publish(topic="master", payload=json.dumps(status), qos=0, retain=True)
+        self.client.publish(topic="master", payload=json.dumps(status), qos=0, retain=False)
 
 
     def stop(self):
         # posli spravu o ukoncovani
         status = self.get_status_msg('quitting')
-        self.client.publish(topic="master", payload=json.dumps(status), qos=0, retain=True)
+        self.client.publish(topic="master", payload=json.dumps(status), qos=0, retain=False)
         self.client.disconnect()
 
 

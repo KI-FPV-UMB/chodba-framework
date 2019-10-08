@@ -27,12 +27,11 @@ appka si povie:
 		list komponentov, pri kazdom komponente: id, x, y, w, h, title, typ (button/button_submit/input_text/input_number/kreslenie)
 
 TODO:
-	pri ukonceni mastra sa dako neukonci frontend_planner
-	aplikacia by mala este vediet poslat layout klavesnice (+oznamit, ci je dynamicky/staticky)
+	pripravit priklad TkInter frontendu
+	frontend aplikacia by mala este vediet poslat layout klavesnice (+oznamit, ci je dynamicky/staticky)
 	do dokumentu zhrnut podmienky na appku (na ake spravy ma ako reagovat)
 	upravit hra2d-java, aby splnalo podmienky na appku. klavesnica-java sa zrusi, ked bude mobil
 	pridat aj hra2d-python; spravit pomocou base kniznice
-	pripravit priklad TkInter frontendu
 	na gitlab spravit dokument, kde opisem ako to cele rozchodit (aby si to mohol napr. aj Martin odskusat)
 
 

@@ -34,7 +34,7 @@ if len(sys.argv) == 2 and sys.argv[1]=="runon":
 
 # ako parameter sa ocakava nazov uzla, kde sa backend spusta
 NODE_NAME = socket.gethostname()
-print("nazov uzla: " + NODE_NAME)
+print("[" + APP_NAME + "] nazov uzla: " + NODE_NAME)
 
 class App:
     def __init__(self):
@@ -99,7 +99,7 @@ class Master(base_app.BaseApp):
     def on_message(self, client, userdata, message):
         sprava = json.loads(message.payload.decode())
         if not "msg" in sprava:
-            print("[master] neznamy typ spravy: " + str(sprava))
+            print("[" + APP_NAME + "] neznamy typ spravy: " + str(sprava))
             return
 
         if sprava["msg"] == "lifecycle":
@@ -125,7 +125,7 @@ class Master(base_app.BaseApp):
             # ak je stav quitting, tak vyhod aplikaciu zo zoznamu
             if sprava["status"] == "quitting":
                 self.apps.remove(app)
-            print("[master] apps: " + str(self.apps))
+            print("[" + APP_NAME + "] apps: " + str(self.apps))
 
         if sprava["msg"] == "log":
             # loguj spravu aplikacie
@@ -149,25 +149,36 @@ class Master(base_app.BaseApp):
                             # zisti, ci uz na tom uzle bezi
                             if not self.is_running(app["name"], nmapp.node):
                                 # este tam nebezi - spusti
-                                print("[master] spustam " + app["name"] + " na " + nmapp.node)
+                                print("[" + APP_NAME + "] spustam " + app["name"] + " na " + nmapp.node)
                                 msg = { 'msg': 'run', 'type':'backend', 'name': app["name"] }
                                 self.client.publish(topic="node/" + nmapp.node, payload=json.dumps(msg), qos=0, retain=False)
                             else:
                                 # uz tam bezi!
-                                print("[master] app " + app["name"] + " je uz na " + nmapp.node + " spustena!")
+                                print("[" + APP_NAME + "] app " + app["name"] + " je uz na " + nmapp.node + " spustena!")
                 elif runon == '?':
                     # spusti na nahodnom (ak este nikde nebezi)
-                    no_nodes = 0
+                    nodes = []
                     for nmapp in self.apps:
                         if nmapp.name == app["name"]:
-                            print("[master] app " + app["name"] + " je uz spustena na " + nmapp.node + "!")
+                            print("[" + APP_NAME + "] app " + app["name"] + " je uz spustena na " + nmapp.node + "!")
                             return
-                    #TODO vyber nahodny uzol
-                    print("?")
+                        if nmapp.name == "node_manager":
+                            nodes.append(nmapp.node)
+                    # este nebezi, vyber nahodny uzol a spusti
+                    node = nodes[random.randint(0, len(nodes)-1)]
+                    print("[" + APP_NAME + "] spustam " + app["name"] + " na " + node)
+                    msg = { 'msg': 'run', 'type':'backend', 'name': app["name"] }
+                    self.client.publish(topic="node/" + node, payload=json.dumps(msg), qos=0, retain=False)
                 else:
                     # spusti na specifikovanom (ak tam este nebezi)
-                    #TODO
-                    print("...")
+                    if not self.is_running(app["name"], runon):
+                        # este tam nebezi - spusti
+                        print("[" + APP_NAME + "] spustam " + app["name"] + " na " + runon)
+                        msg = { 'msg': 'run', 'type':'backend', 'name': app["name"] }
+                        self.client.publish(topic="node/" + runon, payload=json.dumps(msg), qos=0, retain=False)
+                    else:
+                        # uz tam bezi!
+                        print("[" + APP_NAME + "] app " + app["name"] + " je uz na " + runon + " spustena!")
 
         if sprava["msg"] == "applications":
             if not "response_topic" in sprava:
@@ -216,9 +227,11 @@ class Master(base_app.BaseApp):
     def stop(self):
         # vsetkym rozposli spravu aby koncili..
         for app in self.apps:
+            if app.name == APP_NAME:
+                continue
             msg = {"msg": "quit"}
             print("apps/" + app.name + " <= " + json.dumps(msg))         #TODO
-            self.client.publish(topic="apps/" + app.name, payload=json.dumps(msg), qos=0, retain=True)
+            self.client.publish(topic="apps/" + app.name, payload=json.dumps(msg), qos=0, retain=False)
         # skonci
         self.client.disconnect()
 
