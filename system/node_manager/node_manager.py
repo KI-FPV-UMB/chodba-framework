@@ -30,7 +30,7 @@ if len(sys.argv) == 2 and sys.argv[1]=="runon":
     print("*")
     sys.exit(1)
 
-# ako parameter sa ocakava nazov uzla, kde sa backend spusta
+# nazov uzla je dany hostname
 NODE_NAME = socket.gethostname()
 print("[" + APP_NAME + "] nazov uzla: " + NODE_NAME)
 
@@ -54,16 +54,21 @@ class NodeManager(base_app.BaseApp):
     def on_node_message(self, client, userdata, message):
         sprava = json.loads(message.payload.decode())
         if not "msg" in sprava:
-            log = { 'msg': 'log', 'app': self.get_app_name(), 'log': 'neznamy typ spravy: ' + str(sprava) }
+            log = { 'msg': 'log', 'name': APP_NAME, 'node': NODE_NAME, 'log': 'neznamy typ spravy: ' + str(sprava) }
             self.client.publish(topic="master", payload=json.dumps(log), qos=0, retain=False)
             return
 
         if sprava["msg"] == "run":
             # spusti danu app
-            if sprava["type"] == "backend":
-                run_app(BACKEND_APPS_PATH, sprava["name"])
-            if sprava["type"] == "frontend":
-                run_app(FRONTEND_APPS_PATH, sprava["name"])
+            try:
+                if sprava["type"] == "backend":
+                    run_app(BACKEND_APPS_PATH, sprava["name"])
+                if sprava["type"] == "frontend":
+                    run_app(FRONTEND_APPS_PATH, sprava["name"])
+            except Exception as e:
+                print("[" + APP_NAME + "] chyba pri spustani " + sprava["name"] + ": " + str(e))
+                log = { 'msg': 'log', 'name': APP_NAME, 'node': NODE_NAME, 'log': 'chyba pri spustani ' + sprava["name"] + ": " + str(e) }
+                self.client.publish(topic="master", payload=json.dumps(log), qos=0, retain=False)
             #TODO asi pocitat aj s argumentami. priklad: teplomer_alert a b c => spusti danu appku nasledovne: teplomer_alert NODE_NAME a b c
 
     def run(self):

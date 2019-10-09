@@ -17,7 +17,7 @@ def run_app(path, name, arg=None):
             result = subprocess.run([f, arg], stdout=subprocess.PIPE)
             return result.stdout.decode('utf-8').strip('\n')
     # test pre java app
-    # TODO
-    return None
+    #TODO
+    raise Exception('aplikacia nebola najdena alebo neznamy typ aplikacie!')
 
 

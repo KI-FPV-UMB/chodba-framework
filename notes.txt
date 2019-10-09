@@ -37,7 +37,7 @@ TODO:
 TEMY
 rozvrh, obdy, mhd - data citaju z db. tam sa to bude plnit skriptami (tiez moznost robit na mac), alebo rucne
 1) top priority
--databaza [backend] - na zaklade danej spravy zapise udaj do db (asi key/value pary, ale pri kazdom aj zdroj - ze kto to poslal)
+-?databaza [backend] - na zaklade danej spravy zapise udaj do db (asi key/value pary, ale pri kazdom aj zdroj - ze kto to poslal)
 -qr kod pre mobilnu appku [frontend]
 -daky python frontend ukazku (tkinter)
 2) meet-and-code

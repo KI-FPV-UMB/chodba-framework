@@ -32,7 +32,7 @@ if len(sys.argv) == 2 and sys.argv[1]=="runon":
     print("mvagac-X230")        # nazov master uzla
     sys.exit(1)
 
-# ako parameter sa ocakava nazov uzla, kde sa backend spusta
+# nazov uzla je dany hostname
 NODE_NAME = socket.gethostname()
 print("[" + APP_NAME + "] nazov uzla: " + NODE_NAME)
 
@@ -88,12 +88,15 @@ class Master(base_app.BaseApp):
         ret = []
         for entry in os.listdir(path):
             if os.path.isdir(os.path.join(path, entry)):
-                app = App()
-                app.name = entry
-                app.type = run_app(path, app.name, 'type')
-                # ak je rozpoznana, tak ju pridaj do zoznamu
-                if app.type is not None:
-                    ret.append(app.__dict__)       # aby bol objekt serializovatelny do json 
+                try:
+                    app = App()
+                    app.name = entry
+                    app.type = run_app(path, app.name, 'type')
+                    # ak je rozpoznana, tak ju pridaj do zoznamu
+                    if app.type is not None:
+                        ret.append(app.__dict__)       # aby bol objekt serializovatelny do json 
+                except Exception as e:
+                    print("[" + APP_NAME + "] chyba pri spustani " + app.name + ": " + str(e))
         return ret
 
     def on_message(self, client, userdata, message):
@@ -129,7 +132,7 @@ class Master(base_app.BaseApp):
 
         if sprava["msg"] == "log":
             # loguj spravu aplikacie
-            print("[" + sprava["name"] + "] " + sprava["log"])
+            print("[" + sprava["node"] + "/" + sprava["name"] + "] " + sprava["log"])
 
         if sprava["msg"] == "info":
             # loguj spravu aplikacie
@@ -141,44 +144,47 @@ class Master(base_app.BaseApp):
             # pospustaj vsetky backend aplikacie
             apps_list = self.list_offline_apps(BACKEND_APPS_PATH)
             for app in apps_list:
-                runon = run_app(BACKEND_APPS_PATH, app["name"], 'runon')
-                if runon == '*':
-                    # iteruj cez vsetky node_manager-i
-                    for nmapp in self.apps:
-                        if nmapp.name == "node_manager":
-                            # zisti, ci uz na tom uzle bezi
-                            if not self.is_running(app["name"], nmapp.node):
-                                # este tam nebezi - spusti
-                                print("[" + APP_NAME + "] spustam " + app["name"] + " na " + nmapp.node)
-                                msg = { 'msg': 'run', 'type':'backend', 'name': app["name"] }
-                                self.client.publish(topic="node/" + nmapp.node, payload=json.dumps(msg), qos=0, retain=False)
-                            else:
-                                # uz tam bezi!
-                                print("[" + APP_NAME + "] app " + app["name"] + " je uz na " + nmapp.node + " spustena!")
-                elif runon == '?':
-                    # spusti na nahodnom (ak este nikde nebezi)
-                    nodes = []
-                    for nmapp in self.apps:
-                        if nmapp.name == app["name"]:
-                            print("[" + APP_NAME + "] app " + app["name"] + " je uz spustena na " + nmapp.node + "!")
-                            return
-                        if nmapp.name == "node_manager":
-                            nodes.append(nmapp.node)
-                    # este nebezi, vyber nahodny uzol a spusti
-                    node = nodes[random.randint(0, len(nodes)-1)]
-                    print("[" + APP_NAME + "] spustam " + app["name"] + " na " + node)
-                    msg = { 'msg': 'run', 'type':'backend', 'name': app["name"] }
-                    self.client.publish(topic="node/" + node, payload=json.dumps(msg), qos=0, retain=False)
-                else:
-                    # spusti na specifikovanom (ak tam este nebezi)
-                    if not self.is_running(app["name"], runon):
-                        # este tam nebezi - spusti
-                        print("[" + APP_NAME + "] spustam " + app["name"] + " na " + runon)
+                try:
+                    runon = run_app(BACKEND_APPS_PATH, app["name"], 'runon')
+                    if runon == '*':
+                        # iteruj cez vsetky node_manager-i
+                        for nmapp in self.apps:
+                            if nmapp.name == "node_manager":
+                                # zisti, ci uz na tom uzle bezi
+                                if not self.is_running(app["name"], nmapp.node):
+                                    # este tam nebezi - spusti
+                                    print("[" + APP_NAME + "] spustam " + app["name"] + " na " + nmapp.node)
+                                    msg = { 'msg': 'run', 'type':'backend', 'name': app["name"] }
+                                    self.client.publish(topic="node/" + nmapp.node, payload=json.dumps(msg), qos=0, retain=False)
+                                else:
+                                    # uz tam bezi!
+                                    print("[" + APP_NAME + "] app " + app["name"] + " je uz na " + nmapp.node + " spustena!")
+                    elif runon == '?':
+                        # spusti na nahodnom (ak este nikde nebezi)
+                        nodes = []
+                        for nmapp in self.apps:
+                            if nmapp.name == app["name"]:
+                                print("[" + APP_NAME + "] app " + app["name"] + " je uz spustena na " + nmapp.node + "!")
+                                return
+                            if nmapp.name == "node_manager":
+                                nodes.append(nmapp.node)
+                        # este nebezi, vyber nahodny uzol a spusti
+                        node = nodes[random.randint(0, len(nodes)-1)]
+                        print("[" + APP_NAME + "] spustam " + app["name"] + " na " + node)
                         msg = { 'msg': 'run', 'type':'backend', 'name': app["name"] }
-                        self.client.publish(topic="node/" + runon, payload=json.dumps(msg), qos=0, retain=False)
+                        self.client.publish(topic="node/" + node, payload=json.dumps(msg), qos=0, retain=False)
                     else:
-                        # uz tam bezi!
-                        print("[" + APP_NAME + "] app " + app["name"] + " je uz na " + runon + " spustena!")
+                        # spusti na specifikovanom (ak tam este nebezi)
+                        if not self.is_running(app["name"], runon):
+                            # este tam nebezi - spusti
+                            print("[" + APP_NAME + "] spustam " + app["name"] + " na " + runon)
+                            msg = { 'msg': 'run', 'type':'backend', 'name': app["name"] }
+                            self.client.publish(topic="node/" + runon, payload=json.dumps(msg), qos=0, retain=False)
+                        else:
+                            # uz tam bezi!
+                            print("[" + APP_NAME + "] app " + app["name"] + " je uz na " + runon + " spustena!")
+                except Exception as e:
+                    print("[" + APP_NAME + "] chyba pri spustani " + app.name + ": " + str(e))
 
         if sprava["msg"] == "applications":
             if not "response_topic" in sprava:

@@ -12,7 +12,7 @@ import paho.mqtt.client as mqtt
 import json
 import base_app
 
-APP_NAME = "frontend_planner"
+APP_NAME = "oznamy_firmy"
 APP_TYPE = "app"
 APP_ID = hex(random.getrandbits(128))[2:-1]
 
@@ -21,16 +21,11 @@ if len(sys.argv) == 2 and sys.argv[1]=="type":
     print(APP_TYPE)
     sys.exit(1)
 
-# na poziadnie oznam, kde sa ma spustit: * na vsetkych, ? na lubovolnom, <nazov> na konkretnom
-if len(sys.argv) == 2 and sys.argv[1]=="runon":
-    print("mvagac-X230")        # nazov master uzla
-    sys.exit(1)
-
 # nazov uzla je dany hostname
 NODE_NAME = socket.gethostname()
 print("[" + APP_NAME + "] nazov uzla: " + NODE_NAME)
 
-class FrontendPlanner(base_app.BaseApp):
+class OznamyFirmy(base_app.BaseApp):
 
     def get_app_name(self):
         return APP_NAME
@@ -53,11 +48,11 @@ class FrontendPlanner(base_app.BaseApp):
 
 
 if __name__ == '__main__':
-    app = FrontendPlanner()
+    app = OznamyFirmy()
     app.start()
     app.run()
 
 
-#TODO bude asi odpocuvat master topic a ked sa dozvie, ze sa daka appka skoncila, tak na danom uzle spusti nahodne dalsiu. malo by sa dako vediet, ktora appka je spustena userom a ktora takto nahodne. tie nahodne po urcitom case bude striedat. tie kde je hrac nebude moct prerusit (len po dlhsej necinnosti). na kazdom uzle musi stale bezat nejaka frontend appka. pri spustani frontend appky sa zisti, ci je daky live user. ak nie, tak by ju spustilo na viac monitorov; ak je tak len na jeden resp. ak je vedla seba volnych (neobsadenych live userom) tolko monitorov, kolko vyzaduje, tak ich spusti; inac len na 1
+#TODO 
 
 
