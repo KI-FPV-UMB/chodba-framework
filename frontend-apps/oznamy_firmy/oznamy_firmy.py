@@ -1,8 +1,10 @@
 #!/usr/bin/python3
 
-# PYTHONPATH musi odkazoat na absolutnu cestu k .../chodba-framework/base
+"""oznamy_firmy.py: zobrazuje rozne oznamy od firiem (vacsinou ponuky pracovnych miest)"""
+__author__ = "Michal Vagac"
+__email__ = "michal.vagac@gmail.com"
 
-# tato aplikacia sa spusta priamo z os (vzdy pri starte os); a to len na hlavnom uzle. musi sa spustit ako prva
+# PYTHONPATH musi odkazovat na absolutnu cestu k .../chodba-framework/base
 
 import sys
 import os

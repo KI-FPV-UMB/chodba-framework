@@ -4,7 +4,7 @@
 __author__ = "Michal Vagac"
 __email__ = "michal.vagac@gmail.com"
 
-# PYTHONPATH musi odkazoat na absolutnu cestu k .../chodba-framework/base
+# PYTHONPATH musi odkazovat na absolutnu cestu k .../chodba-framework/base
 
 import sys
 import os
