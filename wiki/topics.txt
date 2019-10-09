@@ -1,0 +1,35 @@
+Prehľad štruktúry MQTT topicov
+
+* master - spravy pre master uzol (aplikaciu)
+  * msg=lifecycle => udrziava zoznam beziacich aplikacii
+  * msg=log => zaloguje danu spravu do konzoly
+  * msg=info => do konzoly zaloguje ziskane informacie o aplikacii
+  * msg=applications => zoznam podla filter=[running|all], type=[frontend|backend], posle na response_topic=(nazov_topicu). odpoved bude mat tiez nastavene msg=applications
+  * msg=workspaces => podla zoznamu "node_manager"-ov, posle na response_topic=(nazov_topicu)
+  * msg=approbations => zatial napevno, posle na response_topic=(nazov_topicu)
+* node/(hostname) - spravy pre dany uzol (spracovava node_manager)
+  * TODO spustanie/vypinanie aplikacii
+* app/<nazov> - ovladanie kazdej aplikacie (pozor, podla typu, nie instancie! t.j. sprava pride pre vsetky spustene instancie)
+  * msg=quit => mastrovi posle "lifecycle" spravu, ze konci
+  * msg=info => mastrovi posle "info" spravu o type aplikacie a topicoch, na ktore posiela/pocuva
+  * msg=status => mastrovi posle "lifecycle" spravu, ze je ok
+  * ostatne => mastrovi posle "log" spravu ze dostal neznamu spravu
+* app/(nazov)/(node) - ovladanie konkretnej instancie, moze spracovavat ten isty kod ako app/(nazov)
+
+Niekoľko príkladov publikovania správ:
+```shell
+mosquitto_sub -d -t master
+mosquitto_pub -t master -m '{"msg": "run_backends"}'
+mosquitto_pub -t master -m '{"msg": "applications", "response_topic": "qwe"}'
+mosquitto_pub -t master -m '{"msg": "applications", "response_topic": "qwe", "filter": "running"}'
+mosquitto_pub -t master -m '{"msg": "applications", "response_topic": "qwe", "filter": "running", "type":"system"}'
+mosquitto_pub -t master -m '{"msg": "applications", "type": "app", "response_topic": "qwe"}'
+mosquitto_pub -t master -m '{"msg": "workspaces", "response_topic": "qwe"}'
+mosquitto_pub -t master -m '{"msg": "approbations", "response_topic": "qwe"}'
+mosquitto_pub -t app/master -m '{"msg": "info"}'
+mosquitto_pub -t app/master -m '{"msg": "status"}'
+mosquitto_pub -t app/master -m '{"msg": "quit"}'
+mosquitto_pub -t app/master/mvagac-X230 -m '{"msg": "quit"}'
+mosquitto_pub -t node/mvagac-X230 -m '{"msg": "run", "type": "frontend", "name": "demo_hra2d_p"}'
+```
+

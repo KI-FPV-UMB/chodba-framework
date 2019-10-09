@@ -52,18 +52,18 @@ class OznamyFirmy(base_app.BaseApp):
     def run(self):
         # spusti spracovanie mqtt
         self.client.loop_start()
-        # zobraz okno
+        # priprav okno
         self.top = tkinter.Tk()
         self.top.wm_attributes('-type', 'splash')       # bez dekoracii
         self.top.wm_attributes('-fullscreen','true')
-#        self.top.geometry("{0}x{1}+0+0".format(self.top.winfo_screenwidth()-3, self.top.winfo_screenheight()-3))    # na celu obrazovku
-#        self.top.resizable(False, False)
-#        self.top.update_idletasks()
-#        self.top.overrideredirect(True)
-        def tlacidloAkcia():
+        # napln okno obsahom
+        lbl = tkinter.Label(self.top, text="Hello", font=("Arial Bold", 50))
+        lbl.grid(column=0, row=0)
+        def btnAkcia():
             tkinter.messagebox.showinfo( "chodba...", "Hello World")
-        tlacidlo = tkinter.Button(self.top, text ="Ahoj", command = tlacidloAkcia)
-        tlacidlo.pack()
+        btn = tkinter.Button(self.top, text ="Ahoj", command = btnAkcia)
+        btn.grid(column=1, row=0)
+        # pracuj
         self.top.mainloop()
 
     def stop(self):

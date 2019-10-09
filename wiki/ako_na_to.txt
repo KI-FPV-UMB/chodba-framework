@@ -1,0 +1,40 @@
+Aby mohol byť Váš program spustený v tomto prostredí, musí spĺňať niekoľko podmienok.
+
+1. posiela informacie o zivotnom cykle na topic "master":
+   * "msg": "lifecycle"
+   * "name": nazov aplikacie (malymi pismenami, bez medzier, diakritiky)
+   * "type": "app" alebo "game"
+   * "id": unikatny identifikator (pocas jedneho behu aplikacie sa nesmie zmenit!)
+   * "node": hostname pocitaca, kde je spustena
+   * "status" - stav, co sa s aplikaciou deje:
+     * "starting" - pri spustani
+     * "ok" - po spusteni
+     * "quitting" - pri vypinani
+
+priklad:
+```json
+{"node": "mvagac-X230", "name": "priklad", "type": "app", "msg": "lifecycle", "id": "70e0c7db6a2834b141b26b80a39b9b", "status": "starting"}
+```
+2. pocuva topic "app/<svoj_nazov>"; prichodzia sprava ma vzdy "msg":
+   * "quit": prikaz na ukoncenie aplikacie
+   * "info": na topic "master" posle informacie o sebe:
+     * "msg": "info"
+     * "name": nazov aplikacie (malymi pismenami, bez medzier, diakritiky)
+     * "type": "app" alebo "game"
+     * "id": unikatny identifikator (pocas jedneho behu aplikacie sa nesmie zmenit!)
+     * "pub": info o topicoch, na ktore posiela spravy (publish)
+     * "sub": info o topicoch, na ktorych pocuva (subscribe)
+
+priklad:
+```json
+{"msg": "info", "pub": "", "sub": "abc", "type": "app", "name": "priklad", "id": "e4d3b84da554c5529d4c469cde86406"}
+```
+   * "status": na topic "master" posle, ze je ok (atributy ako pri zivotnom cykle):
+
+priklad:
+```json
+{"msg": "lifecycle", "name": "priklad", "type": "app", "id": "399548a2b577edcad81a7e0a092f092", "status": "ok", "node": "mvagac-X230"}
+```
+
+3. pocuva topic "app/<svoj_nazov>/<hostname>"; moze byt rovnaky kod ako pri "app/<svoj_nazov>"
+

@@ -60,10 +60,12 @@ class SkelTkinter(base_app.BaseApp):
 #        self.top.resizable(False, False)
 #        self.top.update_idletasks()
 #        self.top.overrideredirect(True)
+        # napln okno obsahom
         def tlacidloAkcia():
             tkinter.messagebox.showinfo( "chodba...", "Hello World")
         tlacidlo = tkinter.Button(self.top, text ="Ahoj", command = tlacidloAkcia)
         tlacidlo.pack()
+        # pracuj
         self.top.mainloop()
 
     def stop(self):

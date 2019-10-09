@@ -1,49 +1,4 @@
 
--standardne mqtt topicy:
-	master -spravy pre master uzol (aplikaciu)
-		msg=lifecycle => udrziava zoznam beziacich aplikacii
-		msg=log => zaloguje danu spravu do konzoly
-		msg=info => do konzoly zaloguje ziskane informacie o aplikacii
-		msg=applications => zoznam podla filter=[running|all], type=[frontend|backend], posle na response_topic=<nazov_topicu>
-			odpoved bude mat tiez nastavene msg=applications
-		msg=workspaces => podla zoznamu "node_manager"-ov, posle na response_topic=<nazov_topicu>
-		msg=approbations => zatial napevno, posle na response_topic=<nazov_topicu>
-	node/<hostname>	-spravy pre dany uzol (spracovava node_manager)
-		TODO spustanie/vypinanie aplikacii
-	app/<nazov>	-ovladanie kazdej aplikacie (pozor, podla typu, nie instancie! t.j. sprava pride pre vsetky spustene instancie)
-		msg=quit => mastrovi posle "lifecycle" spravu, ze konci
-		msg=info => mastrovi posle "info" spravu o type aplikacie a topicoch, na ktore posiela/pocuva
-		msg=status => mastrovi posle "lifecycle" spravu, ze je ok
-		ostatne => mastrovi posle "log" spravu ze dostal neznamu spravu
-	app/<nazov>/<node>	-ovladanie konkretnej instancie, moze spracovavat ten isty kod ako app/<nazov>
-
--poziadavky na app:
-1) posiela informacie o zivotnom cykle na topic "master":
-	"msg": "lifecycle"
-	"name": nazov aplikacie (malymi pismenami, bez medzier, diakritiky)
-	"type": "app" alebo "game"
-	"id": unikatny identifikator (pocas jedneho behu aplikacie sa nesmie zmenit!)
-	"node": hostname pocitaca, kde je spustena
-	"status" - stav, co sa s aplikaciou deje:
-		pri spustani: "starting"
-		po spusteni: "ok"
-		pri vypinani: "quitting"
-	priklad: {"node": "mvagac-X230", "name": "priklad", "type": "app", "msg": "lifecycle", "id": "70e0c7db6a2834b141b26b80a39b9b", "status": "starting"}
-2) pocuva topic "app/<svoj_nazov>"; prichodzia sprava ma vzdy "msg":
-	"quit": prikaz na ukoncenie aplikacie
-	"info": na topic "master" posle informacie o sebe:
-		"msg": "info"
-		"name": nazov aplikacie (malymi pismenami, bez medzier, diakritiky)
-		"type": "app" alebo "game"
-		"id": unikatny identifikator (pocas jedneho behu aplikacie sa nesmie zmenit!)
-		"pub": info o topicoch, na ktore posiela spravy (publish)
-		"sub": info o topicoch, na ktorych pocuva (subscribe)
-		priklad: {"msg": "info", "pub": "", "sub": "abc", "type": "app", "name": "priklad", "id": "e4d3b84da554c5529d4c469cde86406"}
-	"status": na topic "master" posle, ze je ok (atributy ako pri zivotnom cykle):
-		priklad: {"msg": "lifecycle", "name": "priklad", "type": "app", "id": "399548a2b577edcad81a7e0a092f092", "status": "ok", "node": "mvagac-X230"}
-
-
-
 TODO:
 	pripravit priklad TkInter frontendu. bude podporovat 2 mody: 1 obrazovkova / viac obrazovkova. pricom sama oznami, kolko obrazoviek v tom
 		multi mode vyzaduje (0=nepodporuje) podla toho by na tych 8 monitoroch mohlo ist naraz niekolko viac-obrazovkovych aplikacii
@@ -51,9 +6,12 @@ TODO:
 	frontend aplikacia by mala este vediet poslat layout klavesnice:
 		dynamicke ovladanie/staticke (pri dynamickom sa pri kazdom odoslani vyziada novy layout)
 		list komponentov, pri kazdom komponente: id, x, y, w, h, title, typ (button/button_submit/input_text/input_number/kreslenie)
+		=> vdaka tomuto by malo byt mozne spravit demo spustenie a nahodne hranie aplikacie. normalne spustim appku, ale okrem toho sa este
+		   spusti dalsia backend appka, ktora bude nahodne generovat stlacene klavesy (ake - to viem vdaka layoutu)
 	do dokumentu zhrnut podmienky na appku (na ake spravy ma ako reagovat)
 	upravit hra2d-java, aby splnalo podmienky na appku. klavesnica-java sa zrusi, ked bude mobil
 	na gitlab spravit dokument, kde opisem ako to cele rozchodit (aby si to mohol napr. aj Martin odskusat)
+	asi tie najlepsie studentske hry upravit do tohto prostredia
 
 
 TEMY
@@ -105,22 +63,6 @@ FRAMEWORK
 	-musi informovat (rovno umoznit?), ze ked chce user s tym pracovat, musi sa prihlasit na lokalnu rpi wifi
 -moznost instalovania dalsich apiek studentami (brat to rovno s gitu?)
 
-=> backend appky
-	-specialna backend appka na spustanie a vypinanie appiek (bude bezat na kazdom rpi)
-	-backend appka, ktora bude planovat (nahodne) frontend appky. a reagovat na ukoncovanie frontend appiek
-	-db backend appka
-=> demo frontend appka
-	-2 mody: 1 obrazovka / viac obrazoviek (dakym sposobom oznami, kolko obrazok v multi mode podporuje)
-=> dobre opisat cely system kanalov
-	mosquitto_sub -d -t master
-	mosquitto_pub -t app/frontend_runner -m "info"
-	mosquitto_pub -t app/frontend_runner -m "status"
-	mosquitto_pub -t app/frontend_runner -m "quit"
-	mosquitto_pub -t run_frontend/1 -m "asd"
-
-KONFIGURACIA (HW)
--mozaika zo starych monitorov (asi vsetko v riadku)
--projektor+rpi4 (kamera, kinect, mikrofon, teplomer, vlhkomer)
 
 
 TODO
