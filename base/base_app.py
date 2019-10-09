@@ -28,6 +28,10 @@ class BaseApp:
         # musi vratit unikatny identifikator aplikacie
         raise NotImplementedError()
 
+    def get_node_name(self):
+        # musi vratit hostname, kde je spusteny
+        raise NotImplementedError()
+
     def info_pub(self):
         # musi vratit retazec s informaciami o topicoch, do ktorych posiela spravy
         raise NotImplementedError()
@@ -67,8 +71,10 @@ class BaseApp:
         self.client.publish(topic="master", payload=json.dumps(status), qos=0, retain=False)
 
         # spracovanie systemovych sprav
-        self.client.message_callback_add('apps/' + self.get_app_name(), self.on_app_message)
-        self.client.subscribe("apps/" + self.get_app_name())
+        self.client.message_callback_add('app/' + self.get_app_name(), self.on_app_message)
+        self.client.subscribe("app/" + self.get_app_name())
+        self.client.message_callback_add('app/' + self.get_app_name() + '/' + self.get_node_name(), self.on_app_message)
+        self.client.subscribe("app/" + self.get_app_name() + '/' + self.get_node_name())
 
         # posli spravu o uspesnom nastartovani
         status = self.get_status_msg('ok')

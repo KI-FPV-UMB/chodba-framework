@@ -14,7 +14,7 @@ def run_app(path, name, arg=None):
     if os.path.isfile(f):
         if arg is None:
             # spusti na pozadi
-            subprocess.Popen(["/usr/bin/python3", f])
+            subprocess.Popen(["/usr/bin/python3", name + ".py"], cwd=p)
             return None
         else:
             # spusti a vrat vystup

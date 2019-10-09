@@ -43,6 +43,9 @@ class SkelBackend(base_app.BaseApp):
     def get_app_id(self):
         return APP_ID
 
+    def get_node_name(self):
+        return NODE_NAME
+
     def info_pub(self):
         return ""
 

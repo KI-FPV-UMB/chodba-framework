@@ -74,6 +74,9 @@ class Master(base_app.BaseApp):
     def get_app_id(self):
         return APP_ID
 
+    def get_node_name(self):
+        return NODE_NAME
+
     def info_pub(self):
         return ""
 
@@ -238,8 +241,8 @@ class Master(base_app.BaseApp):
             if app.name == APP_NAME:
                 continue
             msg = {"msg": "quit"}
-            print("[" + APP_NAME + "] vypinam apps/" + app.name)
-            self.client.publish(topic="apps/" + app.name, payload=json.dumps(msg), qos=0, retain=False)
+            print("[" + APP_NAME + "] vypinam app/" + app.name)
+            self.client.publish(topic="app/" + app.name, payload=json.dumps(msg), qos=0, retain=False)
         # skonci
         self.client.disconnect()
 
