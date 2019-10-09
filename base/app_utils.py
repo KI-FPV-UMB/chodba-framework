@@ -1,5 +1,9 @@
 #!/usr/bin/python3
 
+"""app_utils.py: pomocne programy"""
+__author__ = "Michal Vagac"
+__email__ = "michal.vagac@gmail.com"
+
 import os
 import subprocess
 

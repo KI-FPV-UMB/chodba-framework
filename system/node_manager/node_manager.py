@@ -1,8 +1,10 @@
 #!/usr/bin/python3
 
-# PYTHONPATH musi odkazoat na absolutnu cestu k .../chodba-framework/base
+"""node_manager.py: spravuje konkretny uzol. tato aplikacia sa spusta priamo z os (najlepsie pri starte os), a to na kazdom uzle (1 instancia). este predtym musi byt na jednom uzle spusteny master.py"""
+__author__ = "Michal Vagac"
+__email__ = "michal.vagac@gmail.com"
 
-# tato aplikacia sa spusta priamo z os (vzdy pri starte os); a to na kazdom uzle
+# PYTHONPATH musi odkazovat na absolutnu cestu k .../chodba-framework/base
 
 import sys
 import random

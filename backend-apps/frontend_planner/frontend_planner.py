@@ -1,8 +1,10 @@
 #!/usr/bin/python3
 
-# PYTHONPATH musi odkazoat na absolutnu cestu k .../chodba-framework/base
+"""frontend_planner.py: menezuje spustanie frontend aplikacii na uzloch. ma na starosti to, aby tam vzdy nieco bezalo (t.j. ked nieco skonci, spusti nieco dalsie). tiez zabezpecuje, ze automaticky spustane appky tam budu bezat len urcity cas, potom budu nahradene inymi."""
+__author__ = "Michal Vagac"
+__email__ = "michal.vagac@gmail.com"
 
-# tato aplikacia sa spusta priamo z os (vzdy pri starte os); a to len na hlavnom uzle. musi sa spustit ako prva
+# PYTHONPATH musi odkazoat na absolutnu cestu k .../chodba-framework/base
 
 import sys
 import os

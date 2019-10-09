@@ -1,5 +1,9 @@
 #!/usr/bin/python3
 
+"""base_app.py: zakladna trieda pre frontend/backend (ale aj system) appku. implementuje to, co by mala robit kazda app"""
+__author__ = "Michal Vagac"
+__email__ = "michal.vagac@gmail.com"
+
 import sys
 import socket
 import paho.mqtt.client as mqtt

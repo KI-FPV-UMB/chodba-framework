@@ -1,8 +1,10 @@
 #!/usr/bin/python3
 
-# PYTHONPATH musi odkazoat na absolutnu cestu k .../chodba-framework/base
+"""master.py: uzol ma na starosti hlavne lifecycle aplikacii. tato aplikacia sa spusta priamo z os (najlepsie pri starte os), a to len na hlavnom uzle. musi sa spustit ako prva."""
+__author__ = "Michal Vagac"
+__email__ = "michal.vagac@gmail.com"
 
-# tato aplikacia sa spusta priamo z os (vzdy pri starte os); a to len na hlavnom uzle. musi sa spustit ako prva
+# PYTHONPATH musi odkazovat na absolutnu cestu k .../chodba-framework/base
 
 import sys
 import os
