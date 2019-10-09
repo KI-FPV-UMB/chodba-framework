@@ -36,7 +36,7 @@ if len(sys.argv) == 2 and sys.argv[1]=="runon":
 
 # nazov uzla je dany hostname
 NODE_NAME = socket.gethostname()
-print("[" + APP_NAME + "] nazov uzla: " + NODE_NAME)
+print("[" + APP_NAME + "] spustam na uzle " + NODE_NAME)
 
 class App:
     def __init__(self):

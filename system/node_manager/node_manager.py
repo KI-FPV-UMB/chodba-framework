@@ -34,7 +34,7 @@ if len(sys.argv) == 2 and sys.argv[1]=="runon":
 
 # nazov uzla je dany hostname
 NODE_NAME = socket.gethostname()
-print("[" + APP_NAME + "] nazov uzla: " + NODE_NAME)
+print("[" + APP_NAME + "] spustam na uzle " + NODE_NAME)
 
 class NodeManager(base_app.BaseApp):
 
@@ -76,7 +76,7 @@ class NodeManager(base_app.BaseApp):
     def run(self):
         self.client.message_callback_add('node/' + NODE_NAME, self.on_node_message)
         self.client.subscribe("node/" + NODE_NAME)
-        # cakaj
+        # spracovavaj mqtt spravy
         self.client.loop_forever()
 
 

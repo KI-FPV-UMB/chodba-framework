@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-"""oznamy_firmy.py: zobrazuje rozne oznamy od firiem (vacsinou ponuky pracovnych miest)"""
+"""skel_tkinter.py: skel aplikacia pre frontend gui v pythone"""
 __author__ = "Michal Vagac"
 __email__ = "michal.vagac@gmail.com"
 
@@ -16,7 +16,7 @@ import tkinter
 import tkinter.messagebox
 import base_app
 
-APP_NAME = "oznamy_firmy"
+APP_NAME = "skel_tkinter"
 APP_TYPE = "app"
 APP_ID = hex(random.getrandbits(128))[2:-1]
 
@@ -29,7 +29,7 @@ if len(sys.argv) == 2 and sys.argv[1]=="type":
 NODE_NAME = socket.gethostname()
 print("[" + APP_NAME + "] spustam na uzle " + NODE_NAME)
 
-class OznamyFirmy(base_app.BaseApp):
+class SkelTkinter(base_app.BaseApp):
 
     def get_app_name(self):
         return APP_NAME
@@ -64,11 +64,13 @@ class OznamyFirmy(base_app.BaseApp):
         self.top.mainloop()
 
     def stop(self):
+        # zastav spracovanie mqtt
         super().stop()
+        # zrus okno
         self.top.destroy()
 
 if __name__ == '__main__':
-    app = OznamyFirmy()
+    app = SkelTkinter()
     app.start()
     app.run()
 
