@@ -56,7 +56,7 @@ class BaseApp:
             info = { 'msg': 'info', 'name': self.get_app_name(), 'type': self.get_app_type(), 'id': self.get_app_id(), 'pub': self.info_pub(), 'sub': self.info_sub() }
             self.client.publish(topic="master", payload=json.dumps(info), qos=0, retain=False)
         elif sprava["msg"] == "status":
-            status = self.get_status_msg('ok')
+            status = self.get_status_msg('running')
             self.client.publish(topic="master", payload=json.dumps(status), qos=0, retain=False)
 
     def start(self):
@@ -66,10 +66,6 @@ class BaseApp:
         # pripojenie k brokeru
         self.client.connect(BROKER_URL, BROKER_PORT)
 
-        # posli spravu o startovani
-        status = self.get_status_msg('starting')
-        self.client.publish(topic="master", payload=json.dumps(status), qos=0, retain=False)
-
         # spracovanie systemovych sprav
         self.client.message_callback_add('app/' + self.get_app_name(), self.on_app_message)
         self.client.subscribe("app/" + self.get_app_name())
@@ -77,7 +73,7 @@ class BaseApp:
         self.client.subscribe("app/" + self.get_app_name() + '/' + self.get_node_name())
 
         # posli spravu o uspesnom nastartovani
-        status = self.get_status_msg('ok')
+        status = self.get_status_msg('running')
         self.client.publish(topic="master", payload=json.dumps(status), qos=0, retain=False)
 
 

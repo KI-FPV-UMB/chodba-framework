@@ -70,11 +70,11 @@ class NodeManager(base_app.BaseApp):
                     run_app(BACKEND_APPS_PATH, sprava["name"])
                 if sprava["type"] == "frontend":
                     run_app(FRONTEND_APPS_PATH, sprava["name"])
+                    #TODO ak sa to spusti z mobilu, tak mi so spravou pride aj nick a aprobacia - to dam appke ako argumenty (vzdy obidva, aby nahodou to niekto nehackoval ze tam da 1 argument type)
             except Exception as e:
                 print("[" + APP_NAME + "] chyba pri spustani " + sprava["name"] + ": " + str(e))
                 log = { 'msg': 'log', 'name': APP_NAME, 'node': NODE_NAME, 'log': 'chyba pri spustani ' + sprava["name"] + ": " + str(e) }
                 self.client.publish(topic="master", payload=json.dumps(log), qos=0, retain=False)
-            #TODO asi pocitat aj s argumentami. priklad: teplomer_alert a b c => spusti danu appku nasledovne: teplomer_alert NODE_NAME a b c
 
     def run(self):
         self.client.message_callback_add('node/' + NODE_NAME, self.on_node_message)

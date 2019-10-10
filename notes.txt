@@ -1,17 +1,20 @@
 
 TODO:
-	pripravit priklad TkInter frontendu. bude podporovat 2 mody: 1 obrazovkova / viac obrazovkova. pricom sama oznami, kolko obrazoviek v tom
-		multi mode vyzaduje (0=nepodporuje) podla toho by na tych 8 monitoroch mohlo ist naraz niekolko viac-obrazovkovych aplikacii
-		(napr. 3 a 5, alebo 3 a 3 a 2, a pod.)
+	databaza backend (napr. na ukladanie skore)
+	status frontend (ake su aplikacie, ake workspaces)
+	do dokumentu zhrnut podmienky na appku (na ake spravy ma ako reagovat)
+	na gitlab spravit dokument, kde opisem ako to cele rozchodit (aby si to mohol napr. aj Martin odskusat)
 	frontend aplikacia by mala este vediet poslat layout klavesnice:
 		dynamicke ovladanie/staticke (pri dynamickom sa pri kazdom odoslani vyziada novy layout)
 		list komponentov, pri kazdom komponente: id, x, y, w, h, title, typ (button/button_submit/input_text/input_number/kreslenie)
 		=> vdaka tomuto by malo byt mozne spravit demo spustenie a nahodne hranie aplikacie. normalne spustim appku, ale okrem toho sa este
 		   spusti dalsia backend appka, ktora bude nahodne generovat stlacene klavesy (ake - to viem vdaka layoutu)
-	do dokumentu zhrnut podmienky na appku (na ake spravy ma ako reagovat)
+	pripravit priklad TkInter frontendu. bude podporovat 2 mody: 1 obrazovkova / viac obrazovkova. pricom sama oznami, kolko obrazoviek v tom
+		multi mode vyzaduje (0=nepodporuje) podla toho by na tych 8 monitoroch mohlo ist naraz niekolko viac-obrazovkovych aplikacii
+		(napr. 3 a 5, alebo 3 a 3 a 2, a pod.)
 	upravit hra2d-java, aby splnalo podmienky na appku. klavesnica-java sa zrusi, ked bude mobil
-	na gitlab spravit dokument, kde opisem ako to cele rozchodit (aby si to mohol napr. aj Martin odskusat)
 	asi tie najlepsie studentske hry upravit do tohto prostredia
+	master by mohol ukladat (pomocou db backendu) aj dake statistiky - ktora aplikacia sa ako casto spustila, ako dlho s nou niekto robil, ...
 
 
 TEMY
@@ -34,7 +37,7 @@ rozvrh, obdy, mhd - data citaju z db. tam sa to bude plnit skriptami (tiez mozno
 -mhd-cely [frontend] - celkovy prehlad co/kedy ide
 -hra-... [frontend] - ovladanie musi reagovat na mqtt spravy; jackbox: https://www.youtube.com/watch?v=UZfNc_kbxKQ
 -firmy [frontend] - reklama, oznamy ze niekoho hladaju, ...
--pocuvanie hovorenych povelov (pomocou google sluzby)
+-galeria [frontend]
 3) bc/mgr prace
 -osoba-poloha [backend] - posle spravu, ze na definovanej pozicii (napr. pred kazdym monitorom) stoji nejaka osoba
 -osoba-gesto [backend] - posle spravu, ze nejaka osoba spravila na kinect nejake gesto
@@ -42,6 +45,7 @@ rozvrh, obdy, mhd - data citaju z db. tam sa to bude plnit skriptami (tiez mozno
 -osoby-zapcha [backend] - dotazuje sa na pocty ludi a zaznamenava to do db. po dlhsom case bude vediet, kedy tam byva plno. potom bude dopredu
  vysielat spravu, ze sa blizi zapcha
 -osoby-zapcha-alert [frontend] - zobrazi varovanie, ze bude plno...
+-pocuvanie hovorenych povelov (pomocou google sluzby)
 
 
 FRAMEWORK
