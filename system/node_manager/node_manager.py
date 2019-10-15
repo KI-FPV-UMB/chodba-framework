@@ -54,7 +54,8 @@ class NodeManager(base_app.BaseApp):
                 if sprava["type"] == "backend":
                     run_app(BACKEND_APPS_PATH, sprava["name"])
                 if sprava["type"] == "frontend":
-                    run_app(FRONTEND_APPS_PATH, sprava["name"], sprava["nickname"], sprava["approbation"], sprava["response_topic"])
+                    response_topic = sprava["response_topic"] if "response_topic" in sprava else None
+                    run_app(FRONTEND_APPS_PATH, sprava["name"], sprava["nickname"], sprava["approbation"], response_topic)
             except Exception as e:
                 print("[" + APP_NAME + "] chyba pri spustani " + sprava["name"] + ": " + str(e))
                 log = { 'msg': 'log', 'name': APP_NAME, 'node': NODE_NAME, 'log': 'chyba pri spustani ' + sprava["name"] + ": " + str(e) }

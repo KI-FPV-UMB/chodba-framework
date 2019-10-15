@@ -11,6 +11,7 @@ import os
 import paho.mqtt.client as mqtt
 import json
 import base_app
+import app_utils
 from app_utils import process_args
 from app_utils import run_app
 
@@ -23,19 +24,12 @@ SYSTEM_APPS_PATH = "../../system/"
 BACKEND_APPS_PATH = "../../backend-apps/"
 FRONTEND_APPS_PATH = "../../frontend-apps/"
 
-class Rect:
-    def __init__(self, x, y, w, h):
-        self.x = x
-        self.y = y
-        self.w = w
-        self.h = h
-
 WORKSPACES_LAYOUT = dict([
-    ('mvagac-X230', Rect(0, 0, 1, 1)),
-    ('node2', Rect(1, 0, 1, 1)),
-    ('node3', Rect(0, 1, 1, 1)),
-    ('node4', Rect(1, 1, 1, 1)),
-    ('node5', Rect(2, 0, 2, 2)),
+    ('mvagac-X230', app_utils.Rect(0, 0, 1, 1)),
+    ('node2', app_utils.Rect(1, 0, 1, 1)),
+    ('node3', app_utils.Rect(0, 1, 1, 1)),
+    ('node4', app_utils.Rect(1, 1, 1, 1)),
+    ('node5', app_utils.Rect(2, 0, 2, 2)),
 ])
 
 class App:
@@ -221,7 +215,7 @@ class Master(base_app.BaseApp):
             for k in WORKSPACES_LAYOUT.keys():
                 WORKSPACES_LAYOUT[k].name = k
                 wrkspcs_list.append(WORKSPACES_LAYOUT[k].__dict__)
-            resp = { 'msg': 'workspaces', 'workspaces': wrkspcs_list }
+            resp = { 'msg': 'workspaces', 'grid_width': '4', 'grid_height': '2', 'workspaces': wrkspcs_list }
             print(json.dumps(resp))         #TODO
             self.client.publish(topic=sprava["response_topic"], payload=json.dumps(resp), qos=0, retain=False)
 

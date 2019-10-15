@@ -19,12 +19,20 @@ import ctypes
 import sdl2
 
 import base_app
+import app_utils
 from app_utils import process_args
 
 APP_NAME = "demo_hra2d_p"
 APP_TYPE = "app"
 
 APP_ID, NODE_NAME, NICKNAME, APPROBATION, RESPONSE_TOPIC = process_args(sys.argv, APP_NAME, APP_TYPE)
+
+CONTROL_LAYOUT = [
+        app_utils.ControlElement("dolava", 0, 1, 2, 2, "<-", "button"),
+        app_utils.ControlElement("doprava", 4, 1, 2, 2, "->", "button"),
+        app_utils.ControlElement("hore", 2, 0, 2, 2, "^", "button"),
+        app_utils.ControlElement("dole", 2, 2, 2, 2, "v", "button"),
+]
 
 BIELA = (255, 255, 255)
 
@@ -177,6 +185,15 @@ class DemoHra2Dp(base_app.BaseApp):
     def run(self):
         # spracovavaj mqtt spravy
         self.client.loop_start()
+
+        # oznam pozadovany layout klavesnice
+        if RESPONSE_TOPIC is not None:
+            ctrls_list = []
+            for ctrl in CONTROL_LAYOUT:
+                ctrls_list.append(ctrl.__dict__)
+            resp = { 'msg': 'control_layout', 'grid_width': '6', 'grid_height': '4', 'type': 'static', 'control_elements': ctrls_list }
+            print(json.dumps(resp))            #TODO
+            self.client.publish(topic=RESPONSE_TOPIC, payload=json.dumps(resp), qos=0, retain=False)
 
         # inicializacia SDL2
         if sdl2.SDL_Init(sdl2.SDL_INIT_VIDEO) < 0:
