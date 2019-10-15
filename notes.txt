@@ -1,21 +1,32 @@
 
 TODO:
-	databaza backend (napr. na ukladanie skore)
-	status frontend (ake su aplikacie, ake workspaces); teplotu kazdeho rpi
-	do dokumentu zhrnut podmienky na appku (na ake spravy ma ako reagovat)
-	na gitlab spravit dokument, kde opisem ako to cele rozchodit (aby si to mohol napr. aj Martin odskusat)
 	frontend aplikacia by mala este vediet poslat layout klavesnice:
 		dynamicke ovladanie/staticke (pri dynamickom sa pri kazdom odoslani vyziada novy layout)
 		list komponentov, pri kazdom komponente: id, x, y, w, h, title, typ (button/button_submit/input_text/input_number/kreslenie)
 		=> vdaka tomuto by malo byt mozne spravit demo spustenie a nahodne hranie aplikacie. normalne spustim appku, ale okrem toho sa este
 		   spusti dalsia backend appka, ktora bude nahodne generovat stlacene klavesy (ake - to viem vdaka layoutu)
-	vyber workspace spravit tiez graficky (lebo ak budu obrazovky do stvorca, tak ako by podla nazvu zistili, ktora je ktora...)
+	upravit hra2d-java, aby splnalo podmienky na appku. klavesnica-java sa zrusi, ked bude mobil
+	=> opisat aj s prikladmi cely flow; po spusteni mobilnej aplikacie
+	  1) vyber aplikacii; vypytaj zoznam; odpoved pride na 'qwe':
+		mosquitto_pub -t master -m '{"msg": "applications", "type": "frontend", "response_topic": "qwe"}'
+		{"applications": [{"id": null, "type": "app", "name": "demo_hra2d_p", "node": null, "status": null}, {"id": null, "type": "app", "name": "oznamy_firmy", "node": null, "status": null}], "msg": "applications"}
+	  2) vyber workspace; vypytaj zoznam; odpoved pride na 'qwe':
+		mosquitto_pub -t master -m '{"msg": "workspaces", "response_topic": "qwe"}'
+		{"workspaces": [{"h": 1, "y": 0, "w": 1, "x": 0, "active": true, "name": "mvagac-X230"}, {"h": 1, "y": 0, "w": 1, "x": 1, "name": "node2"}, {"h": 2, "y": 0, "w": 2, "x": 2, "name": "node5"}, {"h": 1, "y": 1, "w": 1, "x": 1, "name": "node4"}, {"h": 1, "y": 1, "w": 1, "x": 0, "name": "node3"}], "msg": "workspaces"}
+	  3) spusti vybranu appku na vybratej workspace
+		mosquitto_pub -t node/mvagac-X230 -m '{"msg": "run", "type": "frontend", "name": "demo_hra2d_p", "nickname": "joker", "approbation": "AI", "response_topic": "qwe"}'
+	  4) appka po spusteni posle info o ovladani
+
+	databaza backend (napr. na ukladanie skore)
+	status frontend (ake su aplikacie, ake workspaces); teplotu kazdeho rpi
+	do dokumentu zhrnut podmienky na appku (na ake spravy ma ako reagovat)
+	na gitlab spravit dokument, kde opisem ako to cele rozchodit (aby si to mohol napr. aj Martin odskusat)
 	pripravit priklad TkInter frontendu. bude podporovat 2 mody: 1 obrazovkova / viac obrazovkova. pricom sama oznami, kolko obrazoviek v tom
 		multi mode vyzaduje (0=nepodporuje) podla toho by na tych 8 monitoroch mohlo ist naraz niekolko viac-obrazovkovych aplikacii
 		(napr. 3 a 5, alebo 3 a 3 a 2, a pod.)
-	upravit hra2d-java, aby splnalo podmienky na appku. klavesnica-java sa zrusi, ked bude mobil
 	asi tie najlepsie studentske hry upravit do tohto prostredia
 	master by mohol ukladat (pomocou db backendu) aj dake statistiky - ktora aplikacia sa ako casto spustila, ako dlho s nou niekto robil, ...
+	spravit sluzbu na spustanie master/node_manager; a to tak aby sa to pustilo po spusteni mosquitto. node_manager spustat cronom
 
 
 TEMY

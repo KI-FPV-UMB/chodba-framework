@@ -7,34 +7,19 @@ __email__ = "michal.vagac@gmail.com"
 # PYTHONPATH musi odkazovat na absolutnu cestu k .../chodba-framework/base
 
 import sys
-import random
-import socket
 import paho.mqtt.client as mqtt
 import json
 import base_app
+from app_utils import process_args
 from app_utils import run_app
 
 APP_NAME = "node_manager"
 APP_TYPE = "system"
-APP_ID = hex(random.getrandbits(128))[2:-1]
+
+APP_ID, NODE_NAME, NICKNAME, APPROBATION, RESPONSE_TOPIC = process_args(sys.argv, APP_NAME, APP_TYPE, "*")
 
 BACKEND_APPS_PATH = "../../backend-apps/"
 FRONTEND_APPS_PATH = "../../frontend-apps/"
-
-# na poziadnie oznam typ
-if len(sys.argv) == 2 and sys.argv[1]=="type":
-    print(APP_TYPE)
-    sys.exit(1)
-
-# na poziadnie oznam, kde sa ma spustit: * na vsetkych, ? na lubovolnom, <nazov> na konkretnom
-if len(sys.argv) == 2 and sys.argv[1]=="runon":
-    # zobraz informaciu, na ktorych uzloch sa ma backend spustat
-    print("*")
-    sys.exit(1)
-
-# nazov uzla je dany hostname
-NODE_NAME = socket.gethostname()
-print("[" + APP_NAME + "] spustam na uzle " + NODE_NAME)
 
 class NodeManager(base_app.BaseApp):
 
@@ -69,8 +54,7 @@ class NodeManager(base_app.BaseApp):
                 if sprava["type"] == "backend":
                     run_app(BACKEND_APPS_PATH, sprava["name"])
                 if sprava["type"] == "frontend":
-                    run_app(FRONTEND_APPS_PATH, sprava["name"])
-                    #TODO ak sa to spusti z mobilu, tak mi so spravou pride aj nick a aprobacia - to dam appke ako argumenty (vzdy obidva, aby nahodou to niekto nehackoval ze tam da 1 argument type)
+                    run_app(FRONTEND_APPS_PATH, sprava["name"], sprava["nickname"], sprava["approbation"], sprava["response_topic"])
             except Exception as e:
                 print("[" + APP_NAME + "] chyba pri spustani " + sprava["name"] + ": " + str(e))
                 log = { 'msg': 'log', 'name': APP_NAME, 'node': NODE_NAME, 'log': 'chyba pri spustani ' + sprava["name"] + ": " + str(e) }

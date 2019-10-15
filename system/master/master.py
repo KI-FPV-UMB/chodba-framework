@@ -8,35 +8,35 @@ __email__ = "michal.vagac@gmail.com"
 
 import sys
 import os
-import random
-import socket
 import paho.mqtt.client as mqtt
 import json
 import base_app
+from app_utils import process_args
 from app_utils import run_app
 
 APP_NAME = "master"
 APP_TYPE = "system"
-APP_ID = hex(random.getrandbits(128))[2:-1]
+
+APP_ID, NODE_NAME, NICKNAME, APPROBATION, RESPONSE_TOPIC = process_args(sys.argv, APP_NAME, APP_TYPE, "mvagac-X230")
 
 SYSTEM_APPS_PATH = "../../system/"
 BACKEND_APPS_PATH = "../../backend-apps/"
 FRONTEND_APPS_PATH = "../../frontend-apps/"
 
-# na poziadnie oznam typ
-if len(sys.argv) == 2 and sys.argv[1]=="type":
-    print(APP_TYPE)
-    sys.exit(1)
+class Rect:
+    def __init__(self, x, y, w, h):
+        self.x = x
+        self.y = y
+        self.w = w
+        self.h = h
 
-# na poziadnie oznam, kde sa ma spustit: * na vsetkych, ? na lubovolnom, <nazov> na konkretnom
-if len(sys.argv) == 2 and sys.argv[1]=="runon":
-    # zobraz informaciu, na ktorych uzloch sa ma backend spustat
-    print("mvagac-X230")        # nazov master uzla
-    sys.exit(1)
-
-# nazov uzla je dany hostname
-NODE_NAME = socket.gethostname()
-print("[" + APP_NAME + "] spustam na uzle " + NODE_NAME)
+WORKSPACES_LAYOUT = dict([
+    ('mvagac-X230', Rect(0, 0, 1, 1)),
+    ('node2', Rect(1, 0, 1, 1)),
+    ('node3', Rect(0, 1, 1, 1)),
+    ('node4', Rect(1, 1, 1, 1)),
+    ('node5', Rect(2, 0, 2, 2)),
+])
 
 class App:
     def __init__(self):
@@ -216,7 +216,11 @@ class Master(base_app.BaseApp):
             wrkspcs_list = []
             for app in self.apps:
                 if app.name == "node_manager":
-                    wrkspcs_list.append(app.node)
+                    if app.node in WORKSPACES_LAYOUT.keys():
+                        WORKSPACES_LAYOUT[app.node].active = True
+            for k in WORKSPACES_LAYOUT.keys():
+                WORKSPACES_LAYOUT[k].name = k
+                wrkspcs_list.append(WORKSPACES_LAYOUT[k].__dict__)
             resp = { 'msg': 'workspaces', 'workspaces': wrkspcs_list }
             print(json.dumps(resp))         #TODO
             self.client.publish(topic=sprava["response_topic"], payload=json.dumps(resp), qos=0, retain=False)

@@ -8,8 +8,6 @@ __email__ = "michal.vagac@gmail.com"
 
 import sys
 import os
-import random
-import socket
 import paho.mqtt.client as mqtt
 import json
 
@@ -18,19 +16,12 @@ import ctypes
 import sdl2
 
 import base_app
+from app_utils import process_args
 
 APP_NAME = "skel_sdl"
 APP_TYPE = "app"
-APP_ID = hex(random.getrandbits(128))[2:-1]
 
-# na poziadnie oznam typ
-if len(sys.argv) == 2 and sys.argv[1]=="type":
-    print(APP_TYPE)
-    sys.exit(1)
-
-# nazov uzla je dany hostname
-NODE_NAME = socket.gethostname()
-print("[" + APP_NAME + "] spustam na uzle " + NODE_NAME)
+APP_ID, NODE_NAME, NICKNAME, APPROBATION, RESPONSE_TOPIC = process_args(sys.argv, APP_NAME, APP_TYPE)
 
 class SkelSDL(base_app.BaseApp):
 
