@@ -1,16 +1,16 @@
 
 TODO:
-	upravit hra2d-java, aby splnalo podmienky na appku. klavesnica-java sa zrusi, ked bude mobil
 	databaza backend (napr. na ukladanie skore)
+	spravit sluzbu na spustanie master/node_manager; a to tak aby sa to pustilo po spusteni mosquitto. node_manager spustat cronom
 	status frontend (ake su aplikacie, ake workspaces); teplotu kazdeho rpi
-	do dokumentu zhrnut podmienky na appku (na ake spravy ma ako reagovat)
-	na gitlab spravit dokument, kde opisem ako to cele rozchodit (aby si to mohol napr. aj Martin odskusat)
+	master by mohol ukladat (pomocou db backendu) aj dake statistiky - ktora aplikacia sa ako casto spustila, ako dlho s nou niekto robil, ...
+
+	upravit hra2d-java, aby splnalo podmienky na appku. klavesnica-java sa zrusi, ked bude mobil
+	doc: zhrnut podmienky na appku (na ake spravy ma ako reagovat); quickstart ze ako to cele rozchodit
 	pripravit priklad TkInter frontendu. bude podporovat 2 mody: 1 obrazovkova / viac obrazovkova. pricom sama oznami, kolko obrazoviek v tom
 		multi mode vyzaduje (0=nepodporuje) podla toho by na tych 8 monitoroch mohlo ist naraz niekolko viac-obrazovkovych aplikacii
 		(napr. 3 a 5, alebo 3 a 3 a 2, a pod.)
 	asi tie najlepsie studentske hry upravit do tohto prostredia
-	master by mohol ukladat (pomocou db backendu) aj dake statistiky - ktora aplikacia sa ako casto spustila, ako dlho s nou niekto robil, ...
-	spravit sluzbu na spustanie master/node_manager; a to tak aby sa to pustilo po spusteni mosquitto. node_manager spustat cronom
 	pri dynamickom ovladani sa pri kazdom odoslani vyziada novy layout (aby bolo mozne podla potreby menit formular)
 	demo spustenie a nahodne hranie aplikacie - normalne spustim appku, ale okrem toho sa este spusti dalsia backend appka, ktora bude nahodne
 		generovat stlacene klavesy (ake - to viem vdaka layoutu)

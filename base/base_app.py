@@ -61,7 +61,7 @@ class BaseApp:
 
     def start(self):
         # priprava klienta
-        self.client = mqtt.Client(self.get_app_name())  #TODO dat aj uzol, musi to byt asi unikatne
+        self.client = mqtt.Client(self.get_node_name() + "_" + self.get_app_name() + "_" + self.get_app_id())
 
         # pripojenie k brokeru
         self.client.connect(BROKER_URL, BROKER_PORT)
