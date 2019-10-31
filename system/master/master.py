@@ -91,6 +91,7 @@ class Master(base_app.BaseApp):
                     app = App()
                     app.name = entry
                     app.type = run_app(path, app.name, 'type')
+                    app.demo_time = run_app(path, app.name, 'demotime')
                     # ak je rozpoznana, tak ju pridaj do zoznamu
                     if app.type is not None:
                         ret.append(app.__dict__)       # aby bol objekt serializovatelny do json 

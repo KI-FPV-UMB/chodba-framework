@@ -10,10 +10,15 @@ import subprocess
 import socket
 import random
 
-def process_args(args, app_name, app_type, runon = None):
+def process_args(args, app_name, app_type, demo_time, runon = None):
     # na poziadnie oznam typ
     if len(args) == 2 and args[1]=="type":
         print(app_type)
+        sys.exit(1)
+
+    # na poziadanie oznam ponukanu dobu trvania dema (ak sa spusti automaticky ako demo, kolko casu jej nehat)
+    if len(args) == 2 and args[1]=="demotime":
+        print(demo_time)
         sys.exit(1)
 
     # na poziadnie oznam, kde sa ma spustit: * na vsetkych, ? na lubovolnom, <nazov> na konkretnom

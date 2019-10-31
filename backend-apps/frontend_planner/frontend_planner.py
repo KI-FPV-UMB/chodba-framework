@@ -15,8 +15,10 @@ from app_utils import process_args
 
 APP_NAME = "frontend_planner"
 APP_TYPE = "app"
+DEMO_TIME = 0
+RUNON = "mvagac-X230"
 
-APP_ID, NODE_NAME, NICKNAME, APPROBATION, RESPONSE_TOPIC = process_args(sys.argv, APP_NAME, APP_TYPE, "mvagac-X230")
+APP_ID, NODE_NAME, NICKNAME, APPROBATION, RESPONSE_TOPIC = process_args(sys.argv, APP_NAME, APP_TYPE, DEMO_TIME, RUNON)
 
 class FrontendPlanner(base_app.BaseApp):
 
@@ -50,5 +52,5 @@ if __name__ == '__main__':
 
 
 #TODO bude asi odpocuvat master topic a ked sa dozvie, ze sa daka appka skoncila, tak na danom uzle spusti nahodne dalsiu. malo by sa dako vediet, ktora appka je spustena userom a ktora takto nahodne. tie nahodne po urcitom case bude striedat. tie kde je hrac nebude moct prerusit (len po dlhsej necinnosti). na kazdom uzle musi stale bezat nejaka frontend appka. pri spustani frontend appky sa zisti, ci je daky live user. ak nie, tak by ju spustilo na viac monitorov; ak je tak len na jeden resp. ak je vedla seba volnych (neobsadenych live userom) tolko monitorov, kolko vyzaduje, tak ich spusti; inac len na 1
-
+#TODO vyziadat si zo servera zoznam frontend appiek aj s demotimeom kazdej. potom z nich jednu nahodnu vybrat a spustit. cakat kolko si vyziadala, potom ju dat vypnut, atd.
 

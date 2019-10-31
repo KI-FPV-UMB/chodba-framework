@@ -24,8 +24,9 @@ from app_utils import process_args
 
 APP_NAME = "demo_hra2d_p"
 APP_TYPE = "app"
+DEMO_TIME = 15
 
-APP_ID, NODE_NAME, NICKNAME, APPROBATION, RESPONSE_TOPIC = process_args(sys.argv, APP_NAME, APP_TYPE)
+APP_ID, NODE_NAME, NICKNAME, APPROBATION, RESPONSE_TOPIC = process_args(sys.argv, APP_NAME, APP_TYPE, DEMO_TIME)
 
 CONTROL_LAYOUT = [
         app_utils.ControlElement("dolava", 0, 1, 2, 2, "<-", "button"),
