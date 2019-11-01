@@ -15,8 +15,9 @@ from app_utils import process_args
 
 APP_NAME = "skel_frontend"
 APP_TYPE = "app"
+DEMO_TIME = 15
 
-APP_ID, NODE_NAME, NICKNAME, APPROBATION, RESPONSE_TOPIC = process_args(sys.argv, APP_NAME, APP_TYPE)
+APP_ID, NODE_NAME, NICKNAME, APPROBATION, RESPONSE_TOPIC = process_args(sys.argv, APP_NAME, APP_TYPE, DEMO_TIME)
 
 class SkelFrontend(base_app.BaseApp):
 

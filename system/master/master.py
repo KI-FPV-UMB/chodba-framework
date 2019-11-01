@@ -186,6 +186,14 @@ class Master(base_app.BaseApp):
                 except Exception as e:
                     print("[" + APP_NAME + "] chyba pri spustani " + app.name + ": " + str(e))
 
+        if sprava["msg"] == "refresh":
+            # refreshni status beziacich aplikacii
+            for app in self.apps:
+                print("[" + APP_NAME + "] refresh stavu " + app.name + " na " + app.node)
+                app.status = "refreshing"
+                msg = { 'msg': 'status' }
+                self.client.publish(topic="app/" + app.name, payload=json.dumps(msg), qos=0, retain=False)
+
         if sprava["msg"] == "applications":
             if not "response_topic" in sprava:
                 return

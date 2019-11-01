@@ -1,11 +1,14 @@
 
 TODO:
 	spravit rodicovi metodu na poslanie spravy; do ktorej vzdy pribali id src spravy (a pripadne dalsie veci: nickname, approb, ... ak su)
+		aj cely zivotny cyklus este upratat. ked appka padne, master o tom nevie. ked hrac dohra hru, musi sa to dat mastrovi vediet
+		frontend_planner bude mozno sucastou mastra. sledovat ci je appka spustena userom alebo automaticky; pamatat si ze kedy
+		ukladat dake statistiky (db backend) - ktora aplikacia sa ako casto spustila, ako dlho s nou niekto robil, ...
+		tiez musi sledovat, kedy naposledy hrac spravil daku akciu - (posle to ako odpoved na otazku/poziadavku) - timeout. aby to vedel
+		zistit, bude asi musiet pocuvat na vsetky spravy, ktore idu frontendom
+		appka by este mala oznamit, ci moze byt spustana automaticky, alebo len userom => demo_time
 	mobilna appka
 	spustanie master (systemd; po posquitto), node_manager (cronom) pri starte; po starte spustit na mastrovi run_backends
-	master by mohol ukladat (pomocou db backendu) aj dake statistiky - ktora aplikacia sa ako casto spustila, ako dlho s nou niekto robil, ...
-		tiez musi sledovat, kedy naposledy hrac spravil daku akciu - (posle to ako odpoved na otazku/poziadavku)
-	appka by este mala oznamit, ci moze byt spustana automaticky, alebo len userom. alebo to rozhodnut podla zverejnenia klavesnice?
 
 	wiki: zhrnut podmienky na appku (na ake spravy ma ako reagovat); quickstart ze ako to cele rozchodit
 		aj detailne opisat vsetky "sluzby" - s prikladmi sprav
@@ -17,11 +20,11 @@ TODO:
 
 TEMY
 1) top priority
+-frontend_planner - planovac nahodneho spustania aplikacii [backend]. musi vediet rozlisit, ci je aplikacia spustena pouzivatelom, alebo nie
 -?databaza [backend] - na zaklade danej spravy zapise udaj do db (asi key/value pary, ale pri kazdom aj zdroj - ze kto to poslal); ukladanie score
 -qr kod pre mobilnu appku [frontend] - aj taka reklama: "Skus to!" a qr kod
--galeria [frontend] (slideshow z noci vyskumnikov)
 -zaujimave/srandovne citaty znamych ludi (mozgotrasy?, chuck norris a java)
--frontend_planner - planovac nahodneho spustania aplikacii [backend]. musi vediet rozlisit, ci je aplikacia spustena pouzivatelom, alebo nie
+-oznamy z webu ki
 2) meet-and-code
 -hra2d (java aj python) - aby to islo ako ma
 -status [frontend] - ake su aplikacie, ake workspaces; teplotu kazdeho rpi
