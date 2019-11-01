@@ -17,11 +17,18 @@ import sys
 import ctypes
 import sdl2
 import sdl2.sdlimage
+import sdl2.sdlttf          # libsdl2-ttf-2.0-0
 
 import base_app
 from app_utils import process_args
 
 SORTED_FILE = "sorted"
+#FONT_PATH = "/usr/share/vlc/skins2/fonts/FreeSans.ttf"
+#FONT_PATH = "/usr/share/fonts/truetype/ttf-dejavu/DejaVuSans.ttf"
+FONT_PATH = "/usr/share/fonts/truetype/ttf-liberation/LiberationSans-Regular.ttf"
+FONT_SIZE = 120
+FS_ENCODING = "iso-8859-2"
+DELAY_S = 1.5
 
 APP_NAME = "galeria"
 APP_TYPE = "app"
@@ -74,8 +81,7 @@ class SkelSDL(base_app.BaseApp):
         r.x, r.y = int(self.window_w/2 - nw/2), int(self.window_h/2 - nh/2)
         r.w, r.h = int(nw), int(nh)
         # vykresli
-        windowsurface = sdl2.SDL_GetWindowSurface(self.window)
-        sdl2.SDL_BlitScaled(obrazok, None, windowsurface, r)
+        sdl2.SDL_BlitScaled(obrazok, None, self.windowsurface, r)
         sdl2.SDL_UpdateWindowSurface(self.window)
         sdl2.SDL_FreeSurface(obrazok)
         # update obrazovky (premietnutie zmien)
@@ -102,27 +108,42 @@ class SkelSDL(base_app.BaseApp):
         if not sdl2.sdlimage.IMG_Init(sdl2.sdlimage.IMG_INIT_JPG | sdl2.sdlimage.IMG_INIT_PNG):
             sys.exit(1)
 
+        if sdl2.sdlttf.TTF_Init() <0:
+            sys.exit(1)
+
         # vytvor a zobraz okno (full screen)
         flags = sdl2.SDL_WINDOW_SHOWN | sdl2.SDL_WINDOW_FULLSCREEN_DESKTOP | sdl2.SDL_WINDOW_BORDERLESS
         self.window = sdl2.SDL_CreateWindow(b"Priklad kreslenia mysou", sdl2.SDL_WINDOWPOS_CENTERED, sdl2.SDL_WINDOWPOS_CENTERED, 800, 600, flags)
 
-        # zisti rozmery vytvoreneho okna
+        # zisti a zapamataj rozmery vytvoreneho okna
         w, h = ctypes.c_int(), ctypes.c_int()
         sdl2.SDL_GetWindowSize(self.window, ctypes.byref(w), ctypes.byref(h))
         self.window_w, self.window_h = w.value, h.value
 
-        # priprav pristup na kreslenie do okna (pozadie okna vyfarbi na bielo)
+        # priprav pristup na kreslenie do okna
         self.renderer = sdl2.SDL_CreateRenderer(self.window, -1, sdl2.SDL_RENDERER_SOFTWARE)
+        self.windowsurface = sdl2.SDL_GetWindowSurface(self.window)
 
-        # vykresli nahodny obrazok
-        #TODO na zaciatku vypisat nazov adresara
+        # vymaz okno
+        sdl2.SDL_SetRenderDrawColor(self.renderer, 0, 0, 0, 0)
+        sdl2.SDL_RenderClear(self.renderer)
+
+        # vypis nazov adresara
+        font = sdl2.sdlttf.TTF_OpenFont(FONT_PATH.encode('ascii'), FONT_SIZE)
+        nazov = sdl2.sdlttf.TTF_RenderText_Solid(font, d[2:].encode(FS_ENCODING), sdl2.SDL_Color(255, 255, 255))
+        r = sdl2.SDL_Rect()
+        r.x, r.y = int(self.window_w/2 - nazov.contents.w / 2), int(self.window_h/2 - nazov.contents.h / 2)
+        r.w, r.h = nazov.contents.w, nazov.contents.h
+        sdl2.SDL_BlitSurface(nazov, None, self.windowsurface, r)
+        sdl2.SDL_FreeSurface(nazov)
+        sdl2.SDL_RenderPresent(self.renderer)
 
         # event loop
-        last_draw = 0
+        last_draw = time.time()
         self.running = True
         event = sdl2.SDL_Event()
         while self.running:
-            if time.time() - last_draw > 2:
+            if time.time() - last_draw > DELAY_S:
                 self.kresli_obrazok()
                 last_draw = time.time()
                 # TODO cas pauzy postupne skracovat
@@ -132,7 +153,7 @@ class SkelSDL(base_app.BaseApp):
                 if event.type == sdl2.SDL_QUIT:             # event: quit
                     self.running = False
                     break
-            sdl2.SDL_Delay(10)
+            sdl2.SDL_Delay(100)                             # v ms
 
         # uvolni alokovane zdroje
         sdl2.SDL_DestroyRenderer(self.renderer)
