@@ -11,6 +11,7 @@ import os
 import paho.mqtt.client as mqtt
 import json
 import random
+import time
 
 import sys
 import ctypes
@@ -19,6 +20,8 @@ import sdl2.sdlimage
 
 import base_app
 from app_utils import process_args
+
+SORTED_FILE = "sorted"
 
 APP_NAME = "galeria"
 APP_TYPE = "app"
@@ -50,8 +53,17 @@ class SkelSDL(base_app.BaseApp):
         # vymaz pozadie
         sdl2.SDL_SetRenderDrawColor(self.renderer, 0, 0, 0, 0)
         sdl2.SDL_RenderClear(self.renderer)
-        # nacitaj nahodny obrazok
-        n = random.randint(0, len(self.files))
+        # nacitaj obrazok
+        if self.sorted:
+            # v poradi
+            n = self.current
+            self.current += 1
+            if self.current >= len(self.files):
+                self.current = 0
+        else:
+            # nahodny
+            n = random.randint(0, len(self.files)-1)
+        print("kreslim", n, self.files[n])
         obrazok = sdl2.sdlimage.IMG_Load(str.encode(self.files[n]))
         # vypocitaj mierku zvacsenia/zmensenia
         aw = obrazok.contents.w / self.window_w
@@ -77,6 +89,11 @@ class SkelSDL(base_app.BaseApp):
         subdirs = [x[0] for x in os.walk(".")]
         d = subdirs[random.randint(1, len(subdirs)-1)]
         self.files = [os.path.join(d, f) for f in os.listdir(d) if os.path.isfile(os.path.join(d, f))]
+        self.sorted = os.path.isfile(os.path.join(d, SORTED_FILE))
+        if self.sorted:
+            self.files.remove(os.path.join(d, SORTED_FILE))
+            self.files.sort()
+            self.current = 0                # ak sa obrazky budu zobrazovat sorted, musime si pamatat, ktory bol zobrazeny ako posledny
 
         # inicializacia SDL2
         if sdl2.SDL_Init(sdl2.SDL_INIT_VIDEO) < 0:
@@ -99,13 +116,17 @@ class SkelSDL(base_app.BaseApp):
 
         # vykresli nahodny obrazok
         #TODO na zaciatku vypisat nazov adresara
-        #TODO toto presunut do cyklu a robit to vzdy po case; postupne geometricky zrychlovat
-        self.kresli_obrazok()
 
         # event loop
+        last_draw = 0
         self.running = True
         event = sdl2.SDL_Event()
         while self.running:
+            if time.time() - last_draw > 2:
+                self.kresli_obrazok()
+                last_draw = time.time()
+                # TODO cas pauzy postupne skracovat
+
             while sdl2.SDL_PollEvent(ctypes.byref(event)) != 0:
                 # spracuvaj eventy
                 if event.type == sdl2.SDL_QUIT:             # event: quit
