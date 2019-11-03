@@ -43,8 +43,10 @@ class BaseApp:
     def get_status_msg(self, status):
         return { 'msg': 'lifecycle', 'name': self.get_app_name(), 'type': self.get_app_type(), 'id': self.get_app_id(), 'node': socket.gethostname(),'status': status }
 
-    def send_message(self):
-        print("TODO")       #TODO
+    def publish_message(self, msg_head, msg_body, topic):
+        head = { 'msg': msg_head, 'src': "node/" + self.get_node_name() + '/' + self.get_app_name() }
+        msg = { **head, **msg_body }
+        self.client.publish(topic=topic, payload=json.dumps(msg), qos=0, retain=False)
 
     def on_app_message(self, client, userdata, message):
         sprava = json.loads(message.payload.decode())
@@ -72,8 +74,8 @@ class BaseApp:
         # spracovanie systemovych sprav
         self.client.message_callback_add('app/' + self.get_app_name(), self.on_app_message)
         self.client.subscribe("app/" + self.get_app_name())
-        self.client.message_callback_add('app/' + self.get_app_name() + '/' + self.get_node_name(), self.on_app_message)
-        self.client.subscribe("app/" + self.get_app_name() + '/' + self.get_node_name())
+        self.client.message_callback_add('node/' + self.get_node_name() + '/' + self.get_app_name(), self.on_app_message)
+        self.client.subscribe("node/" + self.get_node_name() + '/' + self.get_app_name())
 
         # posli spravu o uspesnom nastartovani
         status = self.get_status_msg('running')
