@@ -25,11 +25,11 @@ BACKEND_APPS_PATH = "../../backend-apps/"
 FRONTEND_APPS_PATH = "../../frontend-apps/"
 
 WORKSPACES_LAYOUT = dict([
-    ('mvagac-X230', app_utils.Rect(0, 0, 1, 1)),
-    ('node2', app_utils.Rect(1, 0, 1, 1)),
-    ('node3', app_utils.Rect(0, 1, 1, 1)),
-    ('node4', app_utils.Rect(1, 1, 1, 1)),
-    ('node5', app_utils.Rect(2, 0, 2, 2)),
+    ("mvagac-X230", app_utils.Rect(0, 0, 1, 1)),
+    ("node2", app_utils.Rect(1, 0, 1, 1)),
+    ("node3", app_utils.Rect(0, 1, 1, 1)),
+    ("node4", app_utils.Rect(1, 1, 1, 1)),
+    ("node5", app_utils.Rect(2, 0, 2, 2)),
 ])
 
 class App:
@@ -90,8 +90,8 @@ class Master(base_app.BaseApp):
                 try:
                     app = App()
                     app.name = entry
-                    app.type = run_app(path, app.name, 'type')
-                    app.demo_time = run_app(path, app.name, 'demotime')
+                    app.type = run_app(path, app.name, "type")
+                    app.demo_time = run_app(path, app.name, "demotime")
                     # ak je rozpoznana, tak ju pridaj do zoznamu
                     if app.type is not None:
                         ret.append(app.__dict__)       # aby bol objekt serializovatelny do json 
@@ -100,53 +100,55 @@ class Master(base_app.BaseApp):
         return ret
 
     def on_message(self, client, userdata, message):
-        sprava = json.loads(message.payload.decode())
-        if not "msg" in sprava:
-            print("[" + APP_NAME + "] neznamy typ spravy: " + str(sprava))
+        msg = json.loads(message.payload.decode())
+        if not "msg" in msg:
+            print("[" + APP_NAME + "] neznamy typ spravy: " + str(msg))
             return
 
-        if sprava["msg"] == "lifecycle":
+        if msg["msg"] == "lifecycle":
             # spravuj zivotny cyklus aplikacie
             app = None
             # nastav stav aplikacie
             for a in self.apps:
-                if a.id == sprava["id"]:
+                if a.id == msg["id"]:
                     app = a
                     break
             if app is None:
                 app = App()
-                app.id = sprava["id"]
+                app.id = msg["id"]
                 self.apps.append(app)
-            if "name" in sprava:
-                app.name= sprava["name"]
-            if "type" in sprava:
-                app.type = sprava["type"]
-            if "node" in sprava:
-                app.node = sprava["node"]
-            if "status" in sprava:
-                app.status = sprava["status"]
+            if "name" in msg:
+                app.name= msg["name"]
+            if "type" in msg:
+                app.type = msg["type"]
+            if "node" in msg:
+                app.node = msg["node"]
+            if "status" in msg:
+                app.status = msg["status"]
             # ak je stav quitting, tak vyhod aplikaciu zo zoznamu
-            if sprava["status"] == "quitting":
+            if msg["status"] == "quitting":
                 self.apps.remove(app)
             print("[" + APP_NAME + "] apps: " + str(self.apps))
 
-        if sprava["msg"] == "log":
+        elif msg["msg"] == "log":
             # loguj spravu aplikacie
-            print("[" + sprava["node"] + "/" + sprava["name"] + "] " + sprava["log"])
+            src = "???" if not "src" in msg else msg["src"]
+            print("[" + src + "] " + msg["log"])
 
-        if sprava["msg"] == "info":
+        elif msg["msg"] == "info":
             # loguj spravu aplikacie
-            print("[" + sprava["name"] + "] " + sprava["type"])
-            print("  pub: " + sprava["pub"])
-            print("  sub: " + sprava["sub"])
+            src = "???" if not "src" in msg else msg["src"]
+            print("[" + src + "] " + msg["type"])
+            print("  pub: " + msg["pub"])
+            print("  sub: " + msg["sub"])
 
-        if sprava["msg"] == "run_backends":
+        elif msg["msg"] == "run_backends":
             # pospustaj vsetky backend aplikacie
             apps_list = self.list_offline_apps(BACKEND_APPS_PATH)
             for app in apps_list:
                 try:
-                    runon = run_app(BACKEND_APPS_PATH, app["name"], 'runon')
-                    if runon == '*':
+                    runon = run_app(BACKEND_APPS_PATH, app["name"], "runon")
+                    if runon == "*":
                         # iteruj cez vsetky node_manager-i
                         for nmapp in self.apps:
                             if nmapp.name == "node_manager":
@@ -154,12 +156,12 @@ class Master(base_app.BaseApp):
                                 if not self.is_running(app["name"], nmapp.node):
                                     # este tam nebezi - spusti
                                     print("[" + APP_NAME + "] spustam " + app["name"] + " na " + nmapp.node)
-                                    msg = { 'msg': 'run', 'type':'backend', 'name': app["name"] }
-                                    self.client.publish(topic="node/" + nmapp.node, payload=json.dumps(msg), qos=0, retain=False)
+                                    msg2pub = { "type":"backend", "name": app["name"] }
+                                    self.publish_message("run", msg2pub, "node/" + nmapp.node )
                                 else:
                                     # uz tam bezi!
                                     print("[" + APP_NAME + "] app " + app["name"] + " je uz na " + nmapp.node + " spustena!")
-                    elif runon == '?':
+                    elif runon == "?":
                         # spusti na nahodnom (ak este nikde nebezi)
                         nodes = []
                         for nmapp in self.apps:
@@ -171,51 +173,52 @@ class Master(base_app.BaseApp):
                         # este nebezi, vyber nahodny uzol a spusti
                         node = nodes[random.randint(0, len(nodes)-1)]
                         print("[" + APP_NAME + "] spustam " + app["name"] + " na " + node)
-                        msg = { 'msg': 'run', 'type':'backend', 'name': app["name"] }
-                        self.client.publish(topic="node/" + node, payload=json.dumps(msg), qos=0, retain=False)
+                        msg2pub = { "type":"backend", "name": app["name"] }
+                        self.publish_message("run", msg2pub, "node/" + node )
                     else:
                         # spusti na specifikovanom (ak tam este nebezi)
                         if not self.is_running(app["name"], runon):
                             # este tam nebezi - spusti
                             print("[" + APP_NAME + "] spustam " + app["name"] + " na " + runon)
-                            msg = { 'msg': 'run', 'type':'backend', 'name': app["name"] }
-                            self.client.publish(topic="node/" + runon, payload=json.dumps(msg), qos=0, retain=False)
+                            msg2pub = { "type":"backend", "name": app["name"] }
+                            self.publish_message("run", msg2pub, "node/" + runon )
                         else:
                             # uz tam bezi!
                             print("[" + APP_NAME + "] app " + app["name"] + " je uz na " + runon + " spustena!")
                 except Exception as e:
                     print("[" + APP_NAME + "] chyba pri spustani " + app.name + ": " + str(e))
 
-        if sprava["msg"] == "refresh":
+        elif msg["msg"] == "refresh":
             # refreshni status beziacich aplikacii
             #TODO bude spustane v pravidelnom intervale. a posli nie vsetkym, ale len tym, ktore sa uz dlho neozvali
             for app in self.apps:
                 print("[" + APP_NAME + "] refresh stavu " + app.name + " na " + app.node)
                 app.status = "refreshing"
-                msg = { 'msg': 'status' }
-                self.client.publish(topic="app/" + app.name, payload=json.dumps(msg), qos=0, retain=False)
+                self.publish_message("status", {}, "app/" + app.name)
 
-        if sprava["msg"] == "applications":
-            if not "response_topic" in sprava:
+        elif msg["msg"] == "applications":
+            if not "src" in msg:
+                print("[" + APP_NAME + "] neznamy odosielatel!")
                 return
             apps_list = []
-            if not "filter" in sprava or sprava["filter"] == "all":
-                if not "type" in sprava or sprava["type"] == "system":
+            if not "filter" in msg or msg["filter"] == "all":
+                if not "type" in msg or msg["type"] == "system":
                     apps_list += self.list_offline_apps(SYSTEM_APPS_PATH)
-                if not "type" in sprava or sprava["type"] == "backend":
+                if not "type" in msg or msg["type"] == "backend":
                     apps_list += self.list_offline_apps(BACKEND_APPS_PATH)
-                if not "type" in sprava or sprava["type"] == "frontend":
+                if not "type" in msg or msg["type"] == "frontend":
                     apps_list += self.list_offline_apps(FRONTEND_APPS_PATH)
-            elif sprava["filter"] == "running":
+            elif msg["filter"] == "running":
                 for app in self.apps:
-                    if not "type" in sprava or sprava["type"] == app.type:
+                    if not "type" in msg or msg["type"] == app.type:
                         apps_list.append(app.__dict__)      # aby bol objekt serializovatelny do json
-            resp = { 'msg': 'applications', 'applications': apps_list }
+            resp = { "applications": apps_list }
             print(json.dumps(resp))         #TODO
-            self.client.publish(topic=sprava["response_topic"], payload=json.dumps(resp), qos=0, retain=False)
+            self.publish_message("applications", resp, msg["src"])
 
-        if sprava["msg"] == "workspaces":
-            if not "response_topic" in sprava:
+        elif msg["msg"] == "workspaces":
+            if not "src" in msg:
+                print("[" + APP_NAME + "] neznamy odosielatel!")
                 return
             wrkspcs_list = []
             for app in self.apps:
@@ -225,17 +228,22 @@ class Master(base_app.BaseApp):
             for k in WORKSPACES_LAYOUT.keys():
                 WORKSPACES_LAYOUT[k].name = k
                 wrkspcs_list.append(WORKSPACES_LAYOUT[k].__dict__)
-            resp = { 'msg': 'workspaces', 'grid_width': '4', 'grid_height': '2', 'workspaces': wrkspcs_list }
+            resp = { "grid_width": "4", "grid_height": "2", "workspaces": wrkspcs_list }
             print(json.dumps(resp))         #TODO
-            self.client.publish(topic=sprava["response_topic"], payload=json.dumps(resp), qos=0, retain=False)
+            self.publish_message("workspaces", resp, msg["src"])
 
-        if sprava["msg"] == "approbations":
-            if not "response_topic" in sprava:
+        elif msg["msg"] == "approbations":
+            if not "src" in msg:
+                print("[" + APP_NAME + "] neznamy odosielatel!")
                 return
             apprs_list = [ "AI1", "AI2", "UIN1", "UIN2" ]
-            resp = { 'msg': 'approbations', 'approbations': apprs_list }
+            resp = { "approbations": apprs_list }
             print(json.dumps(resp))         #TODO
-            self.client.publish(topic=sprava["response_topic"], payload=json.dumps(resp), qos=0, retain=False)
+            self.publish_message("approbations", resp, msg["src"])
+
+        else:
+            print("[" + APP_NAME + "] neznamy typ spravy: " + str(msg))
+
 
     def run(self):
         self.client.on_message = self.on_message
@@ -248,11 +256,11 @@ class Master(base_app.BaseApp):
         for app in self.apps:
             if app.name == APP_NAME:
                 continue
-            msg = {"msg": "quit"}
             print("[" + APP_NAME + "] vypinam app/" + app.name)
-            self.client.publish(topic="app/" + app.name, payload=json.dumps(msg), qos=0, retain=False)
+            self.publish_message("quit", {}, "app/" + app.name)
         # skonci
         self.client.disconnect()
+        print("[" + self.get_app_name() + "] koncim na uzle " + self.get_node_name())
 
 
 if __name__ == '__main__':

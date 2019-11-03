@@ -42,27 +42,27 @@ class NodeManager(base_app.BaseApp):
         return "node/" + NODE_NAME
 
     def on_node_message(self, client, userdata, message):
-        sprava = json.loads(message.payload.decode())
-        if not "msg" in sprava:
-            log = { 'msg': 'log', 'name': APP_NAME, 'node': NODE_NAME, 'log': 'neznamy typ spravy: ' + str(sprava) }
-            self.client.publish(topic="master", payload=json.dumps(log), qos=0, retain=False)
+        msg = json.loads(message.payload.decode())
+        if not "msg" in msg:
+            log = { "name": APP_NAME, "node": NODE_NAME, "log": "neznamy typ spravy: " + str(msg) }
+            self.publish_message("log", log, "master" )
             return
 
-        if sprava["msg"] == "run":
+        if msg["msg"] == "run":
             # spusti danu app
             try:
-                if sprava["type"] == "backend":
-                    run_app(BACKEND_APPS_PATH, sprava["name"])
-                if sprava["type"] == "frontend":
-                    response_topic = sprava["response_topic"] if "response_topic" in sprava else None
-                    run_app(FRONTEND_APPS_PATH, sprava["name"], sprava["nickname"], sprava["approbation"], response_topic)
+                if msg["type"] == "backend":
+                    run_app(BACKEND_APPS_PATH, msg["name"])
+                if msg["type"] == "frontend":
+                    src = msg["src"] if "src" in msg else None
+                    run_app(FRONTEND_APPS_PATH, msg["name"], msg["nickname"], msg["approbation"], src)
             except Exception as e:
-                print("[" + APP_NAME + "] chyba pri spustani " + sprava["name"] + ": " + str(e))
-                log = { 'msg': 'log', 'name': APP_NAME, 'node': NODE_NAME, 'log': 'chyba pri spustani ' + sprava["name"] + ": " + str(e) }
-                self.client.publish(topic="master", payload=json.dumps(log), qos=0, retain=False)
+                print("[" + APP_NAME + "] chyba pri spustani " + msg["name"] + ": " + str(e))
+                log = { "name": APP_NAME, "node": NODE_NAME, "log": "chyba pri spustani " + msg["name"] + ": " + str(e) }
+                self.publish_message("log", log, "master" )
 
     def run(self):
-        self.client.message_callback_add('node/' + NODE_NAME, self.on_node_message)
+        self.client.message_callback_add("node/" + NODE_NAME, self.on_node_message)
         self.client.subscribe("node/" + NODE_NAME)
         # spracovavaj mqtt spravy
         self.client.loop_forever()
