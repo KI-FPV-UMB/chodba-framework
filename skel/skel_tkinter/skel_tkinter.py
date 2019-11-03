@@ -46,8 +46,8 @@ class SkelTkinter(base_app.BaseApp):
         self.client.loop_start()
         # zobraz okno
         self.top = tkinter.Tk()
-        self.top.wm_attributes('-type', 'splash')       # bez dekoracii
-        self.top.wm_attributes('-fullscreen','true')
+        self.top.wm_attributes("-type", "splash")       # bez dekoracii
+        self.top.wm_attributes("-fullscreen","true")
 #        self.top.geometry("{0}x{1}+0+0".format(self.top.winfo_screenwidth()-3, self.top.winfo_screenheight()-3))    # na celu obrazovku
 #        self.top.resizable(False, False)
 #        self.top.update_idletasks()

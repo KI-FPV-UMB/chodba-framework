@@ -81,7 +81,7 @@ class BaseApp:
         self.client.subscribe("node/" + self.get_node_name() + "/" + self.get_app_name())
 
         # posli spravu o uspesnom nastartovani
-        status = self.get_lifecycle_msg('running')
+        status = self.get_lifecycle_msg("running")
         self.publish_message("lifecycle", status, "master" )
 
 

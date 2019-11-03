@@ -42,21 +42,21 @@ class FrontendPlanner(base_app.BaseApp):
         return ""
 
     def on_db_message(self, client, userdata, message):
-        sprava = json.loads(message.payload.decode())
-        if not "msg" in sprava:
-            log = { 'msg': 'log', 'name': APP_NAME, 'node': NODE_NAME, 'log': 'neznamy typ spravy: ' + str(sprava) }
-            self.client.publish(topic="master", payload=json.dumps(log), qos=0, retain=False)
+        msg = json.loads(message.payload.decode())
+        if not "msg" in msg:
+            log = { "log": "neznamy typ spravy: " + str(msg) }
+            self.publish_message("log", log, "master" )
             return
 
-        if sprava["msg"] == "insert":
+        if msg["msg"] == "insert":
             # vloz zaznam do db
-            d = { "app_name": sprava["name"], "values": sprava["values"] }
+            d = { "app_name": msg["name"], "values": msg["values"] }
             x = self.col.insert_one(d)
-            if not "response_topic" in sprava:
+            if not "response_topic" in msg:
                 return
-            resp = { 'msg': 'insert-id', 'id': str(x.inserted_id) }
+            resp = { "id": str(x.inserted_id) }
             print(json.dumps(resp))         #TODO
-            self.client.publish(topic=sprava["response_topic"], payload=json.dumps(resp), qos=0, retain=False)
+            self.publish_message("insert-id", resp, msg["src"] )
 
     def run(self):
         self.dbc = pymongo.MongoClient("mongodb://localhost:27017/")
@@ -66,7 +66,7 @@ class FrontendPlanner(base_app.BaseApp):
         #if "chodbadb" not in dblist:
         #      print("Databaza neexistuje, vytvaram...")
 
-        self.client.message_callback_add('database', self.on_db_message)
+        self.client.message_callback_add("database", self.on_db_message)
         self.client.subscribe("database")
         # spracovavaj mqtt spravy
         self.client.loop_forever()

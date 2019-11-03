@@ -111,14 +111,14 @@ class Bludisko:
             self.dlazdice.append(dlazdica)
 
         # nacitaj hraca
-        self.hrac = Hrac('obrazky/hrac.bmp', (self.sirka/2, self.vyska/2), self.dlazdica_sirka, self.dlazdica_vyska, self)
+        self.hrac = Hrac("obrazky/hrac.bmp", (self.sirka/2, self.vyska/2), self.dlazdica_sirka, self.dlazdica_vyska, self)
 
         # nacitaj prisery
         self.prisery = []
         n = 1
-        while os.path.isfile('obrazky/prisera' + str(n) + '.bmp') and os.path.isfile('prisera' + str(n) + '.py'):
-            prisera_f = importlib.import_module('prisera' + str(n))
-            prisera = AktivnyObjekt('obrazky/prisera1.bmp', prisera_f.pozicia(), self.dlazdica_sirka, self.dlazdica_vyska, self)
+        while os.path.isfile("obrazky/prisera" + str(n) + ".bmp") and os.path.isfile("prisera" + str(n) + ".py"):
+            prisera_f = importlib.import_module("prisera" + str(n))
+            prisera = AktivnyObjekt("obrazky/prisera1.bmp", prisera_f.pozicia(), self.dlazdica_sirka, self.dlazdica_vyska, self)
             prisera.uprav = MethodType(prisera_f.uprav, prisera)
             self.prisery.append(prisera)
             n += 1
@@ -192,16 +192,16 @@ class DemoHra2Dp(base_app.BaseApp):
             ctrls_list = []
             for ctrl in CONTROL_LAYOUT:
                 ctrls_list.append(ctrl.__dict__)
-            resp = { 'msg': 'control_layout', 'grid_width': '6', 'grid_height': '4', 'type': 'static', 'control_elements': ctrls_list }
+            resp = { "grid_width": "6", "grid_height": "4", "type": "static", "control_elements": ctrls_list }
             print(json.dumps(resp))            #TODO
-            self.client.publish(topic=RESPONSE_TOPIC, payload=json.dumps(resp), qos=0, retain=False)
+            self.publish_message("control_layout", resp, RESPONSE_TOPIC)
 
         # inicializacia SDL2
         if sdl2.SDL_Init(sdl2.SDL_INIT_VIDEO) < 0:
             sys.exit(1)
 
         # nacitaj bludisko
-        bludisko = Bludisko('bludisko.dat')
+        bludisko = Bludisko("bludisko.dat")
 
         # priprav okno a kreslenie
         flags = sdl2.SDL_WINDOW_SHOWN | sdl2.SDL_WINDOW_FULLSCREEN_DESKTOP | sdl2.SDL_WINDOW_BORDERLESS
