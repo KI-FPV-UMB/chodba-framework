@@ -1,12 +1,22 @@
 
 TODO:
-	spravit rodicovi metodu na poslanie spravy; do ktorej vzdy pribali id src spravy (a pripadne dalsie veci: nickname, approb, ... ak su)
-		aj cely zivotny cyklus este upratat. ked appka padne, master o tom nevie. ked hrac dohra hru, musi sa to dat mastrovi vediet
-		frontend_planner bude mozno sucastou mastra. sledovat ci je appka spustena userom alebo automaticky; pamatat si ze kedy
-		ukladat dake statistiky (db backend) - ktora aplikacia sa ako casto spustila, ako dlho s nou niekto robil, ...
-		tiez musi sledovat, kedy naposledy hrac spravil daku akciu - (posle to ako odpoved na otazku/poziadavku) - timeout. aby to vedel
-		zistit, bude asi musiet pocuvat na vsetky spravy, ktore idu frontendom
-		appka by este mala oznamit, ci moze byt spustana automaticky, alebo len userom => demo_time
+	framework:
+	-zmenit topic uzla kazdej appky z "app/<name>/<node>" na "node/<node>/<name>"
+	-spravit rodicovi metodu na poslanie spravy; do ktorej vzdy pribali id src spravy (a pripadne dalsie veci: nickname, approb, ... ak su)
+	-frontend_planner bude asi sucastou mastra
+		-ked sa na mastri zaregistruje daky novy uzol, tak na nom automaticky spusti nahodnu appku (co moze byt spustana automaticky, t.j.
+		 ma demo_time > 0)
+		-node_manager ked spusti appku, tak dostane aj cas, ako dlho ma bezat - po tom case jej posle prikaz na skoncenie. ked appka
+		 skonci, tak posle lifecycle quitting, takze master bude vediet, ze ma spustit daco dalsie
+		-ked user spusti appku, node_manager najprv vypne, co tam ma. dako inac oznamit mastrovi, ze konci - aby tam master nespustil nieco
+		 ine. vyziadanu appku spusti node_manager; master bude vediet, ze tam bezi pouzivatelom spustena appka.
+	 	-vzdy, ked appka dostane stlacenu klavesu od usera, tak posle o tom masterovi info: lifecycle=playing?
+		-appky spustene userom master sleduje - ak mu urcity cas nepride sprava lifecycle=playing?, tak usudi ze hrac uz dohral - posle appke
+		 quit a naplanuje tam nieco nove
+		-v dakom pravidelnom intervale by mal master oslovovat ostatne apky, ze aky maju status. nie ale vsetky, len tie, ktore sa neozvali
+		 urcity cas. cize pri lifecycle si aj ukladat, kedy sprava prisla
+	-aj cely zivotny cyklus este upratat. ked appka padne, master o tom nevie
+	-ukladat dake statistiky (db backend) - ktora aplikacia sa ako casto spustila, ako dlho s nou niekto robil, ...
 	mobilna appka
 	spustanie master (systemd; po posquitto), node_manager (cronom) pri starte; po starte spustit na mastrovi run_backends
 

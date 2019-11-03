@@ -188,6 +188,7 @@ class Master(base_app.BaseApp):
 
         if sprava["msg"] == "refresh":
             # refreshni status beziacich aplikacii
+            #TODO bude spustane v pravidelnom intervale. a posli nie vsetkym, ale len tym, ktore sa uz dlho neozvali
             for app in self.apps:
                 print("[" + APP_NAME + "] refresh stavu " + app.name + " na " + app.node)
                 app.status = "refreshing"

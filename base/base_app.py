@@ -43,6 +43,9 @@ class BaseApp:
     def get_status_msg(self, status):
         return { 'msg': 'lifecycle', 'name': self.get_app_name(), 'type': self.get_app_type(), 'id': self.get_app_id(), 'node': socket.gethostname(),'status': status }
 
+    def send_message(self):
+        print("TODO")       #TODO
+
     def on_app_message(self, client, userdata, message):
         sprava = json.loads(message.payload.decode())
         if not "msg" in sprava:
