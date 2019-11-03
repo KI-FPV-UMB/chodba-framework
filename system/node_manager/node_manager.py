@@ -55,7 +55,9 @@ class NodeManager(base_app.BaseApp):
                     run_app(BACKEND_APPS_PATH, msg["name"])
                 if msg["type"] == "frontend":
                     src = msg["src"] if "src" in msg else None
-                    run_app(FRONTEND_APPS_PATH, msg["name"], msg["nickname"], msg["approbation"], src)
+                    nick = msg["nick"] if "nick" in msg else None
+                    approb = msg["approb"] if "approb" in msg else None
+                    run_app(FRONTEND_APPS_PATH, msg["name"], nick, approb, src)
             except Exception as e:
                 print("[" + APP_NAME + "] chyba pri spustani " + msg["name"] + ": " + str(e))
                 log = { "name": APP_NAME, "node": NODE_NAME, "log": "chyba pri spustani " + msg["name"] + ": " + str(e) }

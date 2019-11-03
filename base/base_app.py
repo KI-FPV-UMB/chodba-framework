@@ -45,6 +45,7 @@ class BaseApp:
 
     def publish_message(self, msg_head, msg_body, topic):
         head = { "msg": msg_head, "src": "node/" + self.get_node_name() + "/" + self.get_app_name() }
+        #TODO podla moznosti pribalit nickname, approb, ...
         msg = { **head, **msg_body }
         self.client.publish(topic=topic, payload=json.dumps(msg), qos=0, retain=False)
 

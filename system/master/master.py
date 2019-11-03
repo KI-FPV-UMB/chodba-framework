@@ -10,6 +10,7 @@ import sys
 import os
 import paho.mqtt.client as mqtt
 import json
+import random
 import base_app
 import app_utils
 from app_utils import process_args
@@ -83,7 +84,7 @@ class Master(base_app.BaseApp):
                 return True
         return False
 
-    def list_offline_apps(self, path):
+    def list_offline_apps(self, path, as_json):
         ret = []
         for entry in os.listdir(path):
             if os.path.isdir(os.path.join(path, entry)):
@@ -91,13 +92,29 @@ class Master(base_app.BaseApp):
                     app = App()
                     app.name = entry
                     app.type = run_app(path, app.name, "type")
-                    app.demo_time = run_app(path, app.name, "demotime")
+                    app.demo_time = int(run_app(path, app.name, "demotime"))
                     # ak je rozpoznana, tak ju pridaj do zoznamu
                     if app.type is not None:
-                        ret.append(app.__dict__)       # aby bol objekt serializovatelny do json 
+                        if as_json:
+                            ret.append(app.__dict__)       # aby bol objekt serializovatelny do json
+                        else:
+                            ret.append(app)
                 except Exception as e:
                     print("[" + APP_NAME + "] chyba pri spustani " + app.name + ": " + str(e))
         return ret
+
+    def run_random(self, node):
+        # vyber nahodnu aplikaciu (z takych, co maju demo_time > 0)
+        apps_list = self.list_offline_apps(FRONTEND_APPS_PATH, False)
+        candidates = []
+        for a in apps_list:
+            if a.demo_time > 0:
+                candidates.append(a)
+        app = candidates[random.randint(0, len(candidates)-1)]
+        # spusti aplikaciu na danom node
+        print("[" + APP_NAME + "] spustam " + app.name + " na " + node.node)
+        msg2pub = { "type":"frontend", "name": app.name }
+        self.publish_message("run", msg2pub, "node/" + node.node )
 
     def on_message(self, client, userdata, message):
         msg = json.loads(message.payload.decode())
@@ -108,7 +125,7 @@ class Master(base_app.BaseApp):
         if msg["msg"] == "lifecycle":
             # spravuj zivotny cyklus aplikacie
             app = None
-            # nastav stav aplikacie
+            # nastav parametre aplikacie
             for a in self.apps:
                 if a.id == msg["id"]:
                     app = a
@@ -116,7 +133,6 @@ class Master(base_app.BaseApp):
             if app is None:
                 app = App()
                 app.id = msg["id"]
-                self.apps.append(app)
             if "name" in msg:
                 app.name= msg["name"]
             if "type" in msg:
@@ -125,6 +141,12 @@ class Master(base_app.BaseApp):
                 app.node = msg["node"]
             if "status" in msg:
                 app.status = msg["status"]
+            # pridaj appku do zoznamu (ak este nie je)
+            if app not in self.apps:
+                self.apps.append(app)
+                # ak je to novy node_manager, tak na nom treba hned nieco spustit
+                if msg["name"] == "node_manager":
+                    self.run_random(app)
             # ak je stav quitting, tak vyhod aplikaciu zo zoznamu
             if msg["status"] == "quitting":
                 self.apps.remove(app)
@@ -144,7 +166,7 @@ class Master(base_app.BaseApp):
 
         elif msg["msg"] == "run_backends":
             # pospustaj vsetky backend aplikacie
-            apps_list = self.list_offline_apps(BACKEND_APPS_PATH)
+            apps_list = self.list_offline_apps(BACKEND_APPS_PATH, True)
             for app in apps_list:
                 try:
                     runon = run_app(BACKEND_APPS_PATH, app["name"], "runon")
@@ -203,11 +225,11 @@ class Master(base_app.BaseApp):
             apps_list = []
             if not "filter" in msg or msg["filter"] == "all":
                 if not "type" in msg or msg["type"] == "system":
-                    apps_list += self.list_offline_apps(SYSTEM_APPS_PATH)
+                    apps_list += self.list_offline_apps(SYSTEM_APPS_PATH, True)
                 if not "type" in msg or msg["type"] == "backend":
-                    apps_list += self.list_offline_apps(BACKEND_APPS_PATH)
+                    apps_list += self.list_offline_apps(BACKEND_APPS_PATH, True)
                 if not "type" in msg or msg["type"] == "frontend":
-                    apps_list += self.list_offline_apps(FRONTEND_APPS_PATH)
+                    apps_list += self.list_offline_apps(FRONTEND_APPS_PATH, True)
             elif msg["filter"] == "running":
                 for app in self.apps:
                     if not "type" in msg or msg["type"] == app.type:
