@@ -11,6 +11,9 @@ import os
 import paho.mqtt.client as mqtt
 import json
 import random
+#import time
+#import sched
+import threading
 import base_app
 import app_utils
 from app_utils import process_args
@@ -72,6 +75,12 @@ class Master(base_app.BaseApp):
     def get_node_name(self):
         return NODE_NAME
 
+    def get_nickname(self):
+        return NICKNAME
+
+    def get_approbation(self):
+        return APPROBATION
+
     def info_pub(self):
         return ""
 
@@ -103,6 +112,11 @@ class Master(base_app.BaseApp):
                     print("[" + APP_NAME + "] chyba pri spustani " + app.name + ": " + str(e))
         return ret
 
+    def stop_demo(self):
+        self.publish_message("quit", {}, "app/master")
+        print("QQQQQQQQQQQQ")
+        return
+
     def run_random(self, node):
         # vyber nahodnu aplikaciu (z takych, co maju demo_time > 0)
         apps_list = self.list_offline_apps(FRONTEND_APPS_PATH, False)
@@ -115,6 +129,18 @@ class Master(base_app.BaseApp):
         print("[" + APP_NAME + "] spustam " + app.name + " na " + node.node)
         msg2pub = { "type":"frontend", "name": app.name }
         self.publish_message("run", msg2pub, "node/" + node.node )
+        # naplanuj rovno aj jej skoncenie
+#        scheduler = sched.scheduler(time.time, time.sleep)
+#        scheduler.enter(3, 1, self.stop_demo)
+        print('aaa')
+#        scheduler.run(blocking=True)
+        try:
+#            t = threading.Thread(target=stop_demo)
+            t = threading.Timer(5, self.stop_demo)
+            t.start
+            print('bbb')
+        except Exception as e:
+            print('ccc', str(e))
 
     def on_message(self, client, userdata, message):
         msg = json.loads(message.payload.decode())
@@ -139,6 +165,10 @@ class Master(base_app.BaseApp):
                 app.type = msg["type"]
             if "node" in msg:
                 app.node = msg["node"]
+            if "nickname" in msg:
+                app.nickname = msg["nickname"]
+            if "approbation" in msg:
+                app.approbation = msg["approbation"]
             if "status" in msg:
                 app.status = msg["status"]
             # pridaj appku do zoznamu (ak este nie je)

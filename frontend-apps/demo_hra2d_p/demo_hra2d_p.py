@@ -24,7 +24,7 @@ from app_utils import process_args
 
 APP_NAME = "demo_hra2d_p"
 APP_TYPE = "app"
-DEMO_TIME = 15
+DEMO_TIME = 5#15
 
 APP_ID, NODE_NAME, NICKNAME, APPROBATION, RESPONSE_TOPIC = process_args(sys.argv, APP_NAME, APP_TYPE, DEMO_TIME)
 
@@ -176,6 +176,12 @@ class DemoHra2Dp(base_app.BaseApp):
 
     def get_node_name(self):
         return NODE_NAME
+
+    def get_nickname(self):
+        return NICKNAME
+
+    def get_approbation(self):
+        return APPROBATION
 
     def info_pub(self):
         return ""

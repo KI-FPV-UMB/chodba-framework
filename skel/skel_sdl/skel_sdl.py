@@ -38,6 +38,12 @@ class SkelSDL(base_app.BaseApp):
     def get_node_name(self):
         return NODE_NAME
 
+    def get_nickname(self):
+        return NICKNAME
+
+    def get_approbation(self):
+        return APPROBATION
+
     def info_pub(self):
         return ""
 

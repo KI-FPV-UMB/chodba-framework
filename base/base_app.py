@@ -32,6 +32,14 @@ class BaseApp:
         # musi vratit hostname, kde je spusteny
         raise NotImplementedError()
 
+    def get_nickname(self):
+        # musi vratit hostname, kde je spusteny
+        raise NotImplementedError()
+
+    def get_approbation(self):
+        # musi vratit hostname, kde je spusteny
+        raise NotImplementedError()
+
     def info_pub(self):
         # musi vratit retazec s informaciami o topicoch, do ktorych posiela spravy
         raise NotImplementedError()
@@ -41,11 +49,10 @@ class BaseApp:
         raise NotImplementedError()
 
     def get_lifecycle_msg(self, status):
-        return { "name": self.get_app_name(), "type": self.get_app_type(), "id": self.get_app_id(), "node": socket.gethostname(),"status": status }
+        return { "name": self.get_app_name(), "type": self.get_app_type(), "id": self.get_app_id(), "node": self.get_node_name(), "nickname": self.get_nickname(), "approbation": self.get_approbation(), "status": status }
 
     def publish_message(self, msg_head, msg_body, topic):
         head = { "msg": msg_head, "src": "node/" + self.get_node_name() + "/" + self.get_app_name() }
-        #TODO podla moznosti pribalit nickname, approb, ...
         msg = { **head, **msg_body }
         self.client.publish(topic=topic, payload=json.dumps(msg), qos=0, retain=False)
 

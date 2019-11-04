@@ -32,7 +32,7 @@ DELAY_S = 1.5
 
 APP_NAME = "galeria"
 APP_TYPE = "app"
-DEMO_TIME = 45
+DEMO_TIME = 10#45
 
 APP_ID, NODE_NAME, NICKNAME, APPROBATION, RESPONSE_TOPIC = process_args(sys.argv, APP_NAME, APP_TYPE, DEMO_TIME)
 
@@ -49,6 +49,12 @@ class SkelSDL(base_app.BaseApp):
 
     def get_node_name(self):
         return NODE_NAME
+
+    def get_nickname(self):
+        return NICKNAME
+
+    def get_approbation(self):
+        return APPROBATION
 
     def info_pub(self):
         return ""
@@ -113,7 +119,7 @@ class SkelSDL(base_app.BaseApp):
 
         # vytvor a zobraz okno (full screen)
         flags = sdl2.SDL_WINDOW_SHOWN | sdl2.SDL_WINDOW_FULLSCREEN_DESKTOP | sdl2.SDL_WINDOW_BORDERLESS
-        self.window = sdl2.SDL_CreateWindow(b"Priklad kreslenia mysou", sdl2.SDL_WINDOWPOS_CENTERED, sdl2.SDL_WINDOWPOS_CENTERED, 800, 600, flags)
+        self.window = sdl2.SDL_CreateWindow(b"Galeria", sdl2.SDL_WINDOWPOS_CENTERED, sdl2.SDL_WINDOWPOS_CENTERED, 800, 600, flags)
 
         # zisti a zapamataj rozmery vytvoreneho okna
         w, h = ctypes.c_int(), ctypes.c_int()
