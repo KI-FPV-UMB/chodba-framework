@@ -167,16 +167,18 @@ class Master(base_app.BaseApp):
 
             # ak je to frontend app tak zisti, ci na danom uzle uz nejaka frontend app nebezi
             if app.status == "starting" and app.type == "frontend":
+                is_replacing = False
                 for a in self.apps:
                     if a.node == app.node and a.type == "frontend":
                         # na uzle uz bezi nejaka frontend app-ka - vypni ju
                         a.replaced = True
                         self.publish_message("quit", {}, "node/" + a.node + "/" + a.name)
-                        # ak je vyplneny nick a aprobacia, tak oznac tuto novu ako user aplikaciu
-                        if app.nickname is None or app.approbation is None:
-                            # nie je user aplikacia - nacasuj jej automaticke vypnutie
-                            t = threading.Timer(app.demo_time, self.stop_app, [app])
-                            t.start()
+                        is_replacing = True
+                if is_replacing and (app.nickname is None or app.approbation is None):
+                    # nie je user aplikacia a nasilym vytlaca inu beziacu aplikaciu
+                    # asi bola spustena mimo bezneho planovania, takze jej treba naplanovat automaticke ukoncenie
+                    t = threading.Timer(app.demo_time, self.stop_app, [app])
+                    t.start()
 
             # pridaj appku do zoznamu (ak este nie je)
             if app not in self.apps:
