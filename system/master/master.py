@@ -60,6 +60,7 @@ class Master(base_app.BaseApp):
 
     def __init__(self):
         self.apps = []
+        self.quitting = False
 
     def get_app_name(self):
         return APP_NAME
@@ -172,8 +173,9 @@ class Master(base_app.BaseApp):
             if msg["status"] == "quitting":
                 self.apps.remove(app)
                 # automaticky tam spusti novu nahodnu appku
-                self.run_random(app.node)
-                #TODO tu bude problem, ze ked bude user nieco spustat, tak najprv bude musiet vypnut co tam bezi - a toto hned spusti nieco nove
+                if not self.quitting:
+                    self.run_random(app.node)
+                    #TODO tu bude problem, ze ked bude user nieco spustat, tak najprv bude musiet vypnut co tam bezi - a toto hned spusti nieco nove
             print("[" + APP_NAME + "] apps: " + str(self.apps))
 
         elif msg["msg"] == "log":
@@ -298,6 +300,7 @@ class Master(base_app.BaseApp):
         self.client.loop_forever()
 
     def stop(self):
+        self.quitting = True
         # vsetkym rozposli spravu aby koncili..
         for app in self.apps:
             if app.name == APP_NAME:
