@@ -11,16 +11,19 @@ import os
 import paho.mqtt.client as mqtt
 import json
 import random
+import time
 import threading
 import base_app
 import app_utils
 from app_utils import process_args
 from app_utils import run_app
 
+USER_TIMEOUT = 15
+
 APP_NAME = "master"
 APP_TYPE = "system"
 
-APP_ID, NODE_NAME, NICKNAME, APPROBATION, RESPONSE_TOPIC = process_args(sys.argv, APP_NAME, APP_TYPE, "mvagac-X230")
+APP_ID, NODE_NAME, NICKNAME, APPROBATION, USER_TOPIC = process_args(sys.argv, APP_NAME, APP_TYPE, "mvagac-X230")
 
 SYSTEM_APPS_PATH = "../../system/"
 BACKEND_APPS_PATH = "../../backend-apps/"
@@ -111,7 +114,7 @@ class Master(base_app.BaseApp):
                     print("[" + APP_NAME + "] chyba pri spustani " + app.name + ": " + str(e))
         return ret
 
-    def stop_demo(self, app):
+    def stop_app(self, app):
         # vypni spustene demo
         self.publish_message("quit", {}, "node/" + app.node + "/" + app.name)
         return
@@ -131,7 +134,7 @@ class Master(base_app.BaseApp):
         # app je vytvorena z offline apps, takze node nie je definovany - dopln kde to spustame
         app.node = node
         # naplanuj rovno aj jej skoncenie
-        t = threading.Timer(app.demo_time, self.stop_demo, [app])
+        t = threading.Timer(app.demo_time, self.stop_app, [app])
         t.start()
 
     def on_message(self, client, userdata, message):
@@ -142,27 +145,39 @@ class Master(base_app.BaseApp):
 
         if msg["msg"] == "lifecycle":
             # spravuj zivotny cyklus aplikacie
+            # podla id zisti, ci uz danu aplikaciu evidujeme
             app = None
-            # nastav parametre aplikacie
             for a in self.apps:
                 if a.id == msg["id"]:
                     app = a
                     break
+            # zaznamenaj stav aplikacie
             if app is None:
                 app = App()
                 app.id = msg["id"]
-            if "name" in msg:
-                app.name= msg["name"]
-            if "type" in msg:
-                app.type = msg["type"]
-            if "node" in msg:
-                app.node = msg["node"]
-            if "nickname" in msg:
-                app.nickname = msg["nickname"]
-            if "approbation" in msg:
-                app.approbation = msg["approbation"]
-            if "status" in msg:
-                app.status = msg["status"]
+                app.replaced = False
+            app.timestamp = time.time()
+            app.name= msg["name"]
+            app.type = msg["type"]
+            app.node = msg["node"]
+            app.demo_time = msg["demo_time"]
+            app.status = msg["status"]
+            app.nickname = msg["nickname"] if "nickname" in msg else None
+            app.approbation = msg["approbation"] if "approbation" in msg else None
+
+            # ak je to frontend app tak zisti, ci na danom uzle uz nejaka frontend app nebezi
+            if app.status == "starting" and app.type == "frontend":
+                for a in self.apps:
+                    if a.node == app.node and a.type == "frontend":
+                        # na uzle uz bezi nejaka frontend app-ka - vypni ju
+                        a.replaced = True
+                        self.publish_message("quit", {}, "node/" + a.node + "/" + a.name)
+                        # ak je vyplneny nick a aprobacia, tak oznac tuto novu ako user aplikaciu
+                        if app.nickname is None or app.approbation is None:
+                            # nie je user aplikacia - nacasuj jej automaticke vypnutie
+                            t = threading.Timer(app.demo_time, self.stop_app, [app])
+                            t.start()
+
             # pridaj appku do zoznamu (ak este nie je)
             if app not in self.apps:
                 self.apps.append(app)
@@ -173,9 +188,8 @@ class Master(base_app.BaseApp):
             if msg["status"] == "quitting":
                 self.apps.remove(app)
                 # automaticky tam spusti novu nahodnu appku
-                if not self.quitting:
+                if not self.quitting and not app.replaced:
                     self.run_random(app.node)
-                    #TODO tu bude problem, ze ked bude user nieco spustat, tak najprv bude musiet vypnut co tam bezi - a toto hned spusti nieco nove
             print("[" + APP_NAME + "] apps: " + str(self.apps))
 
         elif msg["msg"] == "log":
@@ -292,10 +306,24 @@ class Master(base_app.BaseApp):
         else:
             print("[" + APP_NAME + "] neznamy typ spravy: " + str(msg))
 
+    def check_inactive_users(self):
+        while True:
+            time.sleep(5)
+            # prejdi aplikacie a pri user aplikaciach kontroluj cas poslednej aktivity
+            for a in self.apps:
+                if a.nickname is not None and a.approbation is not None:
+                    if time.time() - a.timestamp > USER_TIMEOUT:
+                        self.stop_app(a)
 
     def run(self):
         self.client.on_message = self.on_message
         self.client.subscribe("master")
+
+        # vytvor scheduler, ktory bude kontrolovat neaktivne user aplikacie
+        t = threading.Thread(target=self.check_inactive_users)
+        t.daemon = True
+        t.start()
+
         # spusti spracovanie mqtt sprav
         self.client.loop_forever()
 

@@ -25,7 +25,7 @@ class BaseApp:
         raise NotImplementedError()
 
     def get_app_type(self):
-        # musi vratit typ aplikacie (system/app/game)
+        # musi vratit typ aplikacie (system/backend/frontend)
         raise NotImplementedError()
 
     def get_app_id(self):
@@ -36,12 +36,16 @@ class BaseApp:
         # musi vratit hostname, kde je spusteny
         raise NotImplementedError()
 
+    def get_demo_time(self):
+        # musi vratit cas, kolko bude bezat ako demo
+        return 0
+
     def get_nickname(self):
-        # musi vratit hostname, kde je spusteny
+        # musi vratit nickname, pod ktorym bol spusteny
         raise NotImplementedError()
 
     def get_approbation(self):
-        # musi vratit hostname, kde je spusteny
+        # musi vratit aprobaciu, pod ktorou bol spusteny
         raise NotImplementedError()
 
     def info_pub(self):
@@ -52,8 +56,13 @@ class BaseApp:
         # musi vratit retazec s informaciami o topicoch, na ktore sa prihlasuje
         raise NotImplementedError()
 
-    def get_lifecycle_msg(self, status):
-        return { "name": self.get_app_name(), "type": self.get_app_type(), "id": self.get_app_id(), "node": self.get_node_name(), "nickname": self.get_nickname(), "approbation": self.get_approbation(), "status": status }
+    def publish_lifecycle_message(self, status):
+        status = { "name": self.get_app_name(), "type": self.get_app_type(), "id": self.get_app_id(), "node": self.get_node_name(), "demo_time": self.get_demo_time(), "status": status }
+        if self.get_nickname() is not None:
+            status["nickname"] = self.get_nickname()
+        if self.get_approbation() is not None:
+            status["approbation"] = self.get_approbation()
+        self.publish_message("lifecycle", status, "master" )
 
     def publish_message(self, msg_head, msg_body, topic):
         head = { "msg": msg_head, "src": "node/" + self.get_node_name() + "/" + self.get_app_name() }
@@ -77,8 +86,7 @@ class BaseApp:
             info = { "name": self.get_app_name(), "type": self.get_app_type(), "id": self.get_app_id(), "pub": self.info_pub(), "sub": self.info_sub() }
             self.publish_message("info", info, "master" )
         elif msg["msg"] == "status":
-            status = self.get_lifecycle_msg("running")
-            self.publish_message("lifecycle", status, "master" )
+            self.publish_lifecycle_message("running")
         else:
             self.on_msg(msg)
 
@@ -92,6 +100,9 @@ class BaseApp:
         # pripojenie k brokeru
         self.client.connect(BROKER_URL, BROKER_PORT)
 
+        # posli spravu o startovani (je potrebne rozlisit prve spustanie od opakujuceho sa stavu running)
+        self.publish_lifecycle_message("starting")
+
         # spracovanie systemovych sprav
         self.client.message_callback_add("app/" + self.get_app_name(), self.on_app_message)
         self.client.subscribe("app/" + self.get_app_name())
@@ -99,15 +110,13 @@ class BaseApp:
         self.client.subscribe("node/" + self.get_node_name() + "/" + self.get_app_name())
 
         # posli spravu o uspesnom nastartovani
-        status = self.get_lifecycle_msg("running")
-        self.publish_message("lifecycle", status, "master" )
+        self.publish_lifecycle_message("running")
 
 
     def stop(self):
         # posli spravu o ukoncovani
         print("[" + self.get_app_name() + "] koncim na uzle " + self.get_node_name())
-        status = self.get_lifecycle_msg("quitting")
-        self.publish_message("lifecycle", status, "master" )
+        self.publish_lifecycle_message("quitting")
         self.client.disconnect()
 
 

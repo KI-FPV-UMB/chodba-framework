@@ -14,10 +14,10 @@ import base_app
 from app_utils import process_args
 
 APP_NAME = "skel_backend"
-APP_TYPE = "app"
+APP_TYPE = "frontend"
 DEMO_TIME = 15
 
-APP_ID, NODE_NAME, NICKNAME, APPROBATION, RESPONSE_TOPIC = process_args(sys.argv, APP_NAME, APP_TYPE, DEMO_TIME, "mvagac-X230")
+APP_ID, NODE_NAME, NICKNAME, APPROBATION, USER_TOPIC = process_args(sys.argv, APP_NAME, APP_TYPE, DEMO_TIME, "mvagac-X230")
 
 class SkelBackend(base_app.BaseApp):
 

@@ -31,12 +31,12 @@ FS_ENCODING = "iso-8859-2"
 DELAY_S = 1.5
 
 APP_NAME = "galeria"
-APP_TYPE = "app"
+APP_TYPE = "frontend"
 DEMO_TIME = 10#45
 
-APP_ID, NODE_NAME, NICKNAME, APPROBATION, RESPONSE_TOPIC = process_args(sys.argv, APP_NAME, APP_TYPE, DEMO_TIME)
+APP_ID, NODE_NAME, NICKNAME, APPROBATION, USER_TOPIC = process_args(sys.argv, APP_NAME, APP_TYPE, DEMO_TIME)
 
-class SkelSDL(base_app.BaseApp):
+class Galeria(base_app.BaseApp):
 
     def get_app_name(self):
         return APP_NAME
@@ -49,6 +49,9 @@ class SkelSDL(base_app.BaseApp):
 
     def get_node_name(self):
         return NODE_NAME
+
+    def get_demo_time(self):
+        return DEMO_TIME
 
     def get_nickname(self):
         return NICKNAME
@@ -184,7 +187,7 @@ class SkelSDL(base_app.BaseApp):
 
 
 if __name__ == '__main__':
-    app = SkelSDL()
+    app = Galeria()
     app.start()
     app.run()
 

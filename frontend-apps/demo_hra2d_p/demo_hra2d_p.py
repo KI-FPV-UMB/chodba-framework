@@ -23,10 +23,10 @@ import app_utils
 from app_utils import process_args
 
 APP_NAME = "demo_hra2d_p"
-APP_TYPE = "app"
+APP_TYPE = "frontend"
 DEMO_TIME = 5#15
 
-APP_ID, NODE_NAME, NICKNAME, APPROBATION, RESPONSE_TOPIC = process_args(sys.argv, APP_NAME, APP_TYPE, DEMO_TIME)
+APP_ID, NODE_NAME, NICKNAME, APPROBATION, USER_TOPIC = process_args(sys.argv, APP_NAME, APP_TYPE, DEMO_TIME)
 
 CONTROL_LAYOUT = [
         app_utils.ControlElement("dolava", 0, 1, 2, 2, "<-", "button"),
@@ -177,6 +177,9 @@ class DemoHra2Dp(base_app.BaseApp):
     def get_node_name(self):
         return NODE_NAME
 
+    def get_demo_time(self):
+        return DEMO_TIME
+
     def get_nickname(self):
         return NICKNAME
 
@@ -209,6 +212,7 @@ class DemoHra2Dp(base_app.BaseApp):
                     self.bludisko.hrac.dolava= False
                 if msg["name"] == "doprava":
                     self.bludisko.hrac.doprava = False
+            self.publish_lifecycle_message("playing")
         else:
             super.on_msg(msg)
 
@@ -217,13 +221,13 @@ class DemoHra2Dp(base_app.BaseApp):
         self.client.loop_start()
 
         # oznam pozadovany layout klavesnice
-        if RESPONSE_TOPIC is not None:
+        if USER_TOPIC is not None:
             ctrls_list = []
             for ctrl in CONTROL_LAYOUT:
                 ctrls_list.append(ctrl.__dict__)
             resp = { "grid_width": "6", "grid_height": "4", "type": "static", "control_elements": ctrls_list }
             print(json.dumps(resp))            #TODO
-            self.publish_message("control_layout", resp, RESPONSE_TOPIC)
+            self.publish_message("control_layout", resp, USER_TOPIC)
 
         # inicializacia SDL2
         if sdl2.SDL_Init(sdl2.SDL_INIT_VIDEO) < 0:

@@ -16,7 +16,7 @@ from app_utils import run_app
 APP_NAME = "node_manager"
 APP_TYPE = "system"
 
-APP_ID, NODE_NAME, NICKNAME, APPROBATION, RESPONSE_TOPIC = process_args(sys.argv, APP_NAME, APP_TYPE, "*")
+APP_ID, NODE_NAME, NICKNAME, APPROBATION, USER_TOPIC = process_args(sys.argv, APP_NAME, APP_TYPE, "*")
 
 BACKEND_APPS_PATH = "../../backend-apps/"
 FRONTEND_APPS_PATH = "../../frontend-apps/"

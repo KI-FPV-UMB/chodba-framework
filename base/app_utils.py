@@ -31,18 +31,18 @@ def process_args(args, app_name, app_type, demo_time, runon = None):
 
     nickname = None
     approbation = None
-    response_topic = None
+    user_topic = None
 
     if len(args) > 2:
         nickname = args[1]
         approbation = args[2]
 
     if len(args) > 3:
-        response_topic = args[3]
+        user_topic = args[3]
 
     print("[" + app_name + "] spustam na uzle " + node_name)
 
-    return app_id, node_name, nickname, approbation, response_topic
+    return app_id, node_name, nickname, approbation, user_topic
 
 
 def run_app(path, name, arg1=None, arg2=None, arg3=None):

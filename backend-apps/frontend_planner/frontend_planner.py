@@ -14,11 +14,11 @@ import base_app
 from app_utils import process_args
 
 APP_NAME = "frontend_planner"
-APP_TYPE = "app"
+APP_TYPE = "backend"
 DEMO_TIME = 0
 RUNON = "mvagac-X230"
 
-APP_ID, NODE_NAME, NICKNAME, APPROBATION, RESPONSE_TOPIC = process_args(sys.argv, APP_NAME, APP_TYPE, DEMO_TIME, RUNON)
+APP_ID, NODE_NAME, NICKNAME, APPROBATION, USER_TOPIC = process_args(sys.argv, APP_NAME, APP_TYPE, DEMO_TIME, RUNON)
 
 class FrontendPlanner(base_app.BaseApp):
 
