@@ -11,10 +11,7 @@ import os
 import paho.mqtt.client as mqtt
 import json
 import random
-import time
-#import sched
 import threading
-import multiprocessing
 import base_app
 import app_utils
 from app_utils import process_args
@@ -113,11 +110,9 @@ class Master(base_app.BaseApp):
                     print("[" + APP_NAME + "] chyba pri spustani " + app.name + ": " + str(e))
         return ret
 
-    def stop_demo(self):
-        #self.publish_message("quit", {}, "app/master")
-        print("QQQQQQQQQQQQ")
-        time.sleep(3)
-        print("WWWWWWWWWWWW")
+    def stop_demo(self, app):
+        # vypni spustene demo
+        self.publish_message("quit", {}, "node/" + app.node + "/" + app.name)
         return
 
     def run_random(self, node):
@@ -132,23 +127,11 @@ class Master(base_app.BaseApp):
         print("[" + APP_NAME + "] spustam " + app.name + " na " + node.node)
         msg2pub = { "type":"frontend", "name": app.name }
         self.publish_message("run", msg2pub, "node/" + node.node )
+        # app je vytvorena z offline apps, takze node nie je definovany - dopln kde to spustame
+        app.node = node.node
         # naplanuj rovno aj jej skoncenie
-        #TODO !@#
-#        scheduler = sched.scheduler(time.time, time.sleep)
-#        scheduler.enter(3, 1, self.stop_demo)
-        print('aaa')
-#        scheduler.run(blocking=True)
-        try:
-            #t = threading.Thread(target=self.stop_demo)
-            t = threading.Timer(5, self.stop_demo)
-            t.start()
-
-            #process = multiprocessing.Process(target=self.stop_demo)           ide
-            #process.start()
-            #process.join()
-            print('bbb')
-        except Exception as e:
-            print('ccc', str(e))
+        t = threading.Timer(app.demo_time, self.stop_demo, [app])
+        t.start()
 
     def on_message(self, client, userdata, message):
         msg = json.loads(message.payload.decode())
