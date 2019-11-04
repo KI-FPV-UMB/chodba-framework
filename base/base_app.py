@@ -9,8 +9,12 @@ import socket
 import paho.mqtt.client as mqtt
 import json
 
+WEBSOCKETS = False
 BROKER_URL = "localhost"
-BROKER_PORT = 1883
+if WEBSOCKETS:
+    BROKER_PORT = 9001
+else:
+    BROKER_PORT = 1883
 
 # zakladna trieda, ktora definuje spolocne vlastnosti pre vsetky menezovane aplikacie
 
@@ -77,7 +81,10 @@ class BaseApp:
 
     def start(self):
         # priprava klienta
-        self.client = mqtt.Client(self.get_node_name() + "_" + self.get_app_name() + "_" + self.get_app_id())
+        if WEBSOCKETS:
+            self.client = mqtt.Client(self.get_node_name() + "_" + self.get_app_name() + "_" + self.get_app_id(), transport="websockets")
+        else:
+            self.client = mqtt.Client(self.get_node_name() + "_" + self.get_app_name() + "_" + self.get_app_id())
 
         # pripojenie k brokeru
         self.client.connect(BROKER_URL, BROKER_PORT)
