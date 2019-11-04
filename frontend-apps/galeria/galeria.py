@@ -62,10 +62,7 @@ class SkelSDL(base_app.BaseApp):
     def info_sub(self):
         return ""
 
-    def kresli_obrazok(self):
-        # vymaz pozadie
-        sdl2.SDL_SetRenderDrawColor(self.renderer, 0, 0, 0, 0)
-        sdl2.SDL_RenderClear(self.renderer)
+    def dalsi_obrazok(self):
         # nacitaj obrazok
         if self.sorted:
             # v poradi
@@ -77,19 +74,26 @@ class SkelSDL(base_app.BaseApp):
             # nahodny
             n = random.randint(0, len(self.files)-1)
         print("kreslim", n, self.files[n])
-        obrazok = sdl2.sdlimage.IMG_Load(str.encode(self.files[n]))
+        self.obrazok = sdl2.sdlimage.IMG_Load(str.encode(self.files[n]))
+
+    def kresli_obrazok(self):
+        if self.obrazok is None:
+            self.dalsi_obrazok()
+        # vymaz pozadie
+        sdl2.SDL_SetRenderDrawColor(self.renderer, 0, 0, 0, 0)
+        sdl2.SDL_RenderClear(self.renderer)
         # vypocitaj mierku zvacsenia/zmensenia
-        aw = obrazok.contents.w / self.window_w
-        ah = obrazok.contents.h / self.window_h
+        aw = self.obrazok.contents.w / self.window_w
+        ah = self.obrazok.contents.h / self.window_h
         r = sdl2.SDL_Rect()
         a = max(aw, ah)
-        nw, nh = obrazok.contents.w / a, obrazok.contents.h / a
+        nw, nh = self.obrazok.contents.w / a, self.obrazok.contents.h / a
         r.x, r.y = int(self.window_w/2 - nw/2), int(self.window_h/2 - nh/2)
         r.w, r.h = int(nw), int(nh)
         # vykresli
-        sdl2.SDL_BlitScaled(obrazok, None, self.windowsurface, r)
+        sdl2.SDL_BlitScaled(self.obrazok, None, self.windowsurface, r)
         sdl2.SDL_UpdateWindowSurface(self.window)
-        sdl2.SDL_FreeSurface(obrazok)
+        #sdl2.SDL_FreeSurface(self.obrazok)             # s tymto to pada
         # update obrazovky (premietnutie zmien)
         sdl2.SDL_RenderPresent(self.renderer)
 
@@ -149,12 +153,14 @@ class SkelSDL(base_app.BaseApp):
         sdl2.SDL_RenderPresent(self.renderer)
 
         # event loop
+        self.obrazok = None
         last_draw = time.time()
         self.running = True
         event = sdl2.SDL_Event()
         while self.running:
+            self.kresli_obrazok()
             if time.time() - last_draw > DELAY_S:
-                self.kresli_obrazok()
+                self.dalsi_obrazok()
                 last_draw = time.time()
                 # TODO cas pauzy postupne skracovat
 
