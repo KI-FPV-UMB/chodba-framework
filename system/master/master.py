@@ -28,7 +28,7 @@ FRONTEND_APPS_PATH = "../../frontend-apps/"
 
 WORKSPACES_LAYOUT = dict([
     ("mvagac-X230", app_utils.Rect(0, 0, 1, 1)),
-    ("node2", app_utils.Rect(1, 0, 1, 1)),
+    ("walle09", app_utils.Rect(1, 0, 1, 1)),
     ("node3", app_utils.Rect(0, 1, 1, 1)),
     ("node4", app_utils.Rect(1, 1, 1, 1)),
     ("node5", app_utils.Rect(2, 0, 2, 2)),

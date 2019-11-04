@@ -60,6 +60,10 @@ class BaseApp:
         msg = { **head, **msg_body }
         self.client.publish(topic=topic, payload=json.dumps(msg), qos=0, retain=False)
 
+    def on_msg(self, msg):
+        log = { "log": "neznamy typ spravy: " + str(msg) }
+        self.publish_message("log", log, "master" )
+
     def on_app_message(self, client, userdata, message):
         msg = json.loads(message.payload.decode())
         if not "msg" in msg:
@@ -76,8 +80,7 @@ class BaseApp:
             status = self.get_lifecycle_msg("running")
             self.publish_message("lifecycle", status, "master" )
         else:
-            log = { "log": "neznamy typ spravy: " + str(msg) }
-            self.publish_message("log", log, "master" )
+            self.on_msg(msg)
 
     def start(self):
         # priprava klienta

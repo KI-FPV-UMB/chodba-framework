@@ -189,6 +189,29 @@ class DemoHra2Dp(base_app.BaseApp):
     def info_sub(self):
         return ""
 
+    def on_msg(self, msg):
+        if msg["msg"] == "control_action":
+            if msg["type"] == "keydown":
+                if msg["name"] == "hore":
+                    self.bludisko.hrac.hore = True
+                if msg["name"] == "dole":
+                    self.bludisko.hrac.dole = True
+                if msg["name"] == "dolava":
+                    self.bludisko.hrac.dolava= True
+                if msg["name"] == "doprava":
+                    self.bludisko.hrac.doprava = True
+            if msg["type"] == "keyup":
+                if msg["name"] == "hore":
+                    self.bludisko.hrac.hore = False
+                if msg["name"] == "dole":
+                    self.bludisko.hrac.dole = False
+                if msg["name"] == "dolava":
+                    self.bludisko.hrac.dolava= False
+                if msg["name"] == "doprava":
+                    self.bludisko.hrac.doprava = False
+        else:
+            super.on_msg(msg)
+
     def run(self):
         # spracovavaj mqtt spravy
         self.client.loop_start()
@@ -207,11 +230,11 @@ class DemoHra2Dp(base_app.BaseApp):
             sys.exit(1)
 
         # nacitaj bludisko
-        bludisko = Bludisko("bludisko.dat")
+        self.bludisko = Bludisko("bludisko.dat")
 
         # priprav okno a kreslenie
         flags = sdl2.SDL_WINDOW_SHOWN | sdl2.SDL_WINDOW_FULLSCREEN_DESKTOP | sdl2.SDL_WINDOW_BORDERLESS
-        window = sdl2.SDL_CreateWindow(b"Hra 2D", sdl2.SDL_WINDOWPOS_CENTERED, sdl2.SDL_WINDOWPOS_CENTERED, bludisko.rozmer_sirka(), bludisko.rozmer_vyska(), flags)
+        window = sdl2.SDL_CreateWindow(b"Hra 2D", sdl2.SDL_WINDOWPOS_CENTERED, sdl2.SDL_WINDOWPOS_CENTERED, self.bludisko.rozmer_sirka(), self.bludisko.rozmer_vyska(), flags)
         windowsurface = sdl2.SDL_GetWindowSurface(window)
 
         # priprav pristup na kreslenie do okna (pozadie okna vyfarbi na bielo)
@@ -225,29 +248,29 @@ class DemoHra2Dp(base_app.BaseApp):
         event = sdl2.SDL_Event()
         while self.running:
 
-            bludisko.uprav()
-            bludisko.zobraz(window, renderer, windowsurface)
+            self.bludisko.uprav()
+            self.bludisko.zobraz(window, renderer, windowsurface)
 
             while sdl2.SDL_PollEvent(ctypes.byref(event)) != 0:
                 # spracuvaj eventy
                 if event.type == sdl2.SDL_KEYDOWN:
                     if event.key.keysym.sym == sdl2.SDLK_LEFT:
-                        bludisko.hrac.dolava = True
+                        self.bludisko.hrac.dolava = True
                     if event.key.keysym.sym == sdl2.SDLK_RIGHT:
-                        bludisko.hrac.doprava = True
+                        self.bludisko.hrac.doprava = True
                     if event.key.keysym.sym == sdl2.SDLK_UP:
-                        bludisko.hrac.hore = True
+                        self.bludisko.hrac.hore = True
                     if event.key.keysym.sym == sdl2.SDLK_DOWN:
-                        bludisko.hrac.dole = True
+                        self.bludisko.hrac.dole = True
                 if event.type == sdl2.SDL_KEYUP:
                     if event.key.keysym.sym == sdl2.SDLK_LEFT:
-                        bludisko.hrac.dolava = False
+                        self.bludisko.hrac.dolava = False
                     if event.key.keysym.sym == sdl2.SDLK_RIGHT:
-                        bludisko.hrac.doprava = False
+                        self.bludisko.hrac.doprava = False
                     if event.key.keysym.sym == sdl2.SDLK_UP:
-                        bludisko.hrac.hore = False
+                        self.bludisko.hrac.hore = False
                     if event.key.keysym.sym == sdl2.SDLK_DOWN:
-                        bludisko.hrac.dole = False
+                        self.bludisko.hrac.dole = False
                 if event.type == sdl2.SDL_QUIT:
                     self.running = False
                     break
@@ -255,10 +278,6 @@ class DemoHra2Dp(base_app.BaseApp):
             sdl2.SDL_Delay(10)
 
         # uvolni alokovane zdroje
-        sdl2.SDL_FreeSurface(tile0)
-        sdl2.SDL_FreeSurface(tile1)
-        sdl2.SDL_FreeSurface(tile2)
-
         sdl2.SDL_DestroyRenderer(renderer)
         sdl2.SDL_DestroyWindow(window)
         sdl2.SDL_Quit()

@@ -23,9 +23,9 @@ import base_app
 from app_utils import process_args
 
 SORTED_FILE = "sorted"
-#FONT_PATH = "/usr/share/vlc/skins2/fonts/FreeSans.ttf"
+FONT_PATH = "/usr/share/fonts/truetype/freefont/FreeSans.ttf"
 #FONT_PATH = "/usr/share/fonts/truetype/ttf-dejavu/DejaVuSans.ttf"
-FONT_PATH = "/usr/share/fonts/truetype/ttf-liberation/LiberationSans-Regular.ttf"
+#FONT_PATH = "/usr/share/fonts/truetype/ttf-liberation/LiberationSans-Regular.ttf"
 FONT_SIZE = 120
 FS_ENCODING = "iso-8859-2"
 DELAY_S = 1.5
@@ -99,6 +99,10 @@ class SkelSDL(base_app.BaseApp):
 
         # nahodne vyber adresar s obrazkami
         subdirs = [x[0] for x in os.walk(".")]
+        if len(subdirs) <= 1:
+            log = { "log": "galeria neobsahuje ziadne podadresare s obrazkami!" }
+            self.publish_message("log", log, "master" )
+            return
         d = subdirs[random.randint(1, len(subdirs)-1)]
         self.files = [os.path.join(d, f) for f in os.listdir(d) if os.path.isfile(os.path.join(d, f))]
         self.sorted = os.path.isfile(os.path.join(d, SORTED_FILE))
