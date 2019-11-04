@@ -1,11 +1,9 @@
 
 TODO:
-	-v dakom pravidelnom intervale by mal master oslovovat ostatne apky, ze aky maju status. nie ale vsetky, len tie, ktore sa neozvali
-	 urcity cas. cize pri lifecycle si aj ukladat, kedy sprava prisla
-	-aj cely zivotny cyklus este upratat. ked appka padne, master o tom nevie
+	-citlive miesto: ked sa prave vypina aplikacia s spusta nova; ak do toho niekto (user) spusti aplikaciu, tak sa neaktivuje ten sposob
+	 nahradenia aplikacie. vysledkom bude, ze budu naraz 2 frontend aplikacie
 	-ukladat dake statistiky (db backend) - ktora aplikacia sa ako casto spustila, ako dlho s nou niekto robil, ...
-	mobilna appka
-	spustanie master (systemd; po posquitto), node_manager (cronom) pri starte; po starte spustit na mastrovi run_backends
+	spustanie master (systemd; po mosquitto), node_manager (cronom) pri starte; po starte spustit na mastrovi run_backends
 
 	wiki: zhrnut podmienky na appku (na ake spravy ma ako reagovat); quickstart ze ako to cele rozchodit
 		aj detailne opisat vsetky "sluzby" - s prikladmi sprav

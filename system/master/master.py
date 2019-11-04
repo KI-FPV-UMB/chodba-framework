@@ -18,7 +18,14 @@ import app_utils
 from app_utils import process_args
 from app_utils import run_app
 
-USER_TIMEOUT = 15
+
+# ak user nespravi ziadnu akciu viac ako USER_TIMEOUT sekund, tak je tato appka vypnuta a nahradena inou
+USER_TIMEOUT = 45
+
+# ako casto sa kontroluju (pinguju) aplikacie. aplikacie, ktorych timestamp je starsi ako TIMESTAMP_CHECK su poziadane o status
+# aplikacie, ktorych timestamp je starsi ako 3*TIMESTAMP_CHECK su vyhodene zo zoznamu (predpoklada sa, ze ich proces uz nebezi)
+TIMESTAMP_CHECK = 60
+
 
 APP_NAME = "master"
 APP_TYPE = "system"
@@ -252,14 +259,6 @@ class Master(base_app.BaseApp):
                 except Exception as e:
                     print("[" + APP_NAME + "] chyba pri spustani " + app.name + ": " + str(e))
 
-        elif msg["msg"] == "refresh":
-            # refreshni status beziacich aplikacii
-            #TODO bude spustane v pravidelnom intervale. a posli nie vsetkym, ale len tym, ktore sa uz dlho neozvali
-            for app in self.apps:
-                print("[" + APP_NAME + "] refresh stavu " + app.name + " na " + app.node)
-                app.status = "refreshing"
-                self.publish_message("status", {}, "app/" + app.name)
-
         elif msg["msg"] == "applications":
             if not "src" in msg:
                 print("[" + APP_NAME + "] neznamy odosielatel!")
@@ -309,13 +308,28 @@ class Master(base_app.BaseApp):
             print("[" + APP_NAME + "] neznamy typ spravy: " + str(msg))
 
     def check_inactive_users(self):
+        last_timestamp_check = time.time()
         while True:
             time.sleep(5)
             # prejdi aplikacie a pri user aplikaciach kontroluj cas poslednej aktivity
-            for a in self.apps:
-                if a.nickname is not None and a.approbation is not None:
-                    if time.time() - a.timestamp > USER_TIMEOUT:
-                        self.stop_app(a)
+            for app in self.apps:
+                if app.nickname is not None and app.approbation is not None:
+                    if time.time() - app.timestamp > USER_TIMEOUT:
+                        print("[" + APP_NAME + "] timeout user app " + app.name)
+                        self.stop_app(app)
+            # v ovela dlhsom intervale pingni vsetky aplikacie, ktore sa davno neozvali (neupdatli lifecycle)
+            if time.time() - last_timestamp_check > TIMESTAMP_CHECK:
+                last_timestamp_check = time.time()
+                for app in self.apps:
+                    if last_timestamp_check - app.timestamp > 3*TIMESTAMP_CHECK and app.status == "refreshing":
+                        # prilis dlho sa neozvali, asi uz nebezia. odstran ich zo zoznamu
+                        print("[" + APP_NAME + "] odstranovanie neodpovedajucej app " + app.name)
+                        self.apps.remove(app)
+                    elif last_timestamp_check - app.timestamp > TIMESTAMP_CHECK:
+                        # daj im este sancu - posli poziadavku na refresh
+                        print("[" + APP_NAME + "] refresh stavu " + app.name + " na " + app.node)
+                        app.status = "refreshing"
+                        self.publish_message("status", {}, "node/" + app.node + "/" + app.name)
 
     def run(self):
         self.client.on_message = self.on_message
