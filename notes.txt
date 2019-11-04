@@ -4,7 +4,7 @@ TODO:
 	-frontend_planner bude asi sucastou mastra
 		*ked sa na mastri zaregistruje daky novy uzol, tak na nom automaticky spusti nahodnu appku (co moze byt spustana automaticky, t.j.
 		 ma demo_time > 0)
-		-node_manager ked spusti appku, tak dostane aj cas, ako dlho ma bezat - po tom case jej posle prikaz na skoncenie. ked appka
+		*node_manager ked spusti appku, tak dostane aj cas, ako dlho ma bezat - po tom case jej posle prikaz na skoncenie. ked appka
 		 skonci, tak posle lifecycle quitting, takze master bude vediet, ze ma spustit daco dalsie
 		-ked user spusti appku, node_manager najprv vypne, co tam ma. dako inac oznamit mastrovi, ze konci - aby tam master nespustil nieco
 		 ine. vyziadanu appku spusti node_manager; master bude vediet, ze tam bezi pouzivatelom spustena appka.
