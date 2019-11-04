@@ -11,9 +11,10 @@ import os
 import paho.mqtt.client as mqtt
 import json
 import random
-#import time
+import time
 #import sched
 import threading
+import multiprocessing
 import base_app
 import app_utils
 from app_utils import process_args
@@ -113,8 +114,10 @@ class Master(base_app.BaseApp):
         return ret
 
     def stop_demo(self):
-        self.publish_message("quit", {}, "app/master")
+        #self.publish_message("quit", {}, "app/master")
         print("QQQQQQQQQQQQ")
+        time.sleep(3)
+        print("WWWWWWWWWWWW")
         return
 
     def run_random(self, node):
@@ -136,9 +139,13 @@ class Master(base_app.BaseApp):
         print('aaa')
 #        scheduler.run(blocking=True)
         try:
-#            t = threading.Thread(target=stop_demo)
+            #t = threading.Thread(target=self.stop_demo)
             t = threading.Timer(5, self.stop_demo)
-            t.start
+            t.start()
+
+            #process = multiprocessing.Process(target=self.stop_demo)           ide
+            #process.start()
+            #process.join()
             print('bbb')
         except Exception as e:
             print('ccc', str(e))
