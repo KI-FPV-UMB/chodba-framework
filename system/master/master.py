@@ -130,6 +130,7 @@ class Master(base_app.BaseApp):
         msg2pub = { "type":"frontend", "name": app.name }
         self.publish_message("run", msg2pub, "node/" + node.node )
         # naplanuj rovno aj jej skoncenie
+        #TODO !@#
 #        scheduler = sched.scheduler(time.time, time.sleep)
 #        scheduler.enter(3, 1, self.stop_demo)
         print('aaa')
