@@ -124,11 +124,11 @@ class Master(base_app.BaseApp):
                 candidates.append(a)
         app = candidates[random.randint(0, len(candidates)-1)]
         # spusti aplikaciu na danom node
-        print("[" + APP_NAME + "] spustam " + app.name + " na " + node.node)
+        print("[" + APP_NAME + "] spustam " + app.name + " na " + node)
         msg2pub = { "type":"frontend", "name": app.name }
-        self.publish_message("run", msg2pub, "node/" + node.node )
+        self.publish_message("run", msg2pub, "node/" + node )
         # app je vytvorena z offline apps, takze node nie je definovany - dopln kde to spustame
-        app.node = node.node
+        app.node = node
         # naplanuj rovno aj jej skoncenie
         t = threading.Timer(app.demo_time, self.stop_demo, [app])
         t.start()
@@ -167,10 +167,13 @@ class Master(base_app.BaseApp):
                 self.apps.append(app)
                 # ak je to novy node_manager, tak na nom treba hned nieco spustit
                 if msg["name"] == "node_manager":
-                    self.run_random(app)
+                    self.run_random(app.node)
             # ak je stav quitting, tak vyhod aplikaciu zo zoznamu
             if msg["status"] == "quitting":
                 self.apps.remove(app)
+                # automaticky tam spusti novu nahodnu appku
+                self.run_random(app.node)
+                #TODO tu bude problem, ze ked bude user nieco spustat, tak najprv bude musiet vypnut co tam bezi - a toto hned spusti nieco nove
             print("[" + APP_NAME + "] apps: " + str(self.apps))
 
         elif msg["msg"] == "log":
