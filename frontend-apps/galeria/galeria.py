@@ -32,7 +32,7 @@ DELAY_S = 1.5
 
 APP_NAME = "galeria"
 APP_TYPE = "frontend"
-DEMO_TIME = 10#45
+DEMO_TIME = 45
 
 APP_ID, NODE_NAME, NICKNAME, APPROBATION, USER_TOPIC = process_args(sys.argv, APP_NAME, APP_TYPE, DEMO_TIME)
 

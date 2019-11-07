@@ -1,0 +1,23 @@
+[Unit]
+Description=chodba node_manager service
+After=chodba-master.service
+Wants=chodba-master.service
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+Environment="DISPLAY=:0.0" "PYTHONPATH=/opt/chodba-framework/base"
+ExecStartPre=xset s off
+ExecStartPre=xset -display :0.0 -dpms
+ExecStartPre=xset -display :0.0 s off
+ExecStartPre=xset -display :0.0 s noblank
+WorkingDirectory=/opt/chodba-framework/system/node_manager
+ExecStart=/opt/chodba-framework/system/node_manager/node_manager.py
+User=pi
+StandardOutput=file:/var/log/chodba/node_manager.log
+StandardError=file:/var/log/chodba/node_manager.err
+
+[Install]
+WantedBy=multi-user.target
+

@@ -1,0 +1,19 @@
+[Unit]
+Description=chodba master service
+After=mosquitto.service
+Wants=mosquitto.service
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+Environment="PYTHONPATH=/opt/chodba-framework/base"
+WorkingDirectory=/opt/chodba-framework/system/master
+ExecStart=/opt/chodba-framework/system/master/master.py
+User=pi
+StandardOutput=file:/var/log/chodba/master.log
+StandardError=file:/var/log/chodba/master.err
+
+[Install]
+WantedBy=multi-user.target
+
