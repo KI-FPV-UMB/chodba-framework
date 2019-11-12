@@ -63,7 +63,7 @@ class FrontendPlanner(base_app.BaseApp):
             humidity, temperature = Adafruit_DHT.read_retry(DHT_SENSOR, DHT_PIN)
             # zapis do db
             #TODO zapis do db
-            msg = { "id": str(x.inserted_id) }
+            msg = { "humidity": str(humidity), "temperature": str(temperature) }
             print(json.dumps(msg))         #TODO
             self.publish_message("insert", msg, "database")
             # cakaj
