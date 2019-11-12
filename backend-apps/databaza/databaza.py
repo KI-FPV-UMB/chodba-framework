@@ -71,7 +71,7 @@ class FrontendPlanner(base_app.BaseApp):
                 self.publish_message("log", log, "master" )
                 return
             q1 = { "app_name": msg["app_name"] }
-            q2 = msg["query"]
+            q2 = json.loads(msg["query"])
             q = { **q1, **q2 }
             try:
                 if "sort" in msg:
