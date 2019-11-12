@@ -70,7 +70,10 @@ class FrontendPlanner(base_app.BaseApp):
             q2 = msg["query"]
             q = { **q1, **q2 }
             if "sort" in msg:
-                resp = self.col.find(q).sort(msg["sort"])
+                if "limit" in msg:
+                    resp = self.col.find(q).sort(msg["sort"]).limit(int(msg["limit"]))
+                else:
+                    resp = self.col.find(q).sort(msg["sort"])
             else:
                 resp = self.col.find(q)
             print(json.dumps(resp))         #TODO
