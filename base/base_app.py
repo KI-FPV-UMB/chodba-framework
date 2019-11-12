@@ -8,6 +8,8 @@ import sys
 import socket
 import paho.mqtt.client as mqtt
 import json
+import time
+import datetime
 
 WEBSOCKETS = False
 BROKER_URL = "localhost"
@@ -65,7 +67,10 @@ class BaseApp:
         self.publish_message("lifecycle", status, "master" )
 
     def publish_message(self, msg_head, msg_body, topic):
-        head = { "msg": msg_head, "src": "node/" + self.get_node_name() + "/" + self.get_app_name(), "app_name": self.get_app_name() }
+        ts = time.time()
+        #st = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
+        st = datetime.datetime.fromtimestamp(ts).strftime('%Y%m%d%H%M%S%f')
+        head = { "msg": msg_head, "timestamp": st, "src": "node/" + self.get_node_name() + "/" + self.get_app_name(), "app_name": self.get_app_name() }
         msg = { **head, **msg_body }
         self.client.publish(topic=topic, payload=json.dumps(msg), qos=0, retain=False)
 

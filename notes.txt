@@ -2,6 +2,7 @@
 TODO:
 	-dorobit rpi hw: senzor teploty, kameru, ir ledku (alebo inac moznost vypnut monitor)
 	-do galerie dorobit prehravanie videa
+	-spustat po starte run_backends (zistit co sa stane, ked to pustim opakovane)
 
 	-ukladat dake statistiky (db backend) - ktora aplikacia sa ako casto spustila, ako dlho s nou niekto robil, ...
 	-spustanie node_manager pri starte X-ov; po starte spustit na mastrovi run_backends
