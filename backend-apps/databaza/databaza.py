@@ -70,10 +70,10 @@ class FrontendPlanner(base_app.BaseApp):
                 log = { "log": "chyba parameter 'query'!" }
                 self.publish_message("log", log, "master" )
                 return
-            q1 = { "app_name": msg["app_name"] }
-            q2 = json.loads(msg["query"])
-            q = { **q1, **q2 }
             try:
+                q1 = { "app_name": msg["app_name"] }
+                q2 = eval(msg["query"])
+                q = { **q1, **q2 }
                 if "sort" in msg:
                     if "limit" in msg:
                         resp = self.col.find(q).sort(msg["sort"]).limit(int(msg["limit"]))
@@ -81,10 +81,10 @@ class FrontendPlanner(base_app.BaseApp):
                         resp = self.col.find(q).sort(msg["sort"])
                 else:
                     resp = self.col.find(q)
+                print(json.dumps(resp))         #TODO
+                self.publish_message("resultset", resp, msg["src"] )
             except Exception as e:
                 print("[" + APP_NAME + "] chyba spustania dotazu " + q + ":\n" + str(e))
-            print(json.dumps(resp))         #TODO
-            self.publish_message("resultset", resp, msg["src"] )
 
         else:
             super.on_msg(msg)
