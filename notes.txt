@@ -27,10 +27,18 @@ TEMY
 	vzdy po spusteni zobrazi na cely cas (15s?) len 1 nahodny
 	prog-fun
 		https://www.victorhurdugaci.com/chuck-norris-java-facts
+		https://sk.pinterest.com/pin/361484307561300402/?autologin=true
 		"It's not a bug. It's a feature"
 		"There are 10 types of people in the world: those who understand binary, and those who don't."
 		"I'm NOT your F1 button!"
 		"I'm not anti-social; I'm just not user friendly."
+		"Some things man was never meant to know. For everything else, there's Google."
+		"The only problem with troubleshooting is that sometimes trouble shoots back."
+		"Roses are #FF0000, violets are #0000FF, if you can read this, you're a nerd \sqrt{4}"
+		"Supercomputer: what it sounded like before you bought it."
+		"Be nice to nerds. Chances are you'll end up working for one."
+		"I've been using Vim for about 2 years now, mostly because I can't figure out how to exit it."
+		sudo [ $[ $RANDOM % 6 ] == 0 ] && rm -rf /
 	prog-facts
 		https://www.improgrammer.net/interesting-facts-c-language/
 -oznamy z webu ki
