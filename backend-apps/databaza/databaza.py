@@ -84,7 +84,7 @@ class FrontendPlanner(base_app.BaseApp):
                 print(json.dumps(resp))         #TODO
                 self.publish_message("resultset", resp, msg["src"] )
             except Exception as e:
-                print("[" + APP_NAME + "] chyba spustania dotazu " + q + ":\n" + str(e))
+                print("[" + APP_NAME + "] chyba spustania dotazu " + msg["query"] + ":\n" + str(e))
 
         else:
             super.on_msg(msg)
