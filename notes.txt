@@ -1,8 +1,9 @@
 
 TODO:
-	-dorobit rpi hw: senzor teploty, kameru, ir ledku (alebo inac moznost vypnut monitor)
 	-do galerie dorobit prehravanie videa
+	-do galerie nahrat ostatne obrazky a videa
 
+	-dorobit rpi hw: senzor teploty, kameru, ir ledku (alebo inac moznost vypnut monitor)
 	-ukladat dake statistiky (db backend) - ktora aplikacia sa ako casto spustila, ako dlho s nou niekto robil, ...
 	-spustanie node_manager pri starte X-ov
 	-pri prepinani apiek tam vidno terminal; to dako vyriesit. mozno nech tam po spusteni nie je nic, len cista obrazovka
@@ -23,6 +24,15 @@ TEMY
 1) top priority
 -qr kod pre mobilnu appku [frontend] - aj taka reklama: "Skus to!" a qr kod
 -zaujimave/srandovne citaty znamych ludi (mozgotrasy?, chuck norris a java)
+	vzdy po spusteni zobrazi na cely cas (15s?) len 1 nahodny
+	prog-fun
+		https://www.victorhurdugaci.com/chuck-norris-java-facts
+		"It's not a bug. It's a feature"
+		"There are 10 types of people in the world: those who understand binary, and those who don't."
+		"I'm NOT your F1 button!"
+		"I'm not anti-social; I'm just not user friendly."
+	prog-facts
+		https://www.improgrammer.net/interesting-facts-c-language/
 -oznamy z webu ki
 2) meet-and-code
 -hra2d (java aj python) - aby to islo ako ma
