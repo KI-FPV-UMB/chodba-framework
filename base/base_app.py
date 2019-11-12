@@ -71,7 +71,10 @@ class BaseApp:
         #st = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
         st = datetime.datetime.fromtimestamp(ts).strftime('%Y%m%d%H%M%S%f')
         head = { "msg": msg_head, "timestamp": st, "src": "node/" + self.get_node_name() + "/" + self.get_app_name(), "app_name": self.get_app_name() }
-        msg = { **head, **msg_body }
+        if msg_body is not None:
+            msg = { **head, **msg_body }
+        else:
+            msg = head
         self.client.publish(topic=topic, payload=json.dumps(msg), qos=0, retain=False)
 
     def on_msg(self, msg):
