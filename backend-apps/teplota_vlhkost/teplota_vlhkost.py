@@ -16,7 +16,7 @@ from app_utils import process_args
 import time
 import Adafruit_DHT
 
-APP_NAME = "frontend_planner"
+APP_NAME = "teplota_vlhkost"
 APP_TYPE = "backend"
 DEMO_TIME = 0
 RUNON = "walle09"    #"mvagac-X230"
