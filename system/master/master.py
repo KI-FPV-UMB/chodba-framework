@@ -29,8 +29,9 @@ TIMESTAMP_CHECK = 60
 
 APP_NAME = "master"
 APP_TYPE = "system"
+DEMO_TIME = 0
 
-APP_ID, NODE_NAME, NICKNAME, APPROBATION, USER_TOPIC = process_args(sys.argv, APP_NAME, APP_TYPE, "mvagac-X230")
+APP_ID, NODE_NAME, NICKNAME, APPROBATION, USER_TOPIC = process_args(sys.argv, True, APP_NAME, APP_TYPE, DEMO_TIME)
 
 SYSTEM_APPS_PATH = "../../system/"
 BACKEND_APPS_PATH = "../../backend-apps/"

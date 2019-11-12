@@ -16,12 +16,13 @@ import pymongo
 import base_app
 from app_utils import process_args
 
+ENABLED = True
 APP_NAME = "databaza"
 APP_TYPE = "backend"
 DEMO_TIME = 0
 RUNON = "walle09"    #"mvagac-X230"
 
-APP_ID, NODE_NAME, NICKNAME, APPROBATION, USER_TOPIC = process_args(sys.argv, APP_NAME, APP_TYPE, DEMO_TIME, RUNON)
+APP_ID, NODE_NAME, NICKNAME, APPROBATION, USER_TOPIC = process_args(sys.argv, ENABLED, APP_NAME, APP_TYPE, DEMO_TIME, RUNON)
 
 class Databaza(base_app.BaseApp):
 

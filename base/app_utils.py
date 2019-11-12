@@ -10,7 +10,12 @@ import subprocess
 import socket
 import random
 
-def process_args(args, app_name, app_type, demo_time, runon = None):
+def process_args(args, enabled, app_name, app_type, demo_time, runon = None):
+    # na poziadnie ci je vobec povolena
+    if len(args) == 2 and args[1]=="enabled":
+        print(enabled)
+        sys.exit(1)
+
     # na poziadnie oznam typ
     if len(args) == 2 and args[1]=="type":
         print(app_type)

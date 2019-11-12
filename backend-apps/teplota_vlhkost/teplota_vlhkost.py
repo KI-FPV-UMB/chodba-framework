@@ -16,12 +16,13 @@ from app_utils import process_args
 import time
 import Adafruit_DHT
 
+ENABLED = True
 APP_NAME = "teplota_vlhkost"
 APP_TYPE = "backend"
 DEMO_TIME = 0
 RUNON = "walle09"    #"mvagac-X230"
 
-APP_ID, NODE_NAME, NICKNAME, APPROBATION, USER_TOPIC = process_args(sys.argv, APP_NAME, APP_TYPE, DEMO_TIME, RUNON)
+APP_ID, NODE_NAME, NICKNAME, APPROBATION, USER_TOPIC = process_args(sys.argv, ENABLED, APP_NAME, APP_TYPE, DEMO_TIME, RUNON)
 
 MEASUREMENT_PAUSE = 15            # v sekundach
 DHT_SENSOR = Adafruit_DHT.DHT22

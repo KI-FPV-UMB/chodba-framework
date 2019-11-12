@@ -18,11 +18,12 @@ import sdl2
 import base_app
 from app_utils import process_args
 
+ENABLED = True
 APP_NAME = "skel_sdl"
 APP_TYPE = "frontend"
 DEMO_TIME = 15
 
-APP_ID, NODE_NAME, NICKNAME, APPROBATION, USER_TOPIC = process_args(sys.argv, APP_NAME, APP_TYPE, DEMO_TIME)
+APP_ID, NODE_NAME, NICKNAME, APPROBATION, USER_TOPIC = process_args(sys.argv, ENABLED, APP_NAME, APP_TYPE, DEMO_TIME)
 
 class SkelSDL(base_app.BaseApp):
 

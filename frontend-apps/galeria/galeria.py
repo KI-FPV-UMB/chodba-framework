@@ -30,11 +30,12 @@ FONT_SIZE = 120
 FS_ENCODING = "iso-8859-2"
 DELAY_S = 1.5
 
+ENABLED = True
 APP_NAME = "galeria"
 APP_TYPE = "frontend"
 DEMO_TIME = 45
 
-APP_ID, NODE_NAME, NICKNAME, APPROBATION, USER_TOPIC = process_args(sys.argv, APP_NAME, APP_TYPE, DEMO_TIME)
+APP_ID, NODE_NAME, NICKNAME, APPROBATION, USER_TOPIC = process_args(sys.argv, ENABLED, APP_NAME, APP_TYPE, DEMO_TIME)
 
 class Galeria(base_app.BaseApp):
 
