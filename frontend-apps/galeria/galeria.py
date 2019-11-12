@@ -76,7 +76,7 @@ class Galeria(base_app.BaseApp):
         else:
             # nahodny
             n = random.randint(0, len(self.files)-1)
-        print("kreslim", n, self.files[n])
+        #print("kreslim", n, self.files[n])
         self.obrazok = sdl2.sdlimage.IMG_Load(str.encode(self.files[n]))
 
     def kresli_obrazok(self):
