@@ -80,7 +80,7 @@ class FrontendPlanner(base_app.BaseApp):
             self.publish_message("resultset", resp, msg["src"] )
 
         else:
-            print("[" + APP_NAME + "] neznamy typ spravy: " + str(msg))
+            super.on_msg(msg)
 
     def run(self):
         self.dbc = pymongo.MongoClient("mongodb://localhost:27017/")

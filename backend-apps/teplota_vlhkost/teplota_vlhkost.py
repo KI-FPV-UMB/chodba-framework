@@ -53,6 +53,9 @@ class FrontendPlanner(base_app.BaseApp):
     def info_sub(self):
         return ""
 
+    def on_msg(self, msg):
+        None
+
     def run(self):
         # spracovavaj mqtt spravy
         self.client.loop_start()
