@@ -2,10 +2,9 @@
 TODO:
 	-dorobit rpi hw: senzor teploty, kameru, ir ledku (alebo inac moznost vypnut monitor)
 	-do galerie dorobit prehravanie videa
-	-spustat po starte run_backends (zistit co sa stane, ked to pustim opakovane)
 
 	-ukladat dake statistiky (db backend) - ktora aplikacia sa ako casto spustila, ako dlho s nou niekto robil, ...
-	-spustanie node_manager pri starte X-ov; po starte spustit na mastrovi run_backends
+	-spustanie node_manager pri starte X-ov
 	-pri prepinani apiek tam vidno terminal; to dako vyriesit. mozno nech tam po spusteni nie je nic, len cista obrazovka
 	-citlive miesto: ked sa prave vypina aplikacia s spusta nova; ak do toho niekto (user) spusti aplikaciu, tak sa neaktivuje ten sposob
 	 nahradenia aplikacie. vysledkom bude, ze budu naraz 2 frontend aplikacie. mozno to spravit tak, ze v tej kontrole na pozadi stale aj
@@ -22,7 +21,6 @@ TODO:
 
 TEMY
 1) top priority
--?databaza [backend] - na zaklade danej spravy zapise udaj do db (asi key/value pary, ale pri kazdom aj zdroj - ze kto to poslal); ukladanie score
 -qr kod pre mobilnu appku [frontend] - aj taka reklama: "Skus to!" a qr kod
 -zaujimave/srandovne citaty znamych ludi (mozgotrasy?, chuck norris a java)
 -oznamy z webu ki
@@ -34,7 +32,6 @@ TEMY
 -oznamy [frontend] - info aj spolocne (ked sa to spusti len automaticky), ale aj podla aprobacie (ked to niekto spusti mobilom)
 -zaznamenanie hry hraca (potom mozne pouzit na demo ukazku - spusti sa normalne hra, ale ina appka jej bude posielat klavesy ako ich ma zaznamenane)
 	alebo aj nahodne klavesy (ake - to vie vdaka layoutu)
--teplomer [backend] - posle nameranu teplotu kazdych n minut
 -teplomer-range [backend] - prijima spravy s nameranou teplotou; ak klesne/stupne cez daku hodnotu, tak spusti teplomer-alert
 -teplomer-alert [frontend] - zobrazi (vtipnu?) spravu, ze teplota je prilis vysoka/nizka
 -rozvrh-prestavky [backend] - sleduje cas, a vzdy cez prestavku vysle signal na spustenie rozvrh-teraz

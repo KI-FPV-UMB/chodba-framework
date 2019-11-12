@@ -90,8 +90,8 @@ class Teplomer(base_app.BaseApp):
             time.sleep(1)
 
         # zobraz graf
-        plt.title('teplota za poslednych ' + str(HIST_DNI) + ' dni')
         fig, axt = plt.subplots()
+        axt.set_title('teplota za poslednych ' + str(HIST_DNI) + ' dni')
         axt.set_xlim(self.cas[0], self.cas[-1])
 
         axt.set_ylabel('teplota', color='tab:red')

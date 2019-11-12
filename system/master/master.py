@@ -147,6 +147,52 @@ class Master(base_app.BaseApp):
         t = threading.Timer(app.demo_time, self.stop_app, [app])
         t.start()
 
+    def run_backends(self):
+        apps_list = self.list_offline_apps(BACKEND_APPS_PATH, True)
+        for app in apps_list:
+            try:
+                runon = run_app(BACKEND_APPS_PATH, app["name"], "runon")
+                if runon == "*":
+                    # iteruj cez vsetky node_manager-i
+                    for nmapp in self.apps:
+                        if nmapp.name == "node_manager":
+                            # zisti, ci uz na tom uzle bezi
+                            if not self.is_running(app["name"], nmapp.node):
+                                # este tam nebezi - spusti
+                                print("[" + APP_NAME + "] spustam " + app["name"] + " na " + nmapp.node)
+                                msg2pub = { "type":"backend", "name": app["name"] }
+                                self.publish_message("run", msg2pub, "node/" + nmapp.node )
+                            else:
+                                # uz tam bezi!
+                                print("[" + APP_NAME + "] app " + app["name"] + " je uz na " + nmapp.node + " spustena!")
+                elif runon == "?":
+                    # spusti na nahodnom (ak este nikde nebezi)
+                    nodes = []
+                    for nmapp in self.apps:
+                        if nmapp.name == app["name"]:
+                            print("[" + APP_NAME + "] app " + app["name"] + " je uz spustena na " + nmapp.node + "!")
+                            return
+                        if nmapp.name == "node_manager":
+                            nodes.append(nmapp.node)
+                    # este nebezi, vyber nahodny uzol a spusti
+                    node = nodes[random.randint(0, len(nodes)-1)]
+                    print("[" + APP_NAME + "] spustam " + app["name"] + " na " + node)
+                    msg2pub = { "type":"backend", "name": app["name"] }
+                    self.publish_message("run", msg2pub, "node/" + node )
+                else:
+                    # spusti na specifikovanom (ak tam este nebezi)
+                    if not self.is_running(app["name"], runon):
+                        # este tam nebezi - spusti
+                        print("[" + APP_NAME + "] spustam " + app["name"] + " na " + runon)
+                        msg2pub = { "type":"backend", "name": app["name"] }
+                        self.publish_message("run", msg2pub, "node/" + runon )
+                    else:
+                        # uz tam bezi!
+                        print("[" + APP_NAME + "] app " + app["name"] + " je uz na " + runon + " spustena!")
+            except Exception as e:
+                print("[" + APP_NAME + "] chyba pri spustani " + app.name + ": " + str(e))
+
+
     def on_message(self, client, userdata, message):
         msg = json.loads(message.payload.decode())
         if not "msg" in msg:
@@ -196,6 +242,9 @@ class Master(base_app.BaseApp):
                 # ak je to novy node_manager, tak na nom treba hned nieco spustit
                 if msg["name"] == "node_manager":
                     self.run_random(app.node)
+                    # pre istotu spusti backends (ak ma nieco bezat na tomto novom node). to co uz bezi na ostatnych sa nespsusti 2x
+                    self.run_backends()
+
             # ak je stav quitting, tak vyhod aplikaciu zo zoznamu
             if msg["status"] == "quitting":
                 self.apps.remove(app)
@@ -218,49 +267,7 @@ class Master(base_app.BaseApp):
 
         elif msg["msg"] == "run_backends":
             # pospustaj vsetky backend aplikacie
-            apps_list = self.list_offline_apps(BACKEND_APPS_PATH, True)
-            for app in apps_list:
-                try:
-                    runon = run_app(BACKEND_APPS_PATH, app["name"], "runon")
-                    if runon == "*":
-                        # iteruj cez vsetky node_manager-i
-                        for nmapp in self.apps:
-                            if nmapp.name == "node_manager":
-                                # zisti, ci uz na tom uzle bezi
-                                if not self.is_running(app["name"], nmapp.node):
-                                    # este tam nebezi - spusti
-                                    print("[" + APP_NAME + "] spustam " + app["name"] + " na " + nmapp.node)
-                                    msg2pub = { "type":"backend", "name": app["name"] }
-                                    self.publish_message("run", msg2pub, "node/" + nmapp.node )
-                                else:
-                                    # uz tam bezi!
-                                    print("[" + APP_NAME + "] app " + app["name"] + " je uz na " + nmapp.node + " spustena!")
-                    elif runon == "?":
-                        # spusti na nahodnom (ak este nikde nebezi)
-                        nodes = []
-                        for nmapp in self.apps:
-                            if nmapp.name == app["name"]:
-                                print("[" + APP_NAME + "] app " + app["name"] + " je uz spustena na " + nmapp.node + "!")
-                                return
-                            if nmapp.name == "node_manager":
-                                nodes.append(nmapp.node)
-                        # este nebezi, vyber nahodny uzol a spusti
-                        node = nodes[random.randint(0, len(nodes)-1)]
-                        print("[" + APP_NAME + "] spustam " + app["name"] + " na " + node)
-                        msg2pub = { "type":"backend", "name": app["name"] }
-                        self.publish_message("run", msg2pub, "node/" + node )
-                    else:
-                        # spusti na specifikovanom (ak tam este nebezi)
-                        if not self.is_running(app["name"], runon):
-                            # este tam nebezi - spusti
-                            print("[" + APP_NAME + "] spustam " + app["name"] + " na " + runon)
-                            msg2pub = { "type":"backend", "name": app["name"] }
-                            self.publish_message("run", msg2pub, "node/" + runon )
-                        else:
-                            # uz tam bezi!
-                            print("[" + APP_NAME + "] app " + app["name"] + " je uz na " + runon + " spustena!")
-                except Exception as e:
-                    print("[" + APP_NAME + "] chyba pri spustani " + app.name + ": " + str(e))
+            self.run_backends()
 
         elif msg["msg"] == "applications":
             if not "src" in msg:
