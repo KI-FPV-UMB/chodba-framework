@@ -58,14 +58,13 @@ class FrontendPlanner(base_app.BaseApp):
 
         if msg["msg"] == "insert":
             # vloz zaznam do db
-            msg_cpy = msg.copy()
-            del msg_cpy["msg"]
-            x = self.col.insert_one(msg_cpy)
+            del msg["msg"]
+            x = self.col.insert_one(msg)
             resp = { "id": str(x.inserted_id) }
             print(json.dumps(resp))         #TODO
-            self.publish_message("insert-id", resp, msg_cpy["src"] )
+            self.publish_message("insert-id", resp, msg["src"] )
 
-        if msg["msg"] == "find":
+        elif msg["msg"] == "find":
             # vyber zaznamy z db
             q1 = { "app_name": msg["app_name"] }
             q2 = msg["query"]
@@ -79,6 +78,9 @@ class FrontendPlanner(base_app.BaseApp):
                 resp = self.col.find(q)
             print(json.dumps(resp))         #TODO
             self.publish_message("resultset", resp, msg["src"] )
+
+        else:
+            print("[" + APP_NAME + "] neznamy typ spravy: " + str(msg))
 
     def run(self):
         self.dbc = pymongo.MongoClient("mongodb://localhost:27017/")
