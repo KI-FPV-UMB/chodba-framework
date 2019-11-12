@@ -56,10 +56,8 @@ class FrontendPlanner(base_app.BaseApp):
 
         if msg["msg"] == "insert":
             # vloz zaznam do db
-            d = { "app_name": msg["name"], "values": msg["values"] }
-            x = self.col.insert_one(d)
-            if not "src" in msg:
-                return
+            del msg["msg"]
+            x = self.col.insert_one(msg)
             resp = { "id": str(x.inserted_id) }
             print(json.dumps(resp))         #TODO
             self.publish_message("insert-id", resp, msg["src"] )

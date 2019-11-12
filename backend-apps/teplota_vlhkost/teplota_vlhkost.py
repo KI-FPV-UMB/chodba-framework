@@ -13,6 +13,7 @@ import json
 import base_app
 from app_utils import process_args
 
+import time
 import Adafruit_DHT
 
 APP_NAME = "frontend_planner"
@@ -22,6 +23,7 @@ RUNON = "mvagac-X230"
 
 APP_ID, NODE_NAME, NICKNAME, APPROBATION, USER_TOPIC = process_args(sys.argv, APP_NAME, APP_TYPE, DEMO_TIME, RUNON)
 
+MEASUREMENT_PAUSE = 15            # v sekundach
 DHT_SENSOR = Adafruit_DHT.DHT22
 DHT_PIN = 4
 
@@ -57,8 +59,15 @@ class FrontendPlanner(base_app.BaseApp):
         # meraj teplotu a vlhkost
         self.running = True
         while self.running:
+            # zmeraj vlhkost a teplotu
             humidity, temperature = Adafruit_DHT.read_retry(DHT_SENSOR, DHT_PIN)
+            # zapis do db
             #TODO zapis do db
+            msg = { "id": str(x.inserted_id) }
+            print(json.dumps(msg))         #TODO
+            self.publish_message("insert", msg, "database")
+            # cakaj
+            time.sleep(MEASUREMENT_PAUSE)
 
     def stop(self):
         # zastav spracovanie mqtt

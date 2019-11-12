@@ -1,14 +1,15 @@
 
 TODO:
 	-dorobit rpi hw: senzor teploty, kameru, ir ledku (alebo inac moznost vypnut monitor)
+	-do galerie dorobit prehravanie videa
 
+	-ukladat dake statistiky (db backend) - ktora aplikacia sa ako casto spustila, ako dlho s nou niekto robil, ...
+	-spustanie node_manager pri starte X-ov; po starte spustit na mastrovi run_backends
 	-pri prepinani apiek tam vidno terminal; to dako vyriesit. mozno nech tam po spusteni nie je nic, len cista obrazovka
 	-citlive miesto: ked sa prave vypina aplikacia s spusta nova; ak do toho niekto (user) spusti aplikaciu, tak sa neaktivuje ten sposob
 	 nahradenia aplikacie. vysledkom bude, ze budu naraz 2 frontend aplikacie. mozno to spravit tak, ze v tej kontrole na pozadi stale aj
 	 zistovat, ci aj napriek vsetkemu nie su na 1 uzle naraz 2 frontend aplikacie - ak ano, tak jednu zrusit (tu, ktora nie je user app - t.j.
 	 ta s nickom). tato kontrola sa moze robit aj relativne casto (kazdych par sekund); nemala by byt draha
-	-ukladat dake statistiky (db backend) - ktora aplikacia sa ako casto spustila, ako dlho s nou niekto robil, ...
-	-spustanie node_manager pri starte X-ov; po starte spustit na mastrovi run_backends
 
 	wiki: zhrnut podmienky na appku (na ake spravy ma ako reagovat); quickstart ze ako to cele rozchodit
 		aj detailne opisat vsetky "sluzby" - s prikladmi sprav
@@ -76,6 +77,12 @@ FRAMEWORK
 		-na vsetkych spustit node_manager
 			systemctl enable chodba-node_manager.service 
 		-na hlavnom uzle cronom opakovane posielat mastrovi spravu run_backends
+	 vi /etc/crontab
+		*/2 * * * *     root    /usr/local/bin/chodba.sh
+		*/2 * * * *     pi      /opt/chodba-framework/git-pull.sh
+		0 7 * * 1-5     root    /usr/local/bin/hdmi-ctrl.sh on
+		0 20 * * 1-5    root    /usr/local/bin/hdmi-ctrl.sh off
+
 -mobilna appka, ktora zobrazi daky predefinovany screen
 	-posielanie sprav ovladania (dola/doprava/...)
 	-posielanie sprav na spustenie frontend appky (zoznam dostane zo servera!)

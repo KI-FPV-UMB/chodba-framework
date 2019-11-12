@@ -65,7 +65,7 @@ class BaseApp:
         self.publish_message("lifecycle", status, "master" )
 
     def publish_message(self, msg_head, msg_body, topic):
-        head = { "msg": msg_head, "src": "node/" + self.get_node_name() + "/" + self.get_app_name() }
+        head = { "msg": msg_head, "src": "node/" + self.get_node_name() + "/" + self.get_app_name(), "app_name": self.get_app_name() }
         msg = { **head, **msg_body }
         self.client.publish(topic=topic, payload=json.dumps(msg), qos=0, retain=False)
 
