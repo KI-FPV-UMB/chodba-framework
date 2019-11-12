@@ -66,16 +66,23 @@ class FrontendPlanner(base_app.BaseApp):
 
         elif msg["msg"] == "find":
             # vyber zaznamy z db
+            if not "query" in msg:
+                log = { "log": "chyba parameter 'query'!" }
+                self.publish_message("log", log, "master" )
+                return
             q1 = { "app_name": msg["app_name"] }
             q2 = msg["query"]
             q = { **q1, **q2 }
-            if "sort" in msg:
-                if "limit" in msg:
-                    resp = self.col.find(q).sort(msg["sort"]).limit(int(msg["limit"]))
+            try:
+                if "sort" in msg:
+                    if "limit" in msg:
+                        resp = self.col.find(q).sort(msg["sort"]).limit(int(msg["limit"]))
+                    else:
+                        resp = self.col.find(q).sort(msg["sort"])
                 else:
-                    resp = self.col.find(q).sort(msg["sort"])
-            else:
-                resp = self.col.find(q)
+                    resp = self.col.find(q)
+            except Exception as e:
+                print("[" + APP_NAME + "] chyba spustania dotazu " + q + ":\n" + str(e))
             print(json.dumps(resp))         #TODO
             self.publish_message("resultset", resp, msg["src"] )
 
