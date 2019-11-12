@@ -25,7 +25,7 @@ from app_utils import process_args
 ENABLED = True
 APP_NAME = "demo_hra2d_p"
 APP_TYPE = "frontend"
-DEMO_TIME = 15
+DEMO_TIME = 5
 
 APP_ID, NODE_NAME, NICKNAME, APPROBATION, USER_TOPIC = process_args(sys.argv, ENABLED, APP_NAME, APP_TYPE, DEMO_TIME)
 

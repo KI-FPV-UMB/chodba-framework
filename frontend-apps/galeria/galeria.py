@@ -30,7 +30,7 @@ FONT_SIZE = 120
 FS_ENCODING = "iso-8859-2"
 DELAY_S = 1.5
 
-ENABLED = True
+ENABLED = False
 APP_NAME = "galeria"
 APP_TYPE = "frontend"
 DEMO_TIME = 45
