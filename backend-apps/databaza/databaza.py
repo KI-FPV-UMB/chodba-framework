@@ -58,11 +58,12 @@ class FrontendPlanner(base_app.BaseApp):
 
         if msg["msg"] == "insert":
             # vloz zaznam do db
-            del msg["msg"]
-            x = self.col.insert_one(msg)
+            msg_cpy = msg.copy()
+            del msg_cpy["msg"]
+            x = self.col.insert_one(msg_cpy)
             resp = { "id": str(x.inserted_id) }
             print(json.dumps(resp))         #TODO
-            self.publish_message("insert-id", resp, msg["src"] )
+            self.publish_message("insert-id", resp, msg_cpy["src"] )
 
         if msg["msg"] == "find":
             # vyber zaznamy z db
