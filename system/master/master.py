@@ -110,14 +110,16 @@ class Master(base_app.BaseApp):
                 try:
                     app = App()
                     app.name = entry
-                    app.type = run_app(path, app.name, "type")
-                    app.demo_time = int(run_app(path, app.name, "demotime"))
-                    # ak je rozpoznana, tak ju pridaj do zoznamu
-                    if app.type is not None:
-                        if as_json:
-                            ret.append(app.__dict__)       # aby bol objekt serializovatelny do json
-                        else:
-                            ret.append(app)
+                    app.enabled = run_app(path, app.name, "enabled")
+                    if app.enabled == "True":
+                        app.type = run_app(path, app.name, "type")
+                        app.demo_time = int(run_app(path, app.name, "demotime"))
+                        # ak je rozpoznana, tak ju pridaj do zoznamu
+                        if app.type is not None:
+                            if as_json:
+                                ret.append(app.__dict__)       # aby bol objekt serializovatelny do json
+                            else:
+                                ret.append(app)
                 except Exception as e:
                     print("[" + APP_NAME + "] chyba pri spustani " + app.name + ": " + str(e))
         return ret

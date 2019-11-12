@@ -12,9 +12,7 @@ import paho.mqtt.client as mqtt
 import json
 import base_app
 from app_utils import process_args
-
 import time
-import Adafruit_DHT
 
 ENABLED = True
 APP_NAME = "teplota_vlhkost"
@@ -23,6 +21,8 @@ DEMO_TIME = 0
 RUNON = "walle09"    #"mvagac-X230"
 
 APP_ID, NODE_NAME, NICKNAME, APPROBATION, USER_TOPIC = process_args(sys.argv, ENABLED, APP_NAME, APP_TYPE, DEMO_TIME, RUNON)
+
+import Adafruit_DHT
 
 MEASUREMENT_PAUSE = 15            # v sekundach
 DHT_SENSOR = Adafruit_DHT.DHT22
