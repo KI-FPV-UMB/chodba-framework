@@ -8,7 +8,6 @@ import sys
 import socket
 import paho.mqtt.client as mqtt
 import json
-import time
 import datetime
 
 WEBSOCKETS = False
@@ -66,11 +65,12 @@ class BaseApp:
             status["approbation"] = self.get_approbation()
         self.publish_message("lifecycle", status, "master" )
 
+    def get_src(self):
+        return "node/" + self.get_node_name() + "/" + self.get_app_name()
+
     def publish_message(self, msg_head, msg_body, topic):
-        ts = time.time()
-        #st = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
-        st = datetime.datetime.fromtimestamp(ts).strftime('%Y%m%d%H%M%S%f')
-        head = { "msg": msg_head, "timestamp": st, "src": "node/" + self.get_node_name() + "/" + self.get_app_name(), "app_name": self.get_app_name() }
+        st = datetime.datetime.now().strftime('%Y%m%d%H%M%S%f')
+        head = { "msg": msg_head, "timestamp": st, "src": self.get_src(), "app_name": self.get_app_name() }
         if msg_body is not None:
             msg = { **head, **msg_body }
         else:
