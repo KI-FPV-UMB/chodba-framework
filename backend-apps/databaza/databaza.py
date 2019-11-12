@@ -64,6 +64,18 @@ class FrontendPlanner(base_app.BaseApp):
             print(json.dumps(resp))         #TODO
             self.publish_message("insert-id", resp, msg["src"] )
 
+        if msg["msg"] == "find":
+            # vyber zaznamy z db
+            q1 = { "app_name": msg["app_name"] }
+            q2 = msg["query"]
+            q = { **q1, **q2 }
+            if "sort" in msg:
+                resp = self.col.find(q).sort(msg["sort"])
+            else:
+                resp = self.col.find(q)
+            print(json.dumps(resp))         #TODO
+            self.publish_message("resultset", resp, msg["src"] )
+
     def run(self):
         self.dbc = pymongo.MongoClient("mongodb://localhost:27017/")
         self.db = self.dbc["chodbadb"]
