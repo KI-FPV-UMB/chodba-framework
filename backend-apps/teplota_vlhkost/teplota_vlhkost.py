@@ -27,7 +27,7 @@ MEASUREMENT_PAUSE = 15            # v sekundach
 DHT_SENSOR = Adafruit_DHT.DHT22
 DHT_PIN = 4
 
-class FrontendPlanner(base_app.BaseApp):
+class TeplotaVlhkost(base_app.BaseApp):
 
     def get_app_name(self):
         return APP_NAME
@@ -65,8 +65,7 @@ class FrontendPlanner(base_app.BaseApp):
             # zmeraj vlhkost a teplotu
             humidity, temperature = Adafruit_DHT.read_retry(DHT_SENSOR, DHT_PIN)
             # zapis do db
-            #TODO zapis do db
-            msg = { "humidity": str(humidity), "temperature": str(temperature) }
+            msg = { "humidity": humidity, "temperature": temperature }
             print(json.dumps(msg))         #TODO
             self.publish_message("insert", msg, "database")
             # cakaj
@@ -80,7 +79,7 @@ class FrontendPlanner(base_app.BaseApp):
 
 
 if __name__ == '__main__':
-    app = FrontendPlanner()
+    app = TeplotaVlhkost()
     app.start()
     app.run()
 

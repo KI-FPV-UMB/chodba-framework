@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-"""frontend_planner.py: menezuje spustanie frontend aplikacii na uzloch. ma na starosti to, aby tam vzdy nieco bezalo (t.j. ked nieco skonci, spusti nieco dalsie). tiez zabezpecuje, ze automaticky spustane appky tam budu bezat len urcity cas, potom budu nahradene inymi."""
+"""databaza.py: umoznuje perzistenciu udajov pre aplikacie."""
 __author__ = "Michal Vagac"
 __email__ = "michal.vagac@gmail.com"
 
@@ -23,7 +23,7 @@ RUNON = "walle09"    #"mvagac-X230"
 
 APP_ID, NODE_NAME, NICKNAME, APPROBATION, USER_TOPIC = process_args(sys.argv, APP_NAME, APP_TYPE, DEMO_TIME, RUNON)
 
-class FrontendPlanner(base_app.BaseApp):
+class Databaza(base_app.BaseApp):
 
     def get_app_name(self):
         return APP_NAME
@@ -72,19 +72,24 @@ class FrontendPlanner(base_app.BaseApp):
                 return
             try:
                 q1 = { "app_name": msg["app_name"] }
-                q2 = eval(msg["query"])
+                q2 = msg["query"]
                 q = { **q1, **q2 }
                 if "sort" in msg:
                     if "limit" in msg:
-                        resp = self.col.find(q).sort(msg["sort"]).limit(int(msg["limit"]))
+                        cur = self.col.find(q).sort(msg["sort"]).limit(int(msg["limit"]))
                     else:
-                        resp = self.col.find(q).sort(msg["sort"])
+                        cur = self.col.find(q).sort(msg["sort"])
                 else:
-                    resp = self.col.find(q)
-                print(json.dumps(resp))         #TODO
+                    cur = self.col.find(q)
+                l = []
+                for doc in cur:
+                    del doc["_id"]
+                    l.append(doc)
+                resp = { "resp": l }
+                print('RESP:', str(resp))         #TODO
                 self.publish_message("resultset", resp, msg["src"] )
             except Exception as e:
-                print("[" + APP_NAME + "] chyba spustania dotazu " + msg["query"] + ":\n" + str(e))
+                print("[" + APP_NAME + "] chyba spustania dotazu " + str(msg["query"]) + ":\n" + repr(e))
 
         else:
             super.on_msg(msg)
@@ -104,11 +109,8 @@ class FrontendPlanner(base_app.BaseApp):
 
 
 if __name__ == '__main__':
-    app = FrontendPlanner()
+    app = Databaza()
     app.start()
     app.run()
-
-
-#TODO mongodb
 
 
