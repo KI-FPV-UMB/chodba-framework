@@ -164,13 +164,14 @@ class Galeria(base_app.BaseApp):
         self.running = True
         event = sdl2.SDL_Event()
         title = not self.notitle
+        title = False       #TODO
         while self.running:
             if title:
                 # vypis nazov adresara
                 sdl2.SDL_BlitSurface(nazov, None, self.windowsurface, r)
-                sdl2.SDL_FreeSurface(nazov)
                 sdl2.SDL_RenderPresent(self.renderer)
                 if time.time() - last_draw > DELAY_S:
+                    sdl2.SDL_FreeSurface(nazov)
                     title = False
             else:
                 self.kresli_obrazok()
