@@ -28,7 +28,7 @@ FONT_PATH = "/usr/share/fonts/truetype/freefont/FreeSans.ttf"
 #FONT_PATH = "/usr/share/fonts/truetype/ttf-dejavu/DejaVuSans.ttf"
 #FONT_PATH = "/usr/share/fonts/truetype/ttf-liberation/LiberationSans-Regular.ttf"
 FONT_SIZE = 120
-FONT_OUTLINE = 1
+FONT_OUTLINE = 2
 FS_ENCODING = "utf-8"
 DELAY_S = 1.5
 
