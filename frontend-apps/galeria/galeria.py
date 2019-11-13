@@ -78,7 +78,7 @@ class Galeria(base_app.BaseApp):
         else:
             # nahodny
             n = random.randint(0, len(self.files)-1)
-        #print("kreslim", n, self.files[n])
+        print("[" + self.get_app_name() + "]   kreslim ", n, self.files[n])
         self.obrazok = sdl2.sdlimage.IMG_Load(str.encode(self.files[n]))
 
     def kresli_obrazok(self):
@@ -113,6 +113,7 @@ class Galeria(base_app.BaseApp):
             self.publish_message("log", log, "master" )
             return
         d = subdirs[random.randint(1, len(subdirs)-1)]
+        print("[" + self.get_app_name() + "] vyberam ", d)
         self.files = [os.path.join(d, f) for f in os.listdir(d) if os.path.isfile(os.path.join(d, f))]
         self.sorted = os.path.isfile(os.path.join(d, SORTED_FILE))
         if self.sorted:
