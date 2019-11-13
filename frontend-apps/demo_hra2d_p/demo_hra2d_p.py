@@ -22,7 +22,7 @@ import base_app
 import app_utils
 from app_utils import process_args
 
-ENABLED = True
+ENABLED = False
 APP_NAME = "demo_hra2d_p"
 APP_TYPE = "frontend"
 DEMO_TIME = 5
