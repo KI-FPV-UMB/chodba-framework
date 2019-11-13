@@ -1,0 +1,7 @@
+[Desktop Entry]
+# The names/descriptions should really be better
+Name=sleep-inf
+Comment=sleep-inf
+Exec=/usr/local/bin/sleep-inf.sh
+# Icon=
+Type=Application
