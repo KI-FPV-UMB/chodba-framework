@@ -33,7 +33,7 @@ DELAY_S = 1.5
 ENABLED = True
 APP_NAME = "galeria"
 APP_TYPE = "frontend"
-DEMO_TIME = 45
+DEMO_TIME = 15
 
 APP_ID, NODE_NAME, NICKNAME, APPROBATION, USER_TOPIC = process_args(sys.argv, ENABLED, APP_NAME, APP_TYPE, DEMO_TIME)
 
@@ -161,8 +161,14 @@ class Galeria(base_app.BaseApp):
         last_draw = time.time()
         self.running = True
         event = sdl2.SDL_Event()
+        title = True
         while self.running:
-            self.kresli_obrazok()
+            if title:
+                sdl2.SDL_RenderPresent(self.renderer)
+                if time.time() - last_draw > DELAY_S:
+                    title = False
+            else:
+                self.kresli_obrazok()
             if time.time() - last_draw > DELAY_S:
                 self.dalsi_obrazok()
                 last_draw = time.time()
