@@ -4,6 +4,7 @@
 __author__ = "Michal Vagac"
 __email__ = "michal.vagac@gmail.com"
 
+# apt-get install mongodb
 # je potrebna starsia verzia mongo: pip3 install pymongo==3.4.0
 
 # PYTHONPATH musi odkazovat na absolutnu cestu k .../chodba-framework/base
