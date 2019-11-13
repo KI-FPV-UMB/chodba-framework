@@ -161,14 +161,14 @@ class Galeria(base_app.BaseApp):
         last_draw = time.time()
         self.running = True
         event = sdl2.SDL_Event()
-        title = True
+        #title = True
         while self.running:
-            if title:
-                sdl2.SDL_RenderPresent(self.renderer)
-                if time.time() - last_draw > DELAY_S:
-                    title = False
-            else:
-                self.kresli_obrazok()
+            #if title:
+            #    sdl2.SDL_RenderPresent(self.renderer)
+            #    if time.time() - last_draw > DELAY_S:
+            #        title = False
+            #else:
+            self.kresli_obrazok()
             if time.time() - last_draw > DELAY_S:
                 self.dalsi_obrazok()
                 last_draw = time.time()
