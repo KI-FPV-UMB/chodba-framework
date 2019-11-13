@@ -28,6 +28,7 @@ FONT_PATH = "/usr/share/fonts/truetype/freefont/FreeSans.ttf"
 #FONT_PATH = "/usr/share/fonts/truetype/ttf-dejavu/DejaVuSans.ttf"
 #FONT_PATH = "/usr/share/fonts/truetype/ttf-liberation/LiberationSans-Regular.ttf"
 FONT_SIZE = 120
+FONT_OUTLINE = 1
 FS_ENCODING = "utf-8"
 DELAY_S = 1.5
 
@@ -102,11 +103,18 @@ class Galeria(base_app.BaseApp):
         # dopis nazov adresara
         if not self.notitle:
             #nazov = sdl2.sdlttf.TTF_RenderText_Solid(self.font, self.folder.encode(FS_ENCODING), sdl2.SDL_Color(255, 255, 255))
+            nazov_outlined = sdl2.sdlttf.TTF_RenderUTF8_Solid(self.font_outlined, self.folder.encode(FS_ENCODING), sdl2.SDL_Color(0, 0, 0))
             nazov = sdl2.sdlttf.TTF_RenderUTF8_Solid(self.font, self.folder.encode(FS_ENCODING), sdl2.SDL_Color(255, 255, 255))
+
             r = sdl2.SDL_Rect()
-            r.x, r.y = int(self.window_w/2 - nazov.contents.w / 2), int(self.window_h - nazov.contents.h - 10)
+            r.x, r.y = FONT_OUTLINE, FONT_OUTLINE
             r.w, r.h = nazov.contents.w, nazov.contents.h
-            sdl2.SDL_BlitSurface(nazov, None, self.windowsurface, r)
+            sdl2.SDL_BlitSurface(nazov, None, nazov_outlined, r)
+
+            r = sdl2.SDL_Rect()
+            r.x, r.y = int(self.window_w/2 - nazov_outlined.contents.w / 2), int(self.window_h - nazov_outlined.contents.h - 10)
+            r.w, r.h = nazov_outlined.contents.w, nazov_outlined.contents.h
+            sdl2.SDL_BlitSurface(nazov_outlined, None, self.windowsurface, r)
 
         # update obrazovky (premietnutie zmien)
         sdl2.SDL_RenderPresent(self.renderer)
@@ -160,7 +168,8 @@ class Galeria(base_app.BaseApp):
         self.renderer = sdl2.SDL_CreateRenderer(self.window, -1, sdl2.SDL_RENDERER_SOFTWARE)
         self.windowsurface = sdl2.SDL_GetWindowSurface(self.window)
         self.font = sdl2.sdlttf.TTF_OpenFont(FONT_PATH.encode("ascii"), FONT_SIZE)
-        sdl2.sdlttf.TTF_SetFontOutline(self.font, 1); 
+        self.font_outlined = sdl2.sdlttf.TTF_OpenFont(FONT_PATH.encode("ascii"), FONT_SIZE)
+        sdl2.sdlttf.TTF_SetFontOutline(self.font_outlined, FONT_OUTLINE); 
 
         # vymaz okno
         sdl2.SDL_SetRenderDrawColor(self.renderer, 0, 0, 0, 0)
