@@ -2,6 +2,13 @@
 TODO:
 	-do galerie dorobit prehravanie videa
 	-do galerie nahrat ostatne obrazky a videa
+	-wifi: chodba_ki, hostnames: chodba_kiXX, ip adresy
+		sudo grep -r "192.168.0." /etc/
+		sudo grep -r "walle" /etc/
+			chodba-ki01
+		sudo vi /etc/fstab /etc/network/interfaces /etc/hostname /etc/ntp.conf /etc/dhcpcd.conf
+		?: 3,9
+		ntp: 2, 9
 
 	-dorobit rpi hw: senzor teploty, kameru, ir ledku (alebo inac moznost vypnut monitor)
 	-ukladat dake statistiky (db backend) - ktora aplikacia sa ako casto spustila, ako dlho s nou niekto robil, ...

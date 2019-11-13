@@ -18,7 +18,7 @@ ENABLED = True
 APP_NAME = "teplota_vlhkost"
 APP_TYPE = "backend"
 DEMO_TIME = 0
-RUNON = "walle09"    #"mvagac-X230"
+RUNON = "chodba-ki01"    #"mvagac-X230"
 
 APP_ID, NODE_NAME, NICKNAME, APPROBATION, USER_TOPIC = process_args(sys.argv, ENABLED, APP_NAME, APP_TYPE, DEMO_TIME, RUNON)
 
