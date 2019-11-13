@@ -12,8 +12,6 @@ import paho.mqtt.client as mqtt
 import json
 import time
 import datetime
-import matplotlib.pyplot as plt
-import matplotlib.dates as mdates
 import base_app
 from app_utils import process_args
 
@@ -25,6 +23,9 @@ APP_TYPE = "frontend"
 DEMO_TIME = 15
 
 APP_ID, NODE_NAME, NICKNAME, APPROBATION, USER_TOPIC = process_args(sys.argv, ENABLED, APP_NAME, APP_TYPE, DEMO_TIME)
+
+import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
 
 class Teplomer(base_app.BaseApp):
 
