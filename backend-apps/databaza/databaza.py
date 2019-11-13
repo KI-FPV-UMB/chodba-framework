@@ -63,7 +63,6 @@ class Databaza(base_app.BaseApp):
             del msg["msg"]
             x = self.col.insert_one(msg)
             resp = { "id": str(x.inserted_id) }
-            print(json.dumps(resp))         #TODO
             self.publish_message("insert-id", resp, msg["src"] )
 
         elif msg["msg"] == "find":
@@ -88,10 +87,9 @@ class Databaza(base_app.BaseApp):
                     del doc["_id"]
                     l.append(doc)
                 resp = { "resp": l }
-                print('RESP:', str(resp))         #TODO
                 self.publish_message("resultset", resp, msg["src"] )
             except Exception as e:
-                print("[" + APP_NAME + "] chyba spustania dotazu " + str(msg["query"]) + ":\n" + repr(e))
+                print("[" + self.get_app_name() + "] chyba spustania dotazu " + str(msg["query"]) + ":\n" + repr(e))
 
         else:
             super.on_msg(msg)

@@ -67,7 +67,6 @@ class TeplotaVlhkost(base_app.BaseApp):
             humidity, temperature = Adafruit_DHT.read_retry(DHT_SENSOR, DHT_PIN)
             # zapis do db
             msg = { "humidity": humidity, "temperature": temperature }
-            print(json.dumps(msg))         #TODO
             self.publish_message("insert", msg, "database")
             # cakaj
             time.sleep(MEASUREMENT_PAUSE)

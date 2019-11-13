@@ -1,7 +1,7 @@
 
 TODO:
-	-do galerie dorobit prehravanie videa
-	-do galerie nahrat ostatne obrazky a videa
+	-do galerie dorobit prehravanie videa; do galerie dohrat videa
+	-kazda n-t appka by malo byt logo ki
 	-wifi: chodba_ki, hostnames: chodba_kiXX, ip adresy
 		sudo grep -r "192.168.0." /etc/
 		sudo grep -r "walle" /etc/
@@ -9,6 +9,7 @@ TODO:
 		sudo vi /etc/fstab /etc/network/interfaces /etc/hostname /etc/ntp.conf /etc/dhcpcd.conf
 		?: 3,9
 		ntp: 2, 9
+		verejnu ip dohodnut na 194.160.41.3
 
 	-dorobit rpi hw: senzor teploty, kameru, ir ledku (alebo inac moznost vypnut monitor)
 	-ukladat dake statistiky (db backend) - ktora aplikacia sa ako casto spustila, ako dlho s nou niekto robil, ...
@@ -85,12 +86,6 @@ TEMY
 FRAMEWORK
 -rpi4:
 	-nainstalovat a spustit mqtt (mosquitto)
-	 vi /etc/mosquitto/mosquitto.conf
-		listener 1883
-		protocol mqtt
-
-		listener 9001
-		protocol websockets
 	-pripojit ethernetom na internet, wifi nastavit ako AP (ale neroutovat!)
 	-nainstalovat OpenCV, nastavit kameru
 	-pripojit a nastavit senzor teploty a vlhkosti, mikrofon
@@ -100,11 +95,7 @@ FRAMEWORK
 		-na vsetkych spustit node_manager
 			systemctl enable chodba-node_manager.service 
 		-na hlavnom uzle cronom opakovane posielat mastrovi spravu run_backends
-	 vi /etc/crontab
-		*/2 * * * *     root    /usr/local/bin/chodba.sh
-		*/2 * * * *     pi      /opt/chodba-framework/git-pull.sh
-		0 7 * * 1-5     root    /usr/local/bin/hdmi-ctrl.sh on
-		0 20 * * 1-5    root    /usr/local/bin/hdmi-ctrl.sh off
+	
 
 -mobilna appka, ktora zobrazi daky predefinovany screen
 	-posielanie sprav ovladania (dola/doprava/...)
