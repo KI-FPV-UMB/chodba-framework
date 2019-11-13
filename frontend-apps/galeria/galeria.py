@@ -23,6 +23,7 @@ import base_app
 from app_utils import process_args
 
 SORTED_FILE = "sorted"
+NOTITLE_FILE = "notitle"
 FONT_PATH = "/usr/share/fonts/truetype/freefont/FreeSans.ttf"
 #FONT_PATH = "/usr/share/fonts/truetype/ttf-dejavu/DejaVuSans.ttf"
 #FONT_PATH = "/usr/share/fonts/truetype/ttf-liberation/LiberationSans-Regular.ttf"
@@ -118,6 +119,9 @@ class Galeria(base_app.BaseApp):
             self.files.remove(os.path.join(d, SORTED_FILE))
             self.files.sort()
             self.current = 0                # ak sa obrazky budu zobrazovat sorted, musime si pamatat, ktory bol zobrazeny ako posledny
+        self.notitle = os.path.isfile(os.path.join(d, NOTITLE_FILE))
+        if self.notitle:
+            self.files.remove(os.path.join(d, NOTITLE_FILE))
 
         # inicializacia SDL2
         if sdl2.SDL_Init(sdl2.SDL_INIT_VIDEO) < 0:
@@ -146,29 +150,28 @@ class Galeria(base_app.BaseApp):
         sdl2.SDL_SetRenderDrawColor(self.renderer, 0, 0, 0, 0)
         sdl2.SDL_RenderClear(self.renderer)
 
-        # vypis nazov adresara
-        font = sdl2.sdlttf.TTF_OpenFont(FONT_PATH.encode("ascii"), FONT_SIZE)
-        nazov = sdl2.sdlttf.TTF_RenderText_Solid(font, d[2:].encode(FS_ENCODING), sdl2.SDL_Color(255, 255, 255))
-        r = sdl2.SDL_Rect()
-        r.x, r.y = int(self.window_w/2 - nazov.contents.w / 2), int(self.window_h/2 - nazov.contents.h / 2)
-        r.w, r.h = nazov.contents.w, nazov.contents.h
-        sdl2.SDL_BlitSurface(nazov, None, self.windowsurface, r)
-        sdl2.SDL_FreeSurface(nazov)
-        sdl2.SDL_RenderPresent(self.renderer)
-
         # event loop
         self.obrazok = None
         last_draw = time.time()
         self.running = True
         event = sdl2.SDL_Event()
-        #title = True
+        title = not self.notitle
         while self.running:
-            #if title:
-            #    sdl2.SDL_RenderPresent(self.renderer)
-            #    if time.time() - last_draw > DELAY_S:
-            #        title = False
-            #else:
-            self.kresli_obrazok()
+            if title:
+                # vypis nazov adresara
+                font = sdl2.sdlttf.TTF_OpenFont(FONT_PATH.encode("ascii"), FONT_SIZE)
+                nazov = sdl2.sdlttf.TTF_RenderText_Solid(font, d[2:].encode(FS_ENCODING), sdl2.SDL_Color(255, 255, 255))
+                r = sdl2.SDL_Rect()
+                r.x, r.y = int(self.window_w/2 - nazov.contents.w / 2), int(self.window_h/2 - nazov.contents.h / 2)
+                r.w, r.h = nazov.contents.w, nazov.contents.h
+                sdl2.SDL_BlitSurface(nazov, None, self.windowsurface, r)
+                sdl2.SDL_FreeSurface(nazov)
+                sdl2.SDL_RenderPresent(self.renderer)
+
+                if time.time() - last_draw > DELAY_S:
+                    title = False
+            else:
+                self.kresli_obrazok()
             if time.time() - last_draw > DELAY_S:
                 self.dalsi_obrazok()
                 last_draw = time.time()
