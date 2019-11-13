@@ -53,10 +53,10 @@ class Teplomer(base_app.BaseApp):
         return ""
 
     def on_msg(self, msg):
-        print("maaaaaaaaaaaaam")
-        print(str(msg))
+        #print("maaaaaaaaaaaaam")
+        #print(str(msg))
         resp = msg["resp"]
-        print(str(resp))
+        #print(str(resp))
         self.cas = []
         self.teplota = []
         self.vlhkost = []
@@ -66,9 +66,9 @@ class Teplomer(base_app.BaseApp):
             #self.cas.append(r["timestamp"])
             self.teplota.append(r["temperature"])
             self.vlhkost.append(r["humidity"])
-        print(self.cas)
-        print(self.teplota)
-        print(self.vlhkost)
+        #print(self.cas)
+        #print(self.teplota)
+        #print(self.vlhkost)
         # {'src': 'node/mvagac-X230/databaza', 'timestamp': '20191112224659761345', 'resp': [{'timestamp': 2.0, 'humidity': 40.0, 'temperature': 26.0, 'app_name': 'teplota_vlhkost'}, {'timestamp': 3.0, 'humidity': 40.0, 'temperature': 25.0, 'app_name': 'teplota_vlhkost'}, {'timestamp': 4.0, 'humidity': 41.0, 'temperature': 24.0, 'app_name': 'teplota_vlhkost'}, {'timestamp': 5.0, 'humidity': 40.0, 'temperature': 24.0, 'app_name': 'teplota_vlhkost'}], 'app_name': 'databaza', 'msg': 'resultset'}
 
         self.waiting = False
@@ -81,7 +81,7 @@ class Teplomer(base_app.BaseApp):
         #st = datetime.now().strftime('%Y%m%d%H%M%S%f') #TODO
         #hist = datetime.strftime(datetime.now() - timedelta(HIST_DNI), '%Y%m%d%H%M%S%f')
         msg = { "msg": "find", "app_name": "teplota_vlhkost", "src": self.get_src(), "query": { "timestamp": { "$gt": hist } } }
-        print("posielaaaam", str(msg))          #TODO
+        #print("posielaaaam", str(msg))          #TODO
         self.client.publish(topic="database", payload=json.dumps(msg), qos=0, retain=False)
         # cakaj
         self.waiting = True
