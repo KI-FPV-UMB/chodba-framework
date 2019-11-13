@@ -1,7 +1,9 @@
 
 TODO:
-	-do galerie dorobit prehravanie videa; do galerie dohrat videa
+	-konfiguracny subor kde by boli tie staticke veci (demo_time, enabled a pod.)
+	-do galerie dorobit prehravanie videa; dohrat tam videa
 	-kazda n-t appka by malo byt logo ki
+	-opravit zobrazovanie teploty
 	-wifi: chodba_ki, hostnames: chodba_kiXX, ip adresy
 		sudo grep -r "192.168.0." /etc/
 		sudo grep -r "walle" /etc/
@@ -10,22 +12,21 @@ TODO:
 		?: 3,9
 		ntp: 2, 9
 		verejnu ip dohodnut na 194.160.41.3
+		ssh pi@194.160.41.39 -p 1194
 
 	-dorobit rpi hw: senzor teploty, kameru, ir ledku (alebo inac moznost vypnut monitor)
 	-ukladat dake statistiky (db backend) - ktora aplikacia sa ako casto spustila, ako dlho s nou niekto robil, ...
-	-spustanie node_manager pri starte X-ov
-	-pri prepinani apiek tam vidno terminal; to dako vyriesit. mozno nech tam po spusteni nie je nic, len cista obrazovka
 	-citlive miesto: ked sa prave vypina aplikacia s spusta nova; ak do toho niekto (user) spusti aplikaciu, tak sa neaktivuje ten sposob
 	 nahradenia aplikacie. vysledkom bude, ze budu naraz 2 frontend aplikacie. mozno to spravit tak, ze v tej kontrole na pozadi stale aj
 	 zistovat, ci aj napriek vsetkemu nie su na 1 uzle naraz 2 frontend aplikacie - ak ano, tak jednu zrusit (tu, ktora nie je user app - t.j.
 	 ta s nickom). tato kontrola sa moze robit aj relativne casto (kazdych par sekund); nemala by byt draha
 
-	wiki: zhrnut podmienky na appku (na ake spravy ma ako reagovat); quickstart ze ako to cele rozchodit
+	-wiki: zhrnut podmienky na appku (na ake spravy ma ako reagovat); quickstart ze ako to cele rozchodit
 		aj detailne opisat vsetky "sluzby" - s prikladmi sprav
-	pripravit priklad TkInter frontendu. bude podporovat 2 mody: 1 obrazovkova / viac obrazovkova. pricom sama oznami, kolko obrazoviek v tom
+	-pripravit priklad TkInter frontendu. bude podporovat 2 mody: 1 obrazovkova / viac obrazovkova. pricom sama oznami, kolko obrazoviek v tom
 		multi mode vyzaduje (0=nepodporuje) podla toho by na tych 8 monitoroch mohlo ist naraz niekolko viac-obrazovkovych aplikacii
 		(napr. 3 a 5, alebo 3 a 3 a 2, a pod.)
-	pri dynamickom ovladani sa pri kazdom odoslani vyziada novy layout (aby bolo mozne podla potreby menit formular)
+	-pri dynamickom ovladani sa pri kazdom odoslani vyziada novy layout (aby bolo mozne podla potreby menit formular)
 
 
 TEMY
