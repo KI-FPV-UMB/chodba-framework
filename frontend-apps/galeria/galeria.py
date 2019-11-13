@@ -151,6 +151,13 @@ class Galeria(base_app.BaseApp):
         sdl2.SDL_SetRenderDrawColor(self.renderer, 0, 0, 0, 0)
         sdl2.SDL_RenderClear(self.renderer)
 
+        # vypis nazov adresara
+        font = sdl2.sdlttf.TTF_OpenFont(FONT_PATH.encode("ascii"), FONT_SIZE)
+        nazov = sdl2.sdlttf.TTF_RenderText_Solid(font, d[2:].encode(FS_ENCODING), sdl2.SDL_Color(255, 255, 255))
+        r = sdl2.SDL_Rect()
+        r.x, r.y = int(self.window_w/2 - nazov.contents.w / 2), int(self.window_h/2 - nazov.contents.h / 2)
+        r.w, r.h = nazov.contents.w, nazov.contents.h
+
         # event loop
         self.obrazok = None
         last_draw = time.time()
@@ -160,15 +167,9 @@ class Galeria(base_app.BaseApp):
         while self.running:
             if title:
                 # vypis nazov adresara
-                font = sdl2.sdlttf.TTF_OpenFont(FONT_PATH.encode("ascii"), FONT_SIZE)
-                nazov = sdl2.sdlttf.TTF_RenderText_Solid(font, d[2:].encode(FS_ENCODING), sdl2.SDL_Color(255, 255, 255))
-                r = sdl2.SDL_Rect()
-                r.x, r.y = int(self.window_w/2 - nazov.contents.w / 2), int(self.window_h/2 - nazov.contents.h / 2)
-                r.w, r.h = nazov.contents.w, nazov.contents.h
                 sdl2.SDL_BlitSurface(nazov, None, self.windowsurface, r)
                 sdl2.SDL_FreeSurface(nazov)
                 sdl2.SDL_RenderPresent(self.renderer)
-
                 if time.time() - last_draw > DELAY_S:
                     title = False
             else:
