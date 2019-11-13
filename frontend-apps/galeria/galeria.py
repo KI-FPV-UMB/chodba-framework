@@ -28,7 +28,7 @@ FONT_PATH = "/usr/share/fonts/truetype/freefont/FreeSans.ttf"
 #FONT_PATH = "/usr/share/fonts/truetype/ttf-dejavu/DejaVuSans.ttf"
 #FONT_PATH = "/usr/share/fonts/truetype/ttf-liberation/LiberationSans-Regular.ttf"
 FONT_SIZE = 120
-FS_ENCODING = "iso-8859-2"
+FS_ENCODING = "utf-8"
 DELAY_S = 1.5
 
 ENABLED = True
@@ -101,7 +101,8 @@ class Galeria(base_app.BaseApp):
 
         # dopis nazov adresara
         if not self.notitle:
-            nazov = sdl2.sdlttf.TTF_RenderText_Solid(self.font, self.folder.encode(FS_ENCODING), sdl2.SDL_Color(255, 255, 255))
+            #nazov = sdl2.sdlttf.TTF_RenderText_Solid(self.font, self.folder.encode(FS_ENCODING), sdl2.SDL_Color(255, 255, 255))
+            nazov = sdl2.sdlttf.TTF_RenderUTF8_Solid(self.font, self.folder.encode(FS_ENCODING), sdl2.SDL_Color(255, 255, 255))
             r = sdl2.SDL_Rect()
             r.x, r.y = int(self.window_w/2 - nazov.contents.w / 2), int(self.window_h - nazov.contents.h - 10)
             r.w, r.h = nazov.contents.w, nazov.contents.h
@@ -159,7 +160,7 @@ class Galeria(base_app.BaseApp):
         self.renderer = sdl2.SDL_CreateRenderer(self.window, -1, sdl2.SDL_RENDERER_SOFTWARE)
         self.windowsurface = sdl2.SDL_GetWindowSurface(self.window)
         self.font = sdl2.sdlttf.TTF_OpenFont(FONT_PATH.encode("ascii"), FONT_SIZE)
-        sdl2.sdlttf.TTF_SetFontOutline(self.font, 2); 
+        sdl2.sdlttf.TTF_SetFontOutline(self.font, 1); 
 
         # vymaz okno
         sdl2.SDL_SetRenderDrawColor(self.renderer, 0, 0, 0, 0)
