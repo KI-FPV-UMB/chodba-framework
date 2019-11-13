@@ -159,6 +159,7 @@ class Galeria(base_app.BaseApp):
         self.renderer = sdl2.SDL_CreateRenderer(self.window, -1, sdl2.SDL_RENDERER_SOFTWARE)
         self.windowsurface = sdl2.SDL_GetWindowSurface(self.window)
         self.font = sdl2.sdlttf.TTF_OpenFont(FONT_PATH.encode("ascii"), FONT_SIZE)
+        sdl2.sdlttf.TTF_SetFontOutline(self.font, 2); 
 
         # vymaz okno
         sdl2.SDL_SetRenderDrawColor(self.renderer, 0, 0, 0, 0)
