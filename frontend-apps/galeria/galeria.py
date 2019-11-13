@@ -101,9 +101,9 @@ class Galeria(base_app.BaseApp):
 
         # dopis nazov adresara
         if not self.notitle:
-            nazov = sdl2.sdlttf.TTF_RenderText_Solid(self.font, "pokus123".encode(FS_ENCODING), sdl2.SDL_Color(255, 255, 255))
+            nazov = sdl2.sdlttf.TTF_RenderText_Solid(self.font, self.folder.encode(FS_ENCODING), sdl2.SDL_Color(255, 255, 255))
             r = sdl2.SDL_Rect()
-            r.x, r.y = int(self.window_w/2 - nazov.contents.w / 2), int(self.window_h/2 - nazov.contents.h / 2)
+            r.x, r.y = int(self.window_w/2 - nazov.contents.w / 2), int(self.window_h - nazov.contents.h - 10)
             r.w, r.h = nazov.contents.w, nazov.contents.h
             sdl2.SDL_BlitSurface(nazov, None, self.windowsurface, r)
 
@@ -125,6 +125,7 @@ class Galeria(base_app.BaseApp):
             return
         d = subdirs[random.randint(1, len(subdirs)-1)]
         print("[" + self.get_app_name() + "] vyberam ", d)
+        self.folder = d[2:]
         self.files = [os.path.join(d, f) for f in os.listdir(d) if os.path.isfile(os.path.join(d, f))]
         self.sorted = os.path.isfile(os.path.join(d, SORTED_FILE))
         if self.sorted:
