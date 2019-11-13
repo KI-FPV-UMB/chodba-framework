@@ -19,7 +19,7 @@ from app_utils import process_args
 
 HIST_DNI = 1                # teplotu kolko dni dozadu zobrazovat
 
-ENABLED = True
+ENABLED = False
 APP_NAME = "teplomer"
 APP_TYPE = "frontend"
 DEMO_TIME = 15
@@ -61,7 +61,7 @@ class Teplomer(base_app.BaseApp):
         self.teplota = []
         self.vlhkost = []
         for r in resp:
-            print(str(r))
+            #print(str(r))
             self.cas.append(datetime.datetime.strptime(r["timestamp"], "%Y%m%d%H%M%S%f"))   #.timestamp())
             #self.cas.append(r["timestamp"])
             self.teplota.append(r["temperature"])
