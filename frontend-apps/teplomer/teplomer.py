@@ -139,6 +139,4 @@ class Teplomer(base_app.BaseApp):
 if __name__ == '__main__':
     app = Teplomer()
     app.start()
-    app.run()
-
 

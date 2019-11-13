@@ -111,6 +111,4 @@ class Databaza(base_app.BaseApp):
 if __name__ == '__main__':
     app = Databaza()
     app.start()
-    app.run()
-
 

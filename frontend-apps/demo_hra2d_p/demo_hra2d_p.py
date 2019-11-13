@@ -298,6 +298,4 @@ class DemoHra2Dp(base_app.BaseApp):
 if __name__ == '__main__':
     app = DemoHra2Dp()
     app.start()
-    app.run()
-
 

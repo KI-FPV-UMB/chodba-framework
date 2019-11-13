@@ -54,7 +54,4 @@ class SkelBackend(base_app.BaseApp):
 if __name__ == '__main__':
     app = SkelBackend()
     app.start()
-    app.run()
-
-
 

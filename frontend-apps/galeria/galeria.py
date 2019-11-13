@@ -202,6 +202,4 @@ class Galeria(base_app.BaseApp):
 if __name__ == '__main__':
     app = Galeria()
     app.start()
-    app.run()
-
 

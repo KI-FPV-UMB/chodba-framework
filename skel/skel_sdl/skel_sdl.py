@@ -106,6 +106,4 @@ class SkelSDL(base_app.BaseApp):
 if __name__ == '__main__':
     app = SkelSDL()
     app.start()
-    app.run()
-
 

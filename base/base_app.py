@@ -120,6 +120,19 @@ class BaseApp:
         # posli spravu o uspesnom nastartovani
         self.publish_lifecycle_message("running")
 
+        # spusti
+        try:
+            self.run()
+        except Exception as e:
+            # zaloguj chybu
+            print("[" + self.get_app_name() + "] chyba pri vykonavani aplikacie: " + repr(e))
+            log = { "log": "chyba pri vykonavani aplikacie: " + repr(e) }
+            self.publish_message("log", log, "master" )
+            # skonci
+            self.stop()
+
+    def run(self):
+        raise NotImplementedError()
 
     def stop(self):
         # posli spravu o ukoncovani

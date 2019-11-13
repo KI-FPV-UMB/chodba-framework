@@ -79,6 +79,4 @@ class NodeManager(base_app.BaseApp):
 if __name__ == '__main__':
     app = NodeManager()
     app.start()
-    app.run()
-
 

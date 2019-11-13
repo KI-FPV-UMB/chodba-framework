@@ -76,6 +76,4 @@ class SkelTkinter(base_app.BaseApp):
 if __name__ == '__main__':
     app = SkelTkinter()
     app.start()
-    app.run()
-
 

@@ -369,6 +369,4 @@ class Master(base_app.BaseApp):
 if __name__ == '__main__':
     app = Master()
     app.start()
-    app.run()
-
 

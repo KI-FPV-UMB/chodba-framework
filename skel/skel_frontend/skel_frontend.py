@@ -53,6 +53,4 @@ class SkelFrontend(base_app.BaseApp):
 if __name__ == '__main__':
     app = SkelFrontend()
     app.start()
-    app.run()
-
 
