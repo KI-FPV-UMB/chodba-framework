@@ -20,7 +20,6 @@ import sdl2.sdlimage
 import sdl2.sdlttf          # libsdl2-ttf-2.0-0
 
 import base_app
-from app_utils import process_args
 
 SORTED_FILE = "sorted"
 NOTITLE_FILE = "notitle"
@@ -31,8 +30,6 @@ FONT_SIZE = 120
 FONT_OUTLINE = 3
 FS_ENCODING = "utf-8"
 DELAY_S = 1.5
-
-NICKNAME, APPROBATION, USER_TOPIC = process_args(sys.argv)
 
 class Galeria(base_app.BaseApp):
 
@@ -175,5 +172,6 @@ class Galeria(base_app.BaseApp):
 
 if __name__ == '__main__':
     app = Galeria()
+    app.process_args(sys.argv)
     app.start()
 

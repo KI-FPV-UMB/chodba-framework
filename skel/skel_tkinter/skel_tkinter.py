@@ -13,9 +13,6 @@ import json
 import tkinter
 import tkinter.messagebox
 import base_app
-from app_utils import process_args
-
-NICKNAME, APPROBATION, USER_TOPIC = process_args(sys.argv)
 
 class SkelTkinter(base_app.BaseApp):
 
@@ -46,5 +43,6 @@ class SkelTkinter(base_app.BaseApp):
 
 if __name__ == '__main__':
     app = SkelTkinter()
+    app.process_args(sys.argv)
     app.start()
 

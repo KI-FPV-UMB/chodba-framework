@@ -33,6 +33,20 @@ class BaseApp:
                 setattr(self, k, config[k])
         print("[" + self.name + "] spustam na uzle " + self.node)
 
+    def process_args(self, args):
+        self.user_topic = None
+        self.nickname = None
+        self.approbation = None
+
+        if len(args) > 1:
+            user_topic = args[1]
+
+        if len(args) > 2:
+            self.nickname = args[2]
+
+        if len(args) > 3:
+            self.approbation = args[3]
+
     def publish_lifecycle_message(self, status):
         state = dict()
         attrs = [ "app_id", "name", "type", "node", "runon", "enabled" ]

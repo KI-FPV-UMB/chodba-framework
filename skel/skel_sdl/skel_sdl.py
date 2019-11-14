@@ -16,9 +16,6 @@ import ctypes
 import sdl2
 
 import base_app
-from app_utils import process_args
-
-NICKNAME, APPROBATION, USER_TOPIC = process_args(sys.argv)
 
 class SkelSDL(base_app.BaseApp):
 
@@ -76,5 +73,6 @@ class SkelSDL(base_app.BaseApp):
 
 if __name__ == '__main__':
     app = SkelSDL()
+    app.process_args(sys.argv)
     app.start()
 

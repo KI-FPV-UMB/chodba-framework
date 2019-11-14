@@ -13,11 +13,8 @@ import json
 import time
 import datetime
 import base_app
-from app_utils import process_args
 
 HIST_DNI = 1                # teplotu kolko dni dozadu zobrazovat
-
-NICKNAME, APPROBATION, USER_TOPIC = process_args(sys.argv)
 
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
@@ -114,5 +111,6 @@ class Teplomer(base_app.BaseApp):
 
 if __name__ == '__main__':
     app = Teplomer()
+    app.process_args(sys.argv)
     app.start()
 

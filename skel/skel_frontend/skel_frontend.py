@@ -11,9 +11,6 @@ import os
 import paho.mqtt.client as mqtt
 import json
 import base_app
-from app_utils import process_args
-
-NICKNAME, APPROBATION, USER_TOPIC = process_args(sys.argv)
 
 class SkelFrontend(base_app.BaseApp):
 
@@ -23,5 +20,6 @@ class SkelFrontend(base_app.BaseApp):
 
 if __name__ == '__main__':
     app = SkelFrontend()
+    app.process_args(sys.argv)
     app.start()
 

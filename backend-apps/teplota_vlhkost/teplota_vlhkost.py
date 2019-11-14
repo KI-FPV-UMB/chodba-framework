@@ -11,11 +11,8 @@ import os
 import paho.mqtt.client as mqtt
 import json
 import base_app
-from app_utils import process_args
 import time
 import Adafruit_DHT
-
-NICKNAME, APPROBATION, USER_TOPIC = process_args(sys.argv)
 
 MEASUREMENT_PAUSE = 15            # v sekundach
 DHT_SENSOR = Adafruit_DHT.DHT22
@@ -49,5 +46,6 @@ class TeplotaVlhkost(base_app.BaseApp):
 
 if __name__ == '__main__':
     app = TeplotaVlhkost()
+    app.process_args(sys.argv)
     app.start()
 

@@ -15,9 +15,6 @@ import paho.mqtt.client as mqtt
 import json
 import pymongo
 import base_app
-from app_utils import process_args
-
-NICKNAME, APPROBATION, USER_TOPIC = process_args(sys.argv)
 
 class Databaza(base_app.BaseApp):
 
@@ -80,5 +77,6 @@ class Databaza(base_app.BaseApp):
 
 if __name__ == '__main__':
     app = Databaza()
+    app.process_args(sys.argv)
     app.start()
 

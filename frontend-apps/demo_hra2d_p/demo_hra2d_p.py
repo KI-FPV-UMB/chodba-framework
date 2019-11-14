@@ -20,9 +20,6 @@ import sdl2
 
 import base_app
 import app_utils
-from app_utils import process_args
-
-NICKNAME, APPROBATION, USER_TOPIC = process_args(sys.argv)
 
 CONTROL_LAYOUT = [
         app_utils.ControlElement("dolava", 0, 1, 2, 2, "<-", "button"),
@@ -265,5 +262,6 @@ class DemoHra2Dp(base_app.BaseApp):
 
 if __name__ == '__main__':
     app = DemoHra2Dp()
+    app.process_args(sys.argv)
     app.start()
 

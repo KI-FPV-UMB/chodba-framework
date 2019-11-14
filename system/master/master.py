@@ -15,7 +15,6 @@ import time
 import threading
 import base_app
 import app_utils
-from app_utils import process_args
 
 
 # ak user nespravi ziadnu akciu viac ako USER_TIMEOUT sekund, tak je tato appka vypnuta a nahradena inou
@@ -24,9 +23,6 @@ USER_TIMEOUT = 45
 # ako casto sa kontroluju (pinguju) aplikacie. aplikacie, ktorych timestamp je starsi ako TIMESTAMP_CHECK su poziadane o status
 # aplikacie, ktorych timestamp je starsi ako 3*TIMESTAMP_CHECK su vyhodene zo zoznamu (predpoklada sa, ze ich proces uz nebezi)
 TIMESTAMP_CHECK = 60
-
-
-NICKNAME, APPROBATION, USER_TOPIC = process_args(sys.argv)
 
 SYSTEM_APPS_PATH = "../../system/"
 BACKEND_APPS_PATH = "../../backend-apps/"

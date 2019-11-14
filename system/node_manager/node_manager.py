@@ -9,16 +9,44 @@ __email__ = "michal.vagac@gmail.com"
 import sys
 import paho.mqtt.client as mqtt
 import json
+import os
+import subprocess
+import random
 import base_app
-from app_utils import process_args
-from app_utils import run_app
 
-NICKNAME, APPROBATION, USER_TOPIC = process_args(sys.argv)
 
 BACKEND_APPS_PATH = "../../backend-apps/"
 FRONTEND_APPS_PATH = "../../frontend-apps/"
 
 class NodeManager(base_app.BaseApp):
+
+    def run_app(self, path, name, arg1=None, arg2=None, arg3=None):
+        p = os.path.join(path, name)
+        # test pre python app
+        f = os.path.join(p, name) + ".py"
+        if os.path.isfile(f):
+            if arg1 is None:
+                # ak je bez parametrov, spusti na pozadi
+                subprocess.Popen(["/usr/bin/python3", name + ".py"], cwd=p)
+                return None
+            elif arg1 is not None and arg2 is None:
+                # ak je 1 parameter, spusti na pozadi
+                subprocess.Popen(["/usr/bin/python3", name + ".py", arg1], cwd=p)
+                return None
+                # ak je prave 1 parameter, spusti a vrat vystup
+                #result = subprocess.run([f, arg1], stdout=subprocess.PIPE)
+                #return result.stdout.decode("utf-8").strip("\n")
+            elif arg1 is not None and arg2 is not None and arg3 is None:
+                # ak su 2 parametre, spusti na pozadi
+                subprocess.Popen(["/usr/bin/python3", name + ".py", arg1, arg2], cwd=p)
+                return None
+            else:
+                # ak su 3 parametre, spusti na pozadi
+                subprocess.Popen(["/usr/bin/python3", name + ".py", arg1, arg2, arg3], cwd=p)
+                return None
+        # test pre java app
+        #TODO
+        raise Exception("aplikacia nebola najdena alebo neznamy typ aplikacie!")
 
     def on_node_message(self, client, userdata, message):
         msg = json.loads(message.payload.decode())
@@ -31,12 +59,12 @@ class NodeManager(base_app.BaseApp):
             # spusti danu app
             try:
                 if msg["type"] == "backend":
-                    run_app(BACKEND_APPS_PATH, msg["run"])
+                    self.run_app(BACKEND_APPS_PATH, msg["run"])
                 if msg["type"] == "frontend":
                     src = msg["src"] if "src" in msg else None
                     nick = msg["nickname"] if "nickname" in msg else None
                     approb = msg["approbation"] if "approbation" in msg else None
-                    run_app(FRONTEND_APPS_PATH, msg["run"], nick, approb, src)
+                    self.run_app(FRONTEND_APPS_PATH, msg["run"], src, nick, approb)
             except Exception as e:
                 print("[" + self.name + "] chyba pri spustani " + msg["run"] + ": " + str(e))
                 log = { "name": self.name, "node": self.node, "log": "chyba pri spustani " + msg["run"] + ": " + str(e) }
