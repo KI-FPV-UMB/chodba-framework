@@ -24,14 +24,18 @@ class BaseApp:
 
     def __init__(self):
         # inicializuj id a node
-        self.app_id = hex(random.getrandbits(128))[2:-1]
+        self.id = hex(random.getrandbits(128))[2:-1]
         self.node = socket.gethostname()
         # nacitaj config a premen ho na atributy
         with open("config.json", "r") as read_file:
             config = json.load(read_file)
             for k in config.keys():
                 setattr(self, k, config[k])
+        # zaloguj start
         print("[" + self.name + "] spustam na uzle " + self.node)
+        print("[" + self.name + "]   id = " + self.id)
+        for k in config.keys():
+            print("[" + self.name + "]   " + k + " = " + str(config[k]))
 
     def process_args(self, args):
         self.user_topic = None
@@ -49,7 +53,7 @@ class BaseApp:
 
     def publish_lifecycle_message(self, status):
         state = dict()
-        attrs = [ "app_id", "name", "type", "node", "runon", "enabled" ]
+        attrs = [ "id", "name", "type", "node", "runon", "enabled" ]
         for attr in attrs:
             if getattr(self, attr, None) is not None:
                 state[attr] = getattr(self, attr)
@@ -85,7 +89,7 @@ class BaseApp:
         if msg["msg"] == "quit":
             self.stop()
         elif msg["msg"] == "info":
-            info = { "name": self.name, "id": self.app_id }
+            info = { "name": self.name, "id": self.id }
             self.publish_message("info", info, "master" )
         elif msg["msg"] == "status":
             self.publish_lifecycle_message("running")
@@ -95,9 +99,9 @@ class BaseApp:
     def start(self):
         # priprava klienta
         if WEBSOCKETS:
-            self.client = mqtt.Client(self.node + "_" + self.name + "_" + self.app_id, transport="websockets")
+            self.client = mqtt.Client(self.node + "_" + self.name + "_" + self.id, transport="websockets")
         else:
-            self.client = mqtt.Client(self.node + "_" + self.name + "_" + self.app_id)
+            self.client = mqtt.Client(self.node + "_" + self.name + "_" + self.id)
 
         # pripojenie k brokeru
         self.client.connect(BROKER_URL, BROKER_PORT)

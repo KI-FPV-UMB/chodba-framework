@@ -1,6 +1,6 @@
 {
-	"enabled": true,
-	"name": "master",
+	"enabled": false,
+	"name": "scripts",
 	"type": "system",
 	"runon": "chodba-ki01"
 }

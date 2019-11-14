@@ -62,15 +62,18 @@ class Master(base_app.BaseApp):
 
     def __init__(self):
         super(Master, self).__init__()
-        self.apps = []
+        self.running_apps = []
         self.quitting = False
 
     def read_config(self, path):
+        if not os.path.isfile(os.path.join(path, "config.json")):
+            print("[" + self.name + "] v adresari " + path + " nebol najdeny konfiguracny subor")
+            return
         with open(os.path.join(path, "config.json"), "r") as read_file:
             return json.load(read_file)
 
     def is_running(self, name, node=None):
-        for app in self.apps:
+        for app in self.running_apps:
             if app.name == name and (node == None or node == app.node):
                 return True
         return False
@@ -80,6 +83,7 @@ class Master(base_app.BaseApp):
         for entry in os.listdir(path):
             if os.path.isdir(os.path.join(path, entry)):
                 app = App()
+                # napln atributy podla konfiguracie
                 app_config = self.read_config(os.path.join(path, entry))
                 for k in app_config.keys():
                     setattr(app, k, app_config[k])
@@ -118,47 +122,46 @@ class Master(base_app.BaseApp):
         t.start()
 
     def run_backends(self):
-        apps_list = self.list_offline_apps(BACKEND_APPS_PATH, True)
+        apps_list = self.list_offline_apps(BACKEND_APPS_PATH, False)
         for app in apps_list:
             try:
-                runon = self.read_config(os.path.join(BACKEND_APPS_PATH, app["name"]))["runon"]
-                if runon == "*":
+                if app.runon == "*":
                     # iteruj cez vsetky node_manager-i
-                    for nmapp in self.apps:
+                    for nmapp in self.running_apps:
                         if nmapp.name == "node_manager":
                             # zisti, ci uz na tom uzle bezi
-                            if not self.is_running(app["name"], nmapp.node):
+                            if not self.is_running(app.name, nmapp.node):
                                 # este tam nebezi - spusti
-                                print("[" + self.name + "] spustam " + app["name"] + " na " + nmapp.node)
-                                msg2pub = { "type":"backend", "run": app["name"] }
+                                print("[" + self.name + "] spustam " + app.name + " na " + nmapp.node)
+                                msg2pub = { "type":"backend", "run": app.name }
                                 self.publish_message("run", msg2pub, "node/" + nmapp.node )
                             else:
                                 # uz tam bezi!
-                                print("[" + self.name + "] app " + app["name"] + " je uz na " + nmapp.node + " spustena!")
-                elif runon == "?":
+                                print("[" + self.name + "] app " + app.name + " je uz na " + nmapp.node + " spustena!")
+                elif app.runon == "?":
                     # spusti na nahodnom (ak este nikde nebezi)
                     nodes = []
-                    for nmapp in self.apps:
-                        if nmapp.name == app["name"]:
-                            print("[" + self.name + "] app " + app["name"] + " je uz spustena na " + nmapp.node + "!")
+                    for nmapp in self.running_apps:
+                        if nmapp.name == app.name:
+                            print("[" + self.name + "] app " + app.name + " je uz spustena na " + nmapp.node + "!")
                             return
                         if nmapp.name == "node_manager":
                             nodes.append(nmapp.node)
                     # este nebezi, vyber nahodny uzol a spusti
                     node = nodes[random.randint(0, len(nodes)-1)]
-                    print("[" + self.name + "] spustam " + app["name"] + " na " + node)
-                    msg2pub = { "type":"backend", "run": app["name"] }
+                    print("[" + self.name + "] spustam " + app.name + " na " + node)
+                    msg2pub = { "type":"backend", "run": app.name }
                     self.publish_message("run", msg2pub, "node/" + node )
                 else:
                     # spusti na specifikovanom (ak tam este nebezi)
-                    if not self.is_running(app["name"], runon):
+                    if not self.is_running(app.name, app.runon):
                         # este tam nebezi - spusti
-                        print("[" + self.name + "] spustam " + app["name"] + " na " + runon)
-                        msg2pub = { "type":"backend", "run": app["name"] }
-                        self.publish_message("run", msg2pub, "node/" + runon )
+                        print("[" + self.name + "] spustam " + app.name + " na " + app.runon)
+                        msg2pub = { "type":"backend", "run": app.name }
+                        self.publish_message("run", msg2pub, "node/" + app.runon )
                     else:
                         # uz tam bezi!
-                        print("[" + self.name + "] app " + app["name"] + " je uz na " + runon + " spustena!")
+                        print("[" + self.name + "] app " + app.name + " je uz na " + app.runon + " spustena!")
             except Exception as e:
                 print("[" + self.name + "] chyba pri spustani " + app.name + ": " + str(e))
 
@@ -178,14 +181,15 @@ class Master(base_app.BaseApp):
             # spravuj zivotny cyklus aplikacie
             # podla id zisti, ci uz danu aplikaciu evidujeme
             app = None
-            for a in self.apps:
-                if a.id == msg["app_id"]:
+            for a in self.running_apps:
+                if a.id == msg["id"]:
                     app = a
                     break
             # zaznamenaj stav aplikacie
             if app is None:
+                # aplikaciu este neevidujeme (pravdepodobne sa prave spusta)
                 app = App()
-                app.id = msg["app_id"]
+                app.id = msg["id"]
                 app.replaced = False
             for k in msg.keys():
                 setattr(app, k, msg[k])
@@ -194,10 +198,10 @@ class Master(base_app.BaseApp):
             # ak je to frontend app tak zisti, ci na danom uzle uz nejaka frontend app nebezi
             if app.status == "starting" and app.type == "frontend":
                 is_replacing = False
-                for a in self.apps:
+                for a in self.running_apps:
                     if a.node == app.node and a.type == "frontend":
                         # na uzle uz bezi nejaka frontend app-ka - vypni ju
-                        a.replaced = True
+                        a.replaced = True               # oznac ze je replaced, aby jej vypnutie nesposobilo nasledne spustenie niecoho ineho
                         self.publish_message("quit", {}, "node/" + a.node + "/" + a.name)
                         is_replacing = True
                 if is_replacing and (app.nickname is None or app.approbation is None):
@@ -207,8 +211,8 @@ class Master(base_app.BaseApp):
                     t.start()
 
             # pridaj appku do zoznamu (ak este nie je)
-            if app not in self.apps:
-                self.apps.append(app)
+            if app not in self.running_apps:
+                self.running_apps.append(app)
                 # ak je to novy node_manager, tak na nom treba hned nieco spustit
                 if app.name == "node_manager":
                     t = threading.Timer(3, self.init_node_manager, [app.node])
@@ -216,11 +220,11 @@ class Master(base_app.BaseApp):
 
             # ak je stav quitting, tak vyhod aplikaciu zo zoznamu
             if app.status == "quitting":
-                self.apps.remove(app)
+                self.running_apps.remove(app)
                 # automaticky tam spusti novu nahodnu appku
                 if not self.quitting and not app.replaced:
                     self.run_random(app.node)
-            print("[" + self.name + "] apps: " + str(self.apps))
+            print("[" + self.name + "] apps: " + str(self.running_apps))
 
         elif msg["msg"] == "log":
             # loguj spravu aplikacie
@@ -251,7 +255,7 @@ class Master(base_app.BaseApp):
                 if not "type" in msg or msg["type"] == "frontend":
                     apps_list += self.list_offline_apps(FRONTEND_APPS_PATH, True)
             elif msg["filter"] == "running":
-                for app in self.apps:
+                for app in self.running_apps:
                     if not "type" in msg or msg["type"] == app.type:
                         apps_list.append(app.__dict__)      # aby bol objekt serializovatelny do json
             resp = { "applications": apps_list }
@@ -263,7 +267,7 @@ class Master(base_app.BaseApp):
                 print("[" + self.name + "] neznamy odosielatel!")
                 return
             wrkspcs_list = []
-            for app in self.apps:
+            for app in self.running_apps:
                 if app.name == "node_manager":
                     if app.node in WORKSPACES_LAYOUT.keys():
                         WORKSPACES_LAYOUT[app.node].active = True
@@ -291,19 +295,20 @@ class Master(base_app.BaseApp):
         while True:
             time.sleep(5)
             # prejdi aplikacie a pri user aplikaciach kontroluj cas poslednej aktivity
-            for app in self.apps:
+            for app in self.running_apps:
                 if getattr(app, "nickname", None) is not None and getattr(app, "approbation", None) is not None:
+                    # user aplikacia, skontroluj cas poslednej aktivity
                     if time.time() - app.timestamp > USER_TIMEOUT:
                         print("[" + self.name + "] timeout user app " + app.name)
                         self.stop_app(app)
             # v ovela dlhsom intervale pingni vsetky aplikacie, ktore sa davno neozvali (neupdatli lifecycle)
             if time.time() - last_timestamp_check > TIMESTAMP_CHECK:
                 last_timestamp_check = time.time()
-                for app in self.apps:
+                for app in self.running_apps:
                     if last_timestamp_check - app.timestamp > 3*TIMESTAMP_CHECK and app.status == "refreshing":
                         # prilis dlho sa neozvali, asi uz nebezia. odstran ich zo zoznamu
                         print("[" + self.name + "] odstranovanie neodpovedajucej app " + app.name)
-                        self.apps.remove(app)
+                        self.running_apps.remove(app)
                     elif last_timestamp_check - app.timestamp > TIMESTAMP_CHECK:
                         # daj im este sancu - posli poziadavku na refresh
                         print("[" + self.name + "] refresh stavu " + app.name + " na " + app.node)
@@ -325,7 +330,7 @@ class Master(base_app.BaseApp):
     def stop(self):
         self.quitting = True
         # vsetkym rozposli spravu aby koncili..
-        for app in self.apps:
+        for app in self.running_apps:
             if app.name == self.name:
                 continue
             print("[" + self.name + "] vypinam app/" + app.name)
