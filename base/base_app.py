@@ -39,7 +39,7 @@ class BaseApp:
         self.approbation = None
 
         if len(args) > 1:
-            user_topic = args[1]
+            self.user_topic = args[1]
 
         if len(args) > 2:
             self.nickname = args[2]
