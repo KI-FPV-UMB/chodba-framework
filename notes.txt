@@ -3,7 +3,6 @@ TODO:
 	-konfiguracny subor kde by boli tie staticke veci (demo_time, enabled a pod.)
 		app_type nastavovat rovno podla adresara; z konfiguracie brat clenenie pre pouzivatelov (labels?)
 		pri deme by mal vyberat len tie, co maju label demo
-		nickname, approbation
 	-do galerie dorobit prehravanie videa; dohrat tam videa
 	-kazda n-t appka by malo byt logo ki
 	-opravit zobrazovanie teploty
