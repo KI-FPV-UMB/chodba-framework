@@ -1,0 +1,7 @@
+{
+	"enabled": false,
+	"name": "teplota_vlhkost",
+	"type": "backend",
+	"runon2": "chodba-ki01",
+	"runon": "mvagac-X230"
+}

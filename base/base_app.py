@@ -8,6 +8,7 @@ import sys
 import socket
 import paho.mqtt.client as mqtt
 import json
+import random
 import datetime
 
 WEBSOCKETS = False
@@ -21,56 +22,35 @@ else:
 
 class BaseApp:
 
-    def get_app_name(self):
-        # musi vratit nazov aplikacie
-        raise NotImplementedError()
-
-    def get_app_type(self):
-        # musi vratit typ aplikacie (system/backend/frontend)
-        raise NotImplementedError()
-
-    def get_app_id(self):
-        # musi vratit unikatny identifikator aplikacie
-        raise NotImplementedError()
-
-    def get_node_name(self):
-        # musi vratit hostname, kde je spusteny
-        raise NotImplementedError()
-
-    def get_demo_time(self):
-        # musi vratit cas, kolko bude bezat ako demo
-        return 0
-
-    def get_nickname(self):
-        # musi vratit nickname, pod ktorym bol spusteny
-        raise NotImplementedError()
-
-    def get_approbation(self):
-        # musi vratit aprobaciu, pod ktorou bol spusteny
-        raise NotImplementedError()
-
-    def info_pub(self):
-        # musi vratit retazec s informaciami o topicoch, do ktorych posiela spravy
-        raise NotImplementedError()
-
-    def info_sub(self):
-        # musi vratit retazec s informaciami o topicoch, na ktore sa prihlasuje
-        raise NotImplementedError()
+    def __init__(self):
+        # inicializuj id a node
+        self.app_id = hex(random.getrandbits(128))[2:-1]
+        self.node = socket.gethostname()
+        # nacitaj config a premen ho na atributy
+        with open("config.json", "r") as read_file:
+            config = json.load(read_file)
+            for k in config.keys():
+                setattr(self, k, config[k])
+        print("[" + self.name + "] spustam na uzle " + self.node)
 
     def publish_lifecycle_message(self, status):
-        status = { "name": self.get_app_name(), "type": self.get_app_type(), "id": self.get_app_id(), "node": self.get_node_name(), "demo_time": self.get_demo_time(), "status": status }
-        if self.get_nickname() is not None:
-            status["nickname"] = self.get_nickname()
-        if self.get_approbation() is not None:
-            status["approbation"] = self.get_approbation()
-        self.publish_message("lifecycle", status, "master" )
+        state = dict()
+        attrs = [ "app_id", "name", "type", "node", "runon", "enabled" ]
+        for attr in attrs:
+            if getattr(self, attr, None) is not None:
+                state[attr] = getattr(self, attr)
+        #state = self.__dict__.copy()
+        #del state["client"]
+        status = { "status": status }
+        msg = { **state, **status }
+        self.publish_message("lifecycle", msg, "master" )
 
     def get_src(self):
-        return "node/" + self.get_node_name() + "/" + self.get_app_name()
+        return "node/" + self.node + "/" + self.name
 
     def publish_message(self, msg_head, msg_body, topic):
         st = datetime.datetime.now().strftime('%Y%m%d%H%M%S%f')
-        head = { "msg": msg_head, "timestamp": st, "src": self.get_src(), "app_name": self.get_app_name() }
+        head = { "msg": msg_head, "timestamp": st, "src": self.get_src(), "name": self.name }
         if msg_body is not None:
             msg = { **head, **msg_body }
         else:
@@ -91,7 +71,7 @@ class BaseApp:
         if msg["msg"] == "quit":
             self.stop()
         elif msg["msg"] == "info":
-            info = { "name": self.get_app_name(), "type": self.get_app_type(), "id": self.get_app_id(), "pub": self.info_pub(), "sub": self.info_sub() }
+            info = { "name": self.name, "id": self.app_id }
             self.publish_message("info", info, "master" )
         elif msg["msg"] == "status":
             self.publish_lifecycle_message("running")
@@ -101,9 +81,9 @@ class BaseApp:
     def start(self):
         # priprava klienta
         if WEBSOCKETS:
-            self.client = mqtt.Client(self.get_node_name() + "_" + self.get_app_name() + "_" + self.get_app_id(), transport="websockets")
+            self.client = mqtt.Client(self.node + "_" + self.name + "_" + self.app_id, transport="websockets")
         else:
-            self.client = mqtt.Client(self.get_node_name() + "_" + self.get_app_name() + "_" + self.get_app_id())
+            self.client = mqtt.Client(self.node + "_" + self.name + "_" + self.app_id)
 
         # pripojenie k brokeru
         self.client.connect(BROKER_URL, BROKER_PORT)
@@ -112,10 +92,10 @@ class BaseApp:
         self.publish_lifecycle_message("starting")
 
         # spracovanie systemovych sprav
-        self.client.message_callback_add("app/" + self.get_app_name(), self.on_app_message)
-        self.client.subscribe("app/" + self.get_app_name())
-        self.client.message_callback_add("node/" + self.get_node_name() + "/" + self.get_app_name(), self.on_app_message)
-        self.client.subscribe("node/" + self.get_node_name() + "/" + self.get_app_name())
+        self.client.message_callback_add("app/" + self.name, self.on_app_message)
+        self.client.subscribe("app/" + self.name)
+        self.client.message_callback_add("node/" + self.node + "/" + self.name, self.on_app_message)
+        self.client.subscribe("node/" + self.node + "/" + self.name)
 
         # posli spravu o uspesnom nastartovani
         self.publish_lifecycle_message("running")
@@ -125,7 +105,7 @@ class BaseApp:
             self.run()
         except Exception as e:
             # zaloguj chybu
-            print("[" + self.get_app_name() + "] chyba pri vykonavani aplikacie: " + repr(e))
+            print("[" + self.name + "] chyba pri vykonavani aplikacie: " + repr(e))
             log = { "log": "chyba pri vykonavani aplikacie: " + repr(e) }
             self.publish_message("log", log, "master" )
             # skonci
@@ -136,7 +116,7 @@ class BaseApp:
 
     def stop(self):
         # posli spravu o ukoncovani
-        print("[" + self.get_app_name() + "] koncim na uzle " + self.get_node_name())
+        print("[" + self.name + "] koncim na uzle " + self.node)
         self.publish_lifecycle_message("quitting")
         self.client.disconnect()
 

@@ -1,0 +1,7 @@
+{
+	"enabled": true,
+	"name": "skel_tkinter",
+	"type": "frontend",
+	"labels": "app,demo",
+	"demo_time": 15
+}

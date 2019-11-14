@@ -13,44 +13,17 @@ import base_app
 from app_utils import process_args
 from app_utils import run_app
 
-APP_NAME = "node_manager"
-APP_TYPE = "system"
-
-APP_ID, NODE_NAME, NICKNAME, APPROBATION, USER_TOPIC = process_args(sys.argv, True, APP_NAME, APP_TYPE, "*")
+NICKNAME, APPROBATION, USER_TOPIC = process_args(sys.argv)
 
 BACKEND_APPS_PATH = "../../backend-apps/"
 FRONTEND_APPS_PATH = "../../frontend-apps/"
 
 class NodeManager(base_app.BaseApp):
 
-    def get_app_name(self):
-        return APP_NAME
-
-    def get_app_type(self):
-        return APP_TYPE
-
-    def get_app_id(self):
-        return APP_ID
-
-    def get_node_name(self):
-        return NODE_NAME
-
-    def get_nickname(self):
-        return NICKNAME
-
-    def get_approbation(self):
-        return APPROBATION
-
-    def info_pub(self):
-        return ""
-
-    def info_sub(self):
-        return "node/" + NODE_NAME
-
     def on_node_message(self, client, userdata, message):
         msg = json.loads(message.payload.decode())
         if not "msg" in msg:
-            log = { "name": APP_NAME, "node": NODE_NAME, "log": "neznamy typ spravy: " + str(msg) }
+            log = { "name": self.name, "node": self.node, "log": "neznamy typ spravy: " + str(msg) }
             self.publish_message("log", log, "master" )
             return
 
@@ -58,20 +31,20 @@ class NodeManager(base_app.BaseApp):
             # spusti danu app
             try:
                 if msg["type"] == "backend":
-                    run_app(BACKEND_APPS_PATH, msg["name"])
+                    run_app(BACKEND_APPS_PATH, msg["run"])
                 if msg["type"] == "frontend":
                     src = msg["src"] if "src" in msg else None
                     nick = msg["nickname"] if "nickname" in msg else None
                     approb = msg["approbation"] if "approbation" in msg else None
-                    run_app(FRONTEND_APPS_PATH, msg["name"], nick, approb, src)
+                    run_app(FRONTEND_APPS_PATH, msg["run"], nick, approb, src)
             except Exception as e:
-                print("[" + APP_NAME + "] chyba pri spustani " + msg["name"] + ": " + str(e))
-                log = { "name": APP_NAME, "node": NODE_NAME, "log": "chyba pri spustani " + msg["name"] + ": " + str(e) }
+                print("[" + self.name + "] chyba pri spustani " + msg["run"] + ": " + str(e))
+                log = { "name": self.name, "node": self.node, "log": "chyba pri spustani " + msg["run"] + ": " + str(e) }
                 self.publish_message("log", log, "master" )
 
     def run(self):
-        self.client.message_callback_add("node/" + NODE_NAME, self.on_node_message)
-        self.client.subscribe("node/" + NODE_NAME)
+        self.client.message_callback_add("node/" + self.node, self.on_node_message)
+        self.client.subscribe("node/" + self.node)
         # spracovavaj mqtt spravy
         self.client.loop_forever()
 

@@ -1,0 +1,7 @@
+{
+	"enabled": false,
+	"name": "teplomer",
+	"type": "frontend",
+	"labels": "app,demo",
+	"demo_time": 15
+}

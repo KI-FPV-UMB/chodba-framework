@@ -32,41 +32,9 @@ FONT_OUTLINE = 3
 FS_ENCODING = "utf-8"
 DELAY_S = 1.5
 
-ENABLED = True
-APP_NAME = "galeria"
-APP_TYPE = "frontend"
-DEMO_TIME = 15
-
-APP_ID, NODE_NAME, NICKNAME, APPROBATION, USER_TOPIC = process_args(sys.argv, ENABLED, APP_NAME, APP_TYPE, DEMO_TIME)
+NICKNAME, APPROBATION, USER_TOPIC = process_args(sys.argv)
 
 class Galeria(base_app.BaseApp):
-
-    def get_app_name(self):
-        return APP_NAME
-
-    def get_app_type(self):
-        return APP_TYPE
-
-    def get_app_id(self):
-        return APP_ID
-
-    def get_node_name(self):
-        return NODE_NAME
-
-    def get_demo_time(self):
-        return DEMO_TIME
-
-    def get_nickname(self):
-        return NICKNAME
-
-    def get_approbation(self):
-        return APPROBATION
-
-    def info_pub(self):
-        return ""
-
-    def info_sub(self):
-        return ""
 
     def dalsi_obrazok(self):
         # nacitaj obrazok
@@ -79,7 +47,7 @@ class Galeria(base_app.BaseApp):
         else:
             # nahodny
             n = random.randint(0, len(self.files)-1)
-        print("[" + self.get_app_name() + "]   kreslim ", n, self.files[n])
+        print("[" + self.name + "]   kreslim ", n, self.files[n])
         self.obrazok = sdl2.sdlimage.IMG_Load(str.encode(self.files[n]))
 
     def kresli_obrazok(self):
@@ -132,7 +100,7 @@ class Galeria(base_app.BaseApp):
             self.publish_message("log", log, "master" )
             return
         d = subdirs[random.randint(1, len(subdirs)-1)]
-        print("[" + self.get_app_name() + "] vyberam ", d)
+        print("[" + self.name + "] vyberam ", d)
         self.folder = d[2:]
         self.files = [os.path.join(d, f) for f in os.listdir(d) if os.path.isfile(os.path.join(d, f))]
         self.sorted = os.path.isfile(os.path.join(d, SORTED_FILE))

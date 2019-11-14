@@ -13,46 +13,15 @@ import json
 import base_app
 from app_utils import process_args
 import time
-
-ENABLED = True
-APP_NAME = "teplota_vlhkost"
-APP_TYPE = "backend"
-DEMO_TIME = 0
-RUNON = "chodba-ki01"    #"mvagac-X230"
-
-APP_ID, NODE_NAME, NICKNAME, APPROBATION, USER_TOPIC = process_args(sys.argv, ENABLED, APP_NAME, APP_TYPE, DEMO_TIME, RUNON)
-
 import Adafruit_DHT
+
+NICKNAME, APPROBATION, USER_TOPIC = process_args(sys.argv)
 
 MEASUREMENT_PAUSE = 15            # v sekundach
 DHT_SENSOR = Adafruit_DHT.DHT22
 DHT_PIN = 4
 
 class TeplotaVlhkost(base_app.BaseApp):
-
-    def get_app_name(self):
-        return APP_NAME
-
-    def get_app_type(self):
-        return APP_TYPE
-
-    def get_app_id(self):
-        return APP_ID
-
-    def get_node_name(self):
-        return NODE_NAME
-
-    def get_nickname(self):
-        return NICKNAME
-
-    def get_approbation(self):
-        return APPROBATION
-
-    def info_pub(self):
-        return ""
-
-    def info_sub(self):
-        return ""
 
     def on_msg(self, msg):
         None

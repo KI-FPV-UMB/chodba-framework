@@ -8,32 +8,11 @@ import os
 import sys
 import subprocess
 import socket
+import json
 import random
 
-def process_args(args, enabled, app_name, app_type, demo_time, runon = None):
-    # na poziadnie ci je vobec povolena
-    if len(args) == 2 and args[1]=="enabled":
-        print(enabled)
-        sys.exit(1)
 
-    # na poziadnie oznam typ
-    if len(args) == 2 and args[1]=="type":
-        print(app_type)
-        sys.exit(1)
-
-    # na poziadanie oznam ponukanu dobu trvania dema (ak sa spusti automaticky ako demo, kolko casu jej nehat)
-    if len(args) == 2 and args[1]=="demotime":
-        print(demo_time)
-        sys.exit(1)
-
-    # na poziadnie oznam, kde sa ma spustit: * na vsetkych, ? na lubovolnom, <nazov> na konkretnom
-    if len(args) == 2 and args[1]=="runon" and runon is not None:
-        print(runon)
-        sys.exit(1)
-
-    app_id = hex(random.getrandbits(128))[2:-1]
-    node_name = socket.gethostname()
-
+def process_args(args):
     nickname = None
     approbation = None
     user_topic = None
@@ -45,9 +24,7 @@ def process_args(args, enabled, app_name, app_type, demo_time, runon = None):
     if len(args) > 3:
         user_topic = args[3]
 
-    print("[" + app_name + "] spustam na uzle " + node_name)
-
-    return app_id, node_name, nickname, approbation, user_topic
+    return nickname, approbation, user_topic
 
 
 def run_app(path, name, arg1=None, arg2=None, arg3=None):

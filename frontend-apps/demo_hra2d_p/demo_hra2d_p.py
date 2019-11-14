@@ -22,12 +22,7 @@ import base_app
 import app_utils
 from app_utils import process_args
 
-ENABLED = False
-APP_NAME = "demo_hra2d_p"
-APP_TYPE = "frontend"
-DEMO_TIME = 5
-
-APP_ID, NODE_NAME, NICKNAME, APPROBATION, USER_TOPIC = process_args(sys.argv, ENABLED, APP_NAME, APP_TYPE, DEMO_TIME)
+NICKNAME, APPROBATION, USER_TOPIC = process_args(sys.argv)
 
 CONTROL_LAYOUT = [
         app_utils.ControlElement("dolava", 0, 1, 2, 2, "<-", "button"),
@@ -165,33 +160,6 @@ class Bludisko:
 
 
 class DemoHra2Dp(base_app.BaseApp):
-
-    def get_app_name(self):
-        return APP_NAME
-
-    def get_app_type(self):
-        return APP_TYPE
-
-    def get_app_id(self):
-        return APP_ID
-
-    def get_node_name(self):
-        return NODE_NAME
-
-    def get_demo_time(self):
-        return DEMO_TIME
-
-    def get_nickname(self):
-        return NICKNAME
-
-    def get_approbation(self):
-        return APPROBATION
-
-    def info_pub(self):
-        return ""
-
-    def info_sub(self):
-        return ""
 
     def on_msg(self, msg):
         if msg["msg"] == "control_action":
