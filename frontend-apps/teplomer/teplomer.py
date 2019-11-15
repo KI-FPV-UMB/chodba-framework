@@ -95,6 +95,7 @@ class Teplomer(base_app.BaseApp):
         #mng.window.state('zoomed')
         mng.resize(*mng.window.maxsize())
         plt.show(block=False)
+        plt.savefig('/temp/teplota.png')
         # cakaj
         self.running = True
         while self.running:
