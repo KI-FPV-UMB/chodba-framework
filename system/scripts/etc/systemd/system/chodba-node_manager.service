@@ -8,7 +8,6 @@ Type=simple
 Restart=always
 RestartSec=1
 Environment="DISPLAY=:0.0" "PYTHONPATH=/opt/chodba-framework/base"
-ExecStartPre=xset s off
 ExecStartPre=xset -display :0.0 -dpms
 ExecStartPre=xset -display :0.0 s off
 ExecStartPre=xset -display :0.0 s noblank
