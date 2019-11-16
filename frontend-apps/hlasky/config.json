@@ -1,0 +1,7 @@
+{
+	"enabled": true,
+	"name": "hlasky",
+	"type": "frontend",
+	"labels": ["fun", "demo"],
+	"demo_time": 15
+}
