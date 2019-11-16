@@ -14,7 +14,6 @@ import base_app
 import time
 import Adafruit_DHT
 
-MEASUREMENT_PAUSE = 15            # v sekundach
 DHT_SENSOR = Adafruit_DHT.DHT22
 DHT_PIN = 4
 
@@ -35,7 +34,7 @@ class TeplotaVlhkost(base_app.BaseApp):
             msg = { "humidity": humidity, "temperature": temperature }
             self.publish_message("insert", msg, "database")
             # cakaj
-            time.sleep(MEASUREMENT_PAUSE)
+            time.sleep(self.measurement_pause_s)
 
     def stop(self):
         # zastav spracovanie mqtt

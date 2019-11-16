@@ -3,5 +3,6 @@
 	"name": "teplota_vlhkost",
 	"type": "backend",
 	"runon": "chodba-ki01",
-	"runon2": "mvagac-X230"
+	"runon2": "mvagac-X230",
+	"measurement_pause_s": 15
 }
