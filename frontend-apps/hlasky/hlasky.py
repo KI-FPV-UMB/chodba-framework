@@ -21,10 +21,15 @@ class Hlasky(base_app.BaseApp):
         # spusti spracovanie mqtt
         self.client.loop_start()
 
+        # vyber nahodnu farbu pozadia
+        colors = ["red", "orange", "yellow", "green", "blue", "indigo", "violet"]
+        bgcol = random.choice(colors)
+
         # zobraz okno
         self.top = tkinter.Tk()
         self.top.wm_attributes("-type", "splash")       # bez dekoracii
         self.top.wm_attributes("-fullscreen","true")
+        self.top.configure(background=bgcol)
 #        self.top.geometry("{0}x{1}+0+0".format(self.top.winfo_screenwidth()-3, self.top.winfo_screenheight()-3))    # na celu obrazovku
 #        self.top.resizable(False, False)
 #        self.top.update_idletasks()
@@ -41,8 +46,8 @@ class Hlasky(base_app.BaseApp):
         n = random.randint(0, len(hlasky)-1)
 
         # napln okno obsahom
-        msg = tkinter.Message(self.top, text=hlasky[n])
-        msg.config(font=('times', 70, 'italic'))    # bg="lightgreen"
+        msg = tkinter.Message(self.top, text=random.choice(hlasky))
+        msg.config(font=('times', 70, 'italic'), bg=bgcol)
         msg.pack(expand=True)                       # aby to bolo vertikalne v strede
 
         # pracuj

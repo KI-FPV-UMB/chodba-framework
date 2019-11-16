@@ -1,3 +1,4 @@
+#TODO https://www.improgrammer.net/interesting-facts-c-language/
 # rozne: https://sk.pinterest.com/pin/361484307561300402/
 It's not a bug. It's a feature
 There are 10 types of people in the world: those who understand binary, and those who don't.

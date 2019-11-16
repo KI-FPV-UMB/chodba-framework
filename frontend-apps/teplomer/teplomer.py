@@ -32,12 +32,6 @@ import sdl2.sdlttf          # libsdl2-ttf-2.0-0
 
 class Teplomer(base_app.BaseApp):
 
-    def info_pub(self):
-        return ""
-
-    def info_sub(self):
-        return ""
-
     def on_msg(self, msg):
         self.status = "kreslim graf"
         resp = msg["resp"]
@@ -160,7 +154,7 @@ class Teplomer(base_app.BaseApp):
     def stop(self):
         # zastav spracovanie mqtt
         super().stop()
-        # zrus graf
+        # skonci
         self.running = False
 
 if __name__ == '__main__':

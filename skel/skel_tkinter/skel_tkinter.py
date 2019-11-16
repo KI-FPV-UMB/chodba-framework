@@ -30,7 +30,7 @@ class SkelTkinter(base_app.BaseApp):
         # napln okno obsahom
         def tlacidloAkcia():
             tkinter.messagebox.showinfo( "chodba...", "Hello World")
-        tlacidlo = tkinter.Button(self.top, text ="Ahoj", command = tlacidloAkcia)
+        tlacidlo = tkinter.Button(self.top, text="Ahoj", command=tlacidloAkcia)
         tlacidlo.pack()
         # pracuj
         self.top.mainloop()
@@ -39,7 +39,8 @@ class SkelTkinter(base_app.BaseApp):
         # zastav spracovanie mqtt
         super().stop()
         # zrus okno
-        self.top.destroy()
+        self.top.quit()
+        #self.top.destroy()
 
 if __name__ == '__main__':
     app = SkelTkinter()

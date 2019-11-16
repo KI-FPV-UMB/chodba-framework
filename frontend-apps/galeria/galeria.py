@@ -96,7 +96,7 @@ class Galeria(base_app.BaseApp):
             log = { "log": "galeria neobsahuje ziadne podadresare s obrazkami!" }
             self.publish_message("log", log, "master" )
             return
-        d = subdirs[random.randint(1, len(subdirs)-1)]
+        d = random.choice(subdirs)
         print("[" + self.name + "] vyberam ", d)
         self.folder = d[2:]
         self.files = [os.path.join(d, f) for f in os.listdir(d) if os.path.isfile(os.path.join(d, f))]
