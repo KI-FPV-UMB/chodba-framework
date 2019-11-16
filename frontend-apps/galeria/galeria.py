@@ -121,7 +121,7 @@ class Galeria(base_app.BaseApp):
 
         # vytvor a zobraz okno (full screen)
         flags = sdl2.SDL_WINDOW_SHOWN | sdl2.SDL_WINDOW_FULLSCREEN_DESKTOP | sdl2.SDL_WINDOW_BORDERLESS
-        self.window = sdl2.SDL_CreateWindow(b"Galeria", sdl2.SDL_WINDOWPOS_CENTERED, sdl2.SDL_WINDOWPOS_CENTERED, 800, 600, flags)
+        self.window = sdl2.SDL_CreateWindow(b"Galeria", sdl2.SDL_WINDOWPOS_CENTERED, sdl2.SDL_WINDOWPOS_CENTERED, 1024, 768, flags)
 
         # zisti a zapamataj rozmery vytvoreneho okna
         w, h = ctypes.c_int(), ctypes.c_int()
