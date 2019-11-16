@@ -53,7 +53,7 @@ class BaseApp:
 
     def publish_lifecycle_message(self, status):
         state = dict()
-        attrs = [ "id", "name", "type", "node", "runon", "enabled", "user_topic", "nickname", "approbation" ]
+        attrs = [ "id", "name", "type", "node", "runon", "enabled", "labels", "user_topic", "nickname", "approbation" ]
         for attr in attrs:
             if getattr(self, attr, None) is not None:
                 state[attr] = getattr(self, attr)

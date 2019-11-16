@@ -78,17 +78,20 @@ class Master(base_app.BaseApp):
                 return True
         return False
 
-    def list_offline_apps(self, path, as_json):
+    def list_offline_apps(self, path, labels, as_json):
         ret = []
         for entry in os.listdir(path):
             if os.path.isdir(os.path.join(path, entry)):
                 app = App()
                 # napln atributy podla konfiguracie
                 app_config = self.read_config(os.path.join(path, entry))
+                has_labels = False
                 for k in app_config.keys():
                     setattr(app, k, app_config[k])
-                if app.enabled:
-                    # ak je rozpoznana, tak ju pridaj do zoznamu
+                    if k == "labels":
+                        has_labels = True
+                if app.enabled and (labels is None or (has_labels and (set(labels) & set(app.labels)))):
+                    # je povolena a odpoveda poziadavke na labels (ak daka bola)
                     if as_json:
                         ret.append(app.__dict__)       # aby bol objekt serializovatelny do json
                     else:
@@ -102,7 +105,7 @@ class Master(base_app.BaseApp):
 
     def run_random(self, node):
         # vyber nahodnu aplikaciu (z takych, co maju demo_time > 0)
-        apps_list = self.list_offline_apps(FRONTEND_APPS_PATH, False)
+        apps_list = self.list_offline_apps(FRONTEND_APPS_PATH, ["demo"], False)
         candidates = []
         for a in apps_list:
             if a.demo_time > 0:
@@ -122,7 +125,7 @@ class Master(base_app.BaseApp):
         t.start()
 
     def run_backends(self):
-        apps_list = self.list_offline_apps(BACKEND_APPS_PATH, False)
+        apps_list = self.list_offline_apps(BACKEND_APPS_PATH, None, False)
         for app in apps_list:
             try:
                 if app.runon == "*":
@@ -246,15 +249,18 @@ class Master(base_app.BaseApp):
             if not "src" in msg:
                 print("[" + self.name + "] neznamy odosielatel!")
                 return
+            # state: all|running
+            # type: system|backend|frontend
+            # labels: ...
             apps_list = []
-            if not "filter" in msg or msg["filter"] == "all":
+            if not "state" in msg or msg["state"] == "all":
                 if not "type" in msg or msg["type"] == "system":
-                    apps_list += self.list_offline_apps(SYSTEM_APPS_PATH, True)
+                    apps_list += self.list_offline_apps(SYSTEM_APPS_PATH, msg.get("labels", None), True)
                 if not "type" in msg or msg["type"] == "backend":
-                    apps_list += self.list_offline_apps(BACKEND_APPS_PATH, True)
+                    apps_list += self.list_offline_apps(BACKEND_APPS_PATH, msg.get("labels", None), True)
                 if not "type" in msg or msg["type"] == "frontend":
-                    apps_list += self.list_offline_apps(FRONTEND_APPS_PATH, True)
-            elif msg["filter"] == "running":
+                    apps_list += self.list_offline_apps(FRONTEND_APPS_PATH, msg.get("labels", None), True)
+            elif msg["state"] == "running":
                 for app in self.running_apps:
                     if not "type" in msg or msg["type"] == app.type:
                         apps_list.append(app.__dict__)      # aby bol objekt serializovatelny do json

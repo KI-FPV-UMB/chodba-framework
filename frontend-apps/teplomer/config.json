@@ -2,6 +2,6 @@
 	"enabled": true,
 	"name": "teplomer",
 	"type": "frontend",
-	"labels": "app,demo",
+	"labels": ["app", "demo"],
 	"demo_time": 15
 }

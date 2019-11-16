@@ -2,6 +2,6 @@
 	"enabled": true,
 	"name": "skel_sdl",
 	"type": "frontend",
-	"labels": "game,demo",
+	"labels": ["game", "demo"],
 	"demo_time": 15
 }

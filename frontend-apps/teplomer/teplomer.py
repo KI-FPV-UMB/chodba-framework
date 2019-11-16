@@ -14,7 +14,7 @@ import time
 import datetime
 import base_app
 
-HIST_DNI = 1                # teplotu kolko dni dozadu zobrazovat
+HIST_DNI = 5                # teplotu kolko dni dozadu zobrazovat
 
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
@@ -95,7 +95,7 @@ class Teplomer(base_app.BaseApp):
         #mng.window.state('zoomed')
         mng.resize(*mng.window.maxsize())
         plt.show(block=False)
-        plt.savefig('/temp/teplota.png')
+        plt.savefig('/tmp/teplota.png')
         # cakaj
         self.running = True
         while self.running:

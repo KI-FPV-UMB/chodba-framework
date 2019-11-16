@@ -2,6 +2,6 @@
 	"enabled": false,
 	"name": "demo_hra2d_p",
 	"type": "frontend",
-	"labels": "game,demo",
+	"labels": ["game", "demo"],
 	"demo_time": 5
 }
