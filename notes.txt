@@ -1,6 +1,5 @@
 
 TODO:
-	-zobrazovanie citatov
 	-kazda n-t appka by malo byt logo ki
 	-app_type nastavovat rovno podla adresara; z konfiguracie brat clenenie pre pouzivatelov (labels?)
 	-do galerie dorobit prehravanie videa; dohrat tam videa
@@ -24,6 +23,8 @@ TEMY
 1) top priority
 -qr kod pre mobilnu appku [frontend] - aj taka reklama: "Skus to!" a qr kod
 -oznamy z webu ki
+	http://www.fpv.umb.sk/rss/katedry-katedra-informatiky.xml
+	https://www.tutorialspoint.com/python_text_processing/python_reading_rss_feed.htm
 2) meet-and-code
 -hra2d (java aj python) - aby to islo ako ma
 -status [frontend] - ake su aplikacie, ake workspaces; teplotu kazdeho rpi
