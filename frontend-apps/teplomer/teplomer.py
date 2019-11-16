@@ -14,7 +14,6 @@ import time
 import datetime
 import base_app
 
-HIST_DNI = 5                # teplotu kolko dni dozadu zobrazovat
 FONT_PATH = "/usr/share/fonts/truetype/freefont/FreeSans.ttf"
 FONT_SIZE = 30
 FS_ENCODING = "utf-8"
@@ -47,7 +46,7 @@ class Teplomer(base_app.BaseApp):
         # vykresli graf
         dpi = 96
         fig, axt = plt.subplots(figsize=(1024/dpi, 768/dpi), dpi=dpi)
-        axt.set_title('teplota za poslednych ' + str(HIST_DNI) + ' dni')
+        axt.set_title('teplota za poslednych ' + str(self.hist_dni) + ' dni')
         axt.set_xlim(cas[0], cas[-1])
 
         axt.set_ylabel('teplota', color='tab:red')
@@ -108,9 +107,9 @@ class Teplomer(base_app.BaseApp):
 
         # poziadaj o data
         self.status = "citam data"
-        hist = (datetime.datetime.now() - datetime.timedelta(HIST_DNI)).strftime('%Y%m%d%H%M%S%f')
+        hist = (datetime.datetime.now() - datetime.timedelta(self.hist_dni)).strftime('%Y%m%d%H%M%S%f')
         #st = datetime.now().strftime('%Y%m%d%H%M%S%f') #TODO
-        #hist = datetime.strftime(datetime.now() - timedelta(HIST_DNI), '%Y%m%d%H%M%S%f')
+        #hist = datetime.strftime(datetime.now() - timedelta(self.hist_dni), '%Y%m%d%H%M%S%f')
         msg = { "msg": "find", "name": "teplota_vlhkost", "src": self.get_src(), "query": { "timestamp": { "$gt": hist } } }
         #print("posielaaaam", str(msg))          #TODO
         self.client.publish(topic="database", payload=json.dumps(msg), qos=0, retain=False)

@@ -29,7 +29,6 @@ FONT_PATH = "/usr/share/fonts/truetype/freefont/FreeSans.ttf"
 FONT_SIZE = 120
 FONT_OUTLINE = 3
 FS_ENCODING = "utf-8"
-DELAY_S = 1.5
 
 class Galeria(base_app.BaseApp):
 
@@ -146,7 +145,7 @@ class Galeria(base_app.BaseApp):
         event = sdl2.SDL_Event()
         while self.running:
             self.kresli_obrazok()
-            if time.time() - last_draw > DELAY_S:
+            if time.time() - last_draw > self.delay_s:
                 self.dalsi_obrazok()
                 last_draw = time.time()
                 # TODO cas pauzy postupne skracovat

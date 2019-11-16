@@ -3,5 +3,6 @@
 	"name": "teplomer",
 	"type": "frontend",
 	"labels": ["app", "demo"],
-	"demo_time": 15
+	"demo_time": 15,
+	"hist_dni": 5
 }

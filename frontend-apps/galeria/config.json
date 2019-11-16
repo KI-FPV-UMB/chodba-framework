@@ -3,5 +3,6 @@
 	"name": "galeria",
 	"type": "frontend",
 	"labels": ["demo"],
-	"demo_time": 15
+	"demo_time": 15,
+	"delay_s": 2.5
 }
