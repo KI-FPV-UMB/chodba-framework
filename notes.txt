@@ -1,7 +1,8 @@
 
 TODO:
+	-android appka
 	-kazda n-t appka by malo byt logo ki
-	-app_type nastavovat rovno podla adresara; z konfiguracie brat clenenie pre pouzivatelov (labels?)
+	-app_type nastavovat rovno podla adresara
 	-do galerie dorobit prehravanie videa; dohrat tam videa
 	-dorobit rpi hw: kameru
 	-ukladat dake statistiky (db backend) - ktora aplikacia sa ako casto spustila, ako dlho s nou niekto robil, ...

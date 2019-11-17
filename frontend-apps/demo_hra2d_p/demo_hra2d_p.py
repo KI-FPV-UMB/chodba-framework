@@ -191,7 +191,7 @@ class DemoHra2Dp(base_app.BaseApp):
             ctrls_list = []
             for ctrl in CONTROL_LAYOUT:
                 ctrls_list.append(ctrl.__dict__)
-            resp = { "grid_width": "6", "grid_height": "4", "type": "static", "control_elements": ctrls_list }
+            resp = { "grid_width": 6, "grid_height": 4, "type": "static", "control_elements": ctrls_list }
             print(json.dumps(resp))            #TODO
             self.publish_message("control_layout", resp, self.user_topic)
 

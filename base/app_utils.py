@@ -20,6 +20,6 @@ class ControlElement:
         self.w = w
         self.h = h
         self.title = title
-        self.typ = typ          # button/button_submit/input_text/input_number/kreslenie
+        self.type = typ          # button/button_submit/input_text/input_number/kreslenie
 
 

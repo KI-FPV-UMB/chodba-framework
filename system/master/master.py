@@ -265,7 +265,7 @@ class Master(base_app.BaseApp):
                     if not "type" in msg or msg["type"] == app.type:
                         apps_list.append(app.__dict__)      # aby bol objekt serializovatelny do json
             resp = { "applications": apps_list }
-            print(json.dumps(resp))         #TODO
+            print(json.dumps(resp), msg["src"])         #TODO
             self.publish_message("applications", resp, msg["src"])
 
         elif msg["msg"] == "workspaces":
