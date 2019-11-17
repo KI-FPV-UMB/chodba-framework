@@ -59,15 +59,15 @@ class NodeManager(base_app.BaseApp):
             # spusti danu app
             try:
                 if msg["type"] == "backend":
-                    self.run_app(BACKEND_APPS_PATH, msg["name"])
+                    self.run_app(BACKEND_APPS_PATH, msg["run"])
                 if msg["type"] == "frontend":
                     src = msg["src"] if "src" in msg else None
                     nick = msg["nickname"] if "nickname" in msg else None
                     approb = msg["approbation"] if "approbation" in msg else None
-                    self.run_app(FRONTEND_APPS_PATH, msg["name"], src, nick, approb)
+                    self.run_app(FRONTEND_APPS_PATH, msg["run"], src, nick, approb)
             except Exception as e:
-                print("[" + self.name + "] chyba pri spustani " + msg["name"] + ": " + str(e))
-                log = { "name": self.name, "node": self.node, "log": "chyba pri spustani " + msg["name"] + ": " + str(e) }
+                print("[" + self.name + "] chyba pri spustani " + msg["run"] + ": " + str(e))
+                log = { "name": self.name, "node": self.node, "log": "chyba pri spustani " + msg["run"] + ": " + str(e) }
                 self.publish_message("log", log, "master" )
 
     def run(self):
