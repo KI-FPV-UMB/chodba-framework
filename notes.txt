@@ -1,6 +1,6 @@
 
 TODO:
-	-android appka
+	-android appka - ovladacie tlacidla asi kreslit graficky
 	-kazda n-t appka by malo byt logo ki
 	-app_type nastavovat rovno podla adresara
 	-do galerie dorobit prehravanie videa; dohrat tam videa
