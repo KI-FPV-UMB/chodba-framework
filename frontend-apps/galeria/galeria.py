@@ -90,7 +90,8 @@ class Galeria(base_app.BaseApp):
         self.client.loop_start()
 
         # nahodne vyber adresar s obrazkami
-        subdirs = [x[0] for x in os.walk(".")]
+        subdirs = [d for d in os.listdir(".") if os.path.isdir(d)]
+        #subdirs = [x[0] for x in os.walk(".")]
         if len(subdirs) <= 1:
             log = { "log": "galeria neobsahuje ziadne podadresare s obrazkami!" }
             self.publish_message("log", log, "master" )
