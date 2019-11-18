@@ -1,11 +1,15 @@
 
 TODO:
 	-android appka - ovladacie tlacidla asi kreslit graficky
+	-rozmery hlasok na projektore - farebne pozadie je len pod textom, nie na celej obrazovke
 	-kazda n-t appka by malo byt logo ki
 	-app_type nastavovat rovno podla adresara
 	-do galerie dorobit prehravanie videa; dohrat tam videa
 	-dorobit rpi hw: kameru
 	-ukladat dake statistiky (db backend) - ktora aplikacia sa ako casto spustila, ako dlho s nou niekto robil, ...
+	 potom na mobile, ked sa bude nieco spustat, tak defaultne to bude triedit podla oblubenosti
+	 dako tak to organizovat, ze aj po rokoch. cize napr. ak kazdy rok budu ziaci robit na grafike arkanoid, tak v zozname to bude ako
+	 arkanoid '19 (ale zotriedene podla popularity). cize vsetky arkanoidy
 
 	-citlive miesto: ked sa prave vypina aplikacia s spusta nova; ak do toho niekto (user) spusti aplikaciu, tak sa neaktivuje ten sposob
 	 nahradenia aplikacie. vysledkom bude, ze budu naraz 2 frontend aplikacie. mozno to spravit tak, ze v tej kontrole na pozadi stale aj

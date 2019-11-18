@@ -28,7 +28,7 @@ class Hlasky(base_app.BaseApp):
         # zobraz okno
         self.top = tkinter.Tk()
         self.top.wm_attributes("-type", "splash")       # bez dekoracii
-        self.top.wm_attributes("-fullscreen","true")
+        self.top.wm_attributes("-fullscreen", True)
         self.top.configure(background=bgcol)
 #        self.top.geometry("{0}x{1}+0+0".format(self.top.winfo_screenwidth()-3, self.top.winfo_screenheight()-3))    # na celu obrazovku
 #        self.top.resizable(False, False)
