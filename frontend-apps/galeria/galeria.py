@@ -98,7 +98,7 @@ class Galeria(base_app.BaseApp):
             return
         d = random.choice(subdirs)
         print("[" + self.name + "] vyberam ", d)
-        self.folder = d[2:]
+        self.folder = d
         self.files = [os.path.join(d, f) for f in os.listdir(d) if os.path.isfile(os.path.join(d, f))]
         self.sorted = os.path.isfile(os.path.join(d, SORTED_FILE))
         if self.sorted:
