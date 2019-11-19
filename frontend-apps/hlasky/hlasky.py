@@ -22,7 +22,7 @@ class Hlasky(base_app.BaseApp):
         self.client.loop_start()
 
         # vyber nahodnu farbu pozadia
-        colors = ["red", "orange", "yellow", "green", "blue", "indigo"]
+        colors = ["white", "orange", "yellow", "green"]
         bgcol = random.choice(colors)
 
         # zobraz okno
