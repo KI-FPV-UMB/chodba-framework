@@ -44,6 +44,11 @@ class Teplomer(base_app.BaseApp):
             vlhkost.append(r["humidity"])
 
         # vykresli graf
+        font = {'family' : 'normal',
+                'weight' : 'bold',
+                'size'   : 22}
+        matplotlib.rc('font', **font)
+
         fig, axt = plt.subplots(figsize=(20, 11), dpi=96)
         axt.set_title('teplota za poslednych ' + str(self.hist_dni) + ' dni')
         axt.set_xlim(cas[0], cas[-1])
