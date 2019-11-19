@@ -75,7 +75,7 @@ class Galeria(base_app.BaseApp):
             # potom vyrenderuj normalny text bielou
             nazov = sdl2.sdlttf.TTF_RenderUTF8_Blended(self.font, self.folder.encode(FS_ENCODING), sdl2.SDL_Color(255, 255, 255))
             r = sdl2.SDL_Rect()
-            r.x, r.y = int(self.window_w/2 - nazov.contents.w / 2 + FONT_OUTLINE / 2), int(self.window_h - nazov.contents.h - 10 + FONT_OUTLINE)
+            r.x, r.y = int(self.window_w/2 - nazov.contents.w / 2 + FONT_OUTLINE / 2), int(self.window_h - nazov.contents.h - 10 + FONT_OUTLINE / 2)
             r.w, r.h = nazov.contents.w, nazov.contents.h
             sdl2.SDL_BlitSurface(nazov, None, self.windowsurface, r)
 
