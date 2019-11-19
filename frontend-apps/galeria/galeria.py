@@ -66,18 +66,19 @@ class Galeria(base_app.BaseApp):
 
         # dopis nazov adresara
         if not self.notitle:
+            # najprv vyrenderuj outlined text ciernou
             nazov_outlined = sdl2.sdlttf.TTF_RenderUTF8_Blended(self.font_outlined, self.folder.encode(FS_ENCODING), sdl2.SDL_Color(0, 0, 0))
-            nazov = sdl2.sdlttf.TTF_RenderUTF8_Blended(self.font, self.folder.encode(FS_ENCODING), sdl2.SDL_Color(255, 255, 255))
-            # najprv vyrenderuj normalny nazov do outlined
-            r = sdl2.SDL_Rect()
-            r.x, r.y = FONT_OUTLINE, FONT_OUTLINE
-            r.w, r.h = nazov.contents.w, nazov.contents.h
-            sdl2.SDL_BlitSurface(nazov, None, nazov_outlined, r)
-            # potom ten vysledok (outlined) do okna
             r = sdl2.SDL_Rect()
             r.x, r.y = int(self.window_w/2 - nazov_outlined.contents.w / 2), int(self.window_h - nazov_outlined.contents.h - 10)
             r.w, r.h = nazov_outlined.contents.w, nazov_outlined.contents.h
             sdl2.SDL_BlitSurface(nazov_outlined, None, self.windowsurface, r)
+            # potom vyrenderuj normalny text bielou
+            nazov = sdl2.sdlttf.TTF_RenderUTF8_Blended(self.font, self.folder.encode(FS_ENCODING), sdl2.SDL_Color(255, 255, 255))
+            r = sdl2.SDL_Rect()
+            r.x, r.y = int(self.window_w/2 - nazov.contents.w / 2 + FONT_OUTLINE / 2), int(self.window_h - nazov.contents.h - 10 + FONT_OUTLINE)
+            r.w, r.h = nazov.contents.w, nazov.contents.h
+            sdl2.SDL_BlitSurface(nazov, None, self.windowsurface, r)
+
 
         # update obrazovky (premietnutie zmien)
         sdl2.SDL_RenderPresent(self.renderer)
