@@ -44,7 +44,7 @@ class Teplomer(base_app.BaseApp):
             vlhkost.append(r["humidity"])
 
         # vykresli graf
-        font = {'family' : 'normal',
+        font = {'family' : 'sans-serif',
                 'weight' : 'bold',
                 'size'   : 22}
         matplotlib.rc('font', **font)
