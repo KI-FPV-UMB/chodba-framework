@@ -43,6 +43,10 @@ class Teplomer(base_app.BaseApp):
             teplota.append(r["temperature"])
             vlhkost.append(r["humidity"])
 
+        if len(cas) == 0:
+            self.status = "ziadne data!"
+            return
+
         # vykresli graf
         font = {'family' : 'sans-serif',
                 'weight' : 'bold',
