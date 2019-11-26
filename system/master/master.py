@@ -174,6 +174,30 @@ class Master(base_app.BaseApp):
         # pre istotu spusti backends (ak ma nieco bezat na tomto novom node). to co uz bezi na ostatnych sa nespsusti 2x
         self.run_backends()
 
+    def show_apps_status():
+        print("[" + self.name + "] apps: ") # + str(self.running_apps))
+        apps_sys = []
+        apps_back = []
+        apps_frnt = []
+        for app in self.running_apps:
+            if app.type == "system":
+                apps_sys.append(app)
+            elif app.type == "backend":
+                apps_back.append(app)
+            elif app.type == "frontend":
+                apps_frnt.append(app)
+        apps_sys.sort()
+        apps_back.sort()
+        apps_frnt.sort()
+        
+        def show_status(l):
+            for app in l:
+                print("  " + "{:<15} {:<10} {:<10} {:<10}".format(app.name, app.type, app.node, app.status))
+
+        show_status(apps_sys)
+        show_status(apps_back)
+        show_status(apps_frnt)
+
     def on_message(self, client, userdata, message):
         msg = json.loads(message.payload.decode())
         if not "msg" in msg:
@@ -227,10 +251,7 @@ class Master(base_app.BaseApp):
                 # automaticky tam spusti novu nahodnu appku
                 if not self.quitting and not app.replaced:
                     self.run_random(app.node)
-            print("[" + self.name + "] apps: ") # + str(self.running_apps))
-            for app in self.running_apps:
-                print("  " + "{:>10} {:>10}".format(app.name, app.node))
-                # type, node, status
+            show_apps_status()
 
         elif msg["msg"] == "log":
             # loguj spravu aplikacie
