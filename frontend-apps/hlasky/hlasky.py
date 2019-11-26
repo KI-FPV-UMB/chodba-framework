@@ -13,6 +13,7 @@ import json
 import tkinter
 import tkinter.messagebox
 import random
+import subprocess
 import base_app
 
 class Hlasky(base_app.BaseApp):
@@ -35,18 +36,25 @@ class Hlasky(base_app.BaseApp):
 #        self.top.update_idletasks()
 #        self.top.overrideredirect(True)
 
-        # nacitaj hlasky zo suboru
-        hlasky = []
-        with open("hlasky.txt") as fp:
-            line = fp.readline()
-            while line:
-                if not line.startswith("#"):
-                    hlasky.append(line)
+        r = random.randrange(0, 3)
+        if r < 2:
+            # daj hlasku z fortune
+            result = subprocess.run(["/usr/games/fortune", "sk"], stdout=subprocess.PIPE)
+            hlaska = result.stdout.decode("utf-8")  #.strip("\n")
+        else:
+            # nacitaj hlasky zo suboru
+            hlasky = []
+            with open("hlasky.txt") as fp:
                 line = fp.readline()
-        n = random.randint(0, len(hlasky)-1)
+                while line:
+                    if not line.startswith("#"):
+                        hlasky.append(line)
+                    line = fp.readline()
+            #n = random.randint(0, len(hlasky)-1)
+            hlaska = random.choice(hlasky)
 
         # napln okno obsahom
-        msg = tkinter.Message(self.top, text=random.choice(hlasky))
+        msg = tkinter.Message(self.top, text=hlaska)
         msg.config(font=('times', 70, 'italic'), bg=bgcol)
         msg.pack(expand=True)                       # aby to bolo vertikalne v strede
 
