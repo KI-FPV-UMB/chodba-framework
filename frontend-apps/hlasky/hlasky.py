@@ -40,7 +40,7 @@ class Hlasky(base_app.BaseApp):
         if r < 2:
             # daj hlasku z fortune
             result = subprocess.run(["/usr/games/fortune", "sk"], stdout=subprocess.PIPE)
-            hlaska = result.stdout.decode("utf-8")  #.strip("\n")
+            hlaska = result.stdout.decode("utf-8").replace("\t", "")
         else:
             # nacitaj hlasky zo suboru
             hlasky = []
