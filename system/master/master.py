@@ -186,9 +186,9 @@ class Master(base_app.BaseApp):
                 apps_back.append(app)
             elif app.type == "frontend":
                 apps_frnt.append(app)
-        apps_sys.sort()
-        apps_back.sort()
-        apps_frnt.sort()
+        apps_sys.sort(key=lambda x: x.name)
+        apps_back.sort(key=lambda x: x.name)
+        apps_frnt.sort(key=lambda x: x.name)
         
         def show_status(l):
             for app in l:
