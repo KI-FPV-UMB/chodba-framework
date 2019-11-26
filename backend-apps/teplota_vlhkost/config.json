@@ -1,5 +1,5 @@
 {
-	"enabled": false,
+	"enabled": true,
 	"name": "teplota_vlhkost",
 	"type": "backend",
 	"runon": "chodba-ki01",
