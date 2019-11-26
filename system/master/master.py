@@ -174,7 +174,7 @@ class Master(base_app.BaseApp):
         # pre istotu spusti backends (ak ma nieco bezat na tomto novom node). to co uz bezi na ostatnych sa nespsusti 2x
         self.run_backends()
 
-    def show_apps_status():
+    def show_apps_status(self):
         print("[" + self.name + "] apps: ") # + str(self.running_apps))
         apps_sys = []
         apps_back = []
@@ -251,7 +251,7 @@ class Master(base_app.BaseApp):
                 # automaticky tam spusti novu nahodnu appku
                 if not self.quitting and not app.replaced:
                     self.run_random(app.node)
-            show_apps_status()
+            self.show_apps_status()
 
         elif msg["msg"] == "log":
             # loguj spravu aplikacie
