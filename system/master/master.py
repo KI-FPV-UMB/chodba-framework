@@ -227,7 +227,10 @@ class Master(base_app.BaseApp):
                 # automaticky tam spusti novu nahodnu appku
                 if not self.quitting and not app.replaced:
                     self.run_random(app.node)
-            print("[" + self.name + "] apps: " + str(self.running_apps))
+            print("[" + self.name + "] apps: ") # + str(self.running_apps))
+            for app in self.running_apps:
+                print("  " + "{:>10} {:>10}".format(app.name, app.node))
+                # type, node, status
 
         elif msg["msg"] == "log":
             # loguj spravu aplikacie
@@ -315,6 +318,15 @@ class Master(base_app.BaseApp):
                         # prilis dlho sa neozvali, asi uz nebezia. odstran ich zo zoznamu
                         print("[" + self.name + "] odstranovanie neodpovedajucej app " + app.name)
                         self.running_apps.remove(app)
+                        # ak tam nic nebezi, tak tam automaticky spusti novu nahodnu appku
+                        if not self.quitting and not app.replaced:
+                            obsadeny = False
+                            for app2 in self.running_apps:
+                                if app2.type == "frontend" and app2.node == app.node:
+                                    obsadeny = True
+                                    break
+                            if not obsadeny:
+                                self.run_random(app.node)
                     elif last_timestamp_check - app.timestamp > TIMESTAMP_CHECK:
                         # daj im este sancu - posli poziadavku na refresh
                         print("[" + self.name + "] refresh stavu " + app.name + " na " + app.node)
