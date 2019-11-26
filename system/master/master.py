@@ -192,7 +192,7 @@ class Master(base_app.BaseApp):
         
         def show_status(l):
             for app in l:
-                print("  " + "{:<15} {:<10} {:<10} {:<10}".format(app.name, app.type, app.node, app.status))
+                print("  " + "{:<20} {:<10} {:<12} {:<15}".format(app.name, app.type, app.node, app.status))
 
         show_status(apps_sys)
         show_status(apps_back)
