@@ -1,14 +1,44 @@
+ssh pi@194.160.41.39 -p 1194
+
+
+Fatal Python error: Inconsistent interned string state.
+
+Current thread 0xb3824460 (most recent call first):
+  File "/home/pi/.local/lib/python3.7/site-packages/paho/mqtt/client.py", line 2902 in _handle_on_message
+  File "/home/pi/.local/lib/python3.7/site-packages/paho/mqtt/client.py", line 2759 in _handle_publish
+  File "/home/pi/.local/lib/python3.7/site-packages/paho/mqtt/client.py", line 2560 in _packet_handle
+  File "/home/pi/.local/lib/python3.7/site-packages/paho/mqtt/client.py", line 2071 in _packet_read
+  File "/home/pi/.local/lib/python3.7/site-packages/paho/mqtt/client.py", line 1374 in loop_read
+  File "/home/pi/.local/lib/python3.7/site-packages/paho/mqtt/client.py", line 1072 in loop
+  File "/home/pi/.local/lib/python3.7/site-packages/paho/mqtt/client.py", line 1578 in loop_forever
+  File "/home/pi/.local/lib/python3.7/site-packages/paho/mqtt/client.py", line 2913 in _thread_main
+  File "/usr/lib/python3.7/threading.py", line 865 in run
+  File "/usr/lib/python3.7/threading.py", line 917 in _bootstrap_inner
+  File "/usr/lib/python3.7/threading.py", line 885 in _bootstrap
+
+Thread 0xb6f72ad0 (most recent call first):
+  File "teplomer.py", line 167 in run
+  File "/opt/chodba-framework/base/base_app.py", line 123 in start
+  File "teplomer.py", line 185 in <module>
+
+
+
 
 TODO:
+	-technologie na zvazenie (ROS 2.0):
+		-databaza: https://redis.io/
+		-messaging: https://zeromq.org/
+		-vymena dat: https://en.wikipedia.org/wiki/Data_Distribution_Service
+		-konfiguracia siete: https://en.wikipedia.org/wiki/Zero-configuration_networking
+	-kazda n-ta (7?) appka by malo byt logo ki
+	-do galerie dorobit prehravanie videa; dohrat tam videa
 	-android appka
 		-ovladacie tlacidla asi kreslit graficky
 		-na tom ovladacom screene aj dake tlacidlo na restart
 		-spustanie aplikacie by malo byt asi na predposlednom screene, nie na tom ovladacom. lebo ked sa uspi a zobudi mobil, tak sa to spusti znova (aj sprava na spustenie appky)
 		 tym padom tu pracu s mqtt treba dako vynat do novej triedy; mozno ako staticke metody
 		-prvy screen preusporiadat nanovo - lebo teraz sa to zle formatuje, ked sa to nezmesti
-	-kazda n-t appka by malo byt logo ki
 	-app_type nastavovat rovno podla adresara
-	-do galerie dorobit prehravanie videa; dohrat tam videa
 	-dorobit rpi hw: kameru https://www.makexyz.com/3d-models/order/f3677c995f2832e1a5c7413595707bbc
 	-ukladat dake statistiky (db backend) - ktora aplikacia sa ako casto spustila, ako dlho s nou niekto robil, ...
 	 potom na mobile, ked sa bude nieco spustat, tak defaultne to bude triedit podla oblubenosti
