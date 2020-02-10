@@ -13,10 +13,13 @@ import json
 import time
 import datetime
 import base_app
+import numpy as np
 
 FONT_PATH = "/usr/share/fonts/truetype/freefont/FreeSans.ttf"
 FONT_SIZE = 30
 FS_ENCODING = "utf-8"
+RUNNING_AVERAGE_COUNT = 16
+HUMIDITY_ALPHA = 0.8
 
 import matplotlib
 matplotlib.use('Agg')
@@ -29,6 +32,11 @@ import sdl2
 import sdl2.sdlimage
 import sdl2.sdlttf          # libsdl2-ttf-2.0-0
 
+# filtrovanie
+#   Kalman Filter: https://forum.arduino.cc/index.php?topic=389745.0
+#   Running Average: https://www.megunolink.com/articles/coding/3-methods-filter-noisy-arduino-measurements/
+
+
 class Teplomer(base_app.BaseApp):
 
     def on_msg(self, msg):
@@ -36,12 +44,25 @@ class Teplomer(base_app.BaseApp):
         resp = msg["resp"]
         cas = []
         teplota = []
+        teplota_avg = [0] * RUNNING_AVERAGE_COUNT
         vlhkost = []
+        vlhkost_last = None
         for r in resp:
             cas.append(datetime.datetime.strptime(r["timestamp"], "%Y%m%d%H%M%S%f"))   #.timestamp())
-            #cas.append(r["timestamp"])
-            teplota.append(r["temperature"])
-            vlhkost.append(r["humidity"])
+            # teplota
+            t = float(r["temperature"])
+            #teplota_avg.pop(0)                 # odstran prvy prvok
+            #teplota_avg.append(t)          # pridaj na koniec novy prvok
+            #teplota.append(np.mean(teplota_avg))
+            teplota.append(t)
+            # vlhkost
+            h = float(r["humidity"])
+            h = 20 if h > 60 else h     #TODO
+            if vlhkost_last is not None:
+                #h = HUMIDITY_ALPHA * h + (1 - HUMIDITY_ALPHA) * vlhkost_last
+                h = HUMIDITY_ALPHA * (h - vlhkost_last) + vlhkost_last
+            vlhkost_last = h
+            vlhkost.append(h)
 
         if len(cas) == 0:
             self.status = "ziadne data!"
@@ -58,7 +79,7 @@ class Teplomer(base_app.BaseApp):
         axt.set_xlim(cas[0], cas[-1])
 
         axt.set_ylabel('teplota', color='tab:red')
-        axt.plot(cas, teplota, 'r')
+        axt.plot(cas, teplota, 'r')     # teplota[RUNNING_AVERAGE_COUNT:]
         axt.tick_params(axis='y', labelcolor='tab:red')
         #axt.legend(['teplota'])
 
