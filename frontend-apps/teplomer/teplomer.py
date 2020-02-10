@@ -32,7 +32,7 @@ import sdl2.sdlttf          # libsdl2-ttf-2.0-0
 class Teplomer(base_app.BaseApp):
 
     def on_msg(self, msg):
-        self.status = "kreslim graf"
+        self.status = "teplomer: kreslim graf"
         resp = msg["resp"]
         cas = []
         teplota = []
@@ -114,13 +114,16 @@ class Teplomer(base_app.BaseApp):
         self.font = sdl2.sdlttf.TTF_OpenFont(FONT_PATH.encode("ascii"), FONT_SIZE)
 
         # poziadaj o data
-        self.status = "citam data"
+        self.status = "teplomer: citam data"
         hist = (datetime.datetime.now() - datetime.timedelta(self.hist_dni)).strftime('%Y%m%d%H%M%S%f')
         #st = datetime.now().strftime('%Y%m%d%H%M%S%f') #TODO
         #hist = datetime.strftime(datetime.now() - timedelta(self.hist_dni), '%Y%m%d%H%M%S%f')
         msg = { "msg": "find", "name": "teplota_vlhkost", "src": self.get_src(), "query": { "timestamp": { "$gt": hist } } }
         #print("posielaaaam", str(msg))          #TODO
         self.client.publish(topic="database", payload=json.dumps(msg), qos=0, retain=False)
+
+        # kym sa budu nacitavat data, zobraz logo KI
+        self.obrazok = sdl2.sdlimage.IMG_Load(str.encode("logo_ki.png"))
 
         # event loop
         self.running = True
@@ -129,6 +132,11 @@ class Teplomer(base_app.BaseApp):
             # kresli
             sdl2.SDL_SetRenderDrawColor(self.renderer, 0, 0, 0, 0)
             sdl2.SDL_RenderClear(self.renderer)
+            # kresli obrazok
+            r = sdl2.SDL_Rect()
+            r.x, r.y = 0, 0
+            r.w, r.h = self.obrazok.contents.w, self.obrazok.contents.h
+            sdl2.SDL_BlitSurface(self.obrazok, None, self.windowsurface, r)
             if self.status != "hotovo":
                 # vypis spravu
                 nazov = sdl2.sdlttf.TTF_RenderUTF8_Blended(self.font, self.status.encode(FS_ENCODING), sdl2.SDL_Color(255, 255, 255))
@@ -136,12 +144,6 @@ class Teplomer(base_app.BaseApp):
                 r.x, r.y = 10, int(self.window_h - nazov.contents.h - 10)
                 r.w, r.h = nazov.contents.w, nazov.contents.h
                 sdl2.SDL_BlitSurface(nazov, None, self.windowsurface, r)
-            else:
-                # kresli obrazok
-                r = sdl2.SDL_Rect()
-                r.x, r.y = 0, 0
-                r.w, r.h = self.obrazok.contents.w, self.obrazok.contents.h
-                sdl2.SDL_BlitSurface(self.obrazok, None, self.windowsurface, r)
             sdl2.SDL_RenderPresent(self.renderer)
 
             # spracuj eventy
