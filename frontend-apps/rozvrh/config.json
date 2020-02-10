@@ -1,0 +1,7 @@
+{
+	"enabled": true,
+	"name": "rozvrh",
+	"type": "frontend",
+	"labels": ["demo"],
+	"demo_time": 20
+}

@@ -99,7 +99,10 @@ TEMY
 
 FRAMEWORK
 -rpi4:
-	-nainstalovat a spustit mqtt (mosquitto)
+	-instalacia
+		apt-get install mosquitto python3-paho-mqtt libsdl2-2.0-0 libsdl2-image-2.0-0 libsdl2-ttf-2.0-0 python3-pil.imagetk
+		pip3 install pysdl2
+	-spustit mqtt (mosquitto)
 	-pripojit ethernetom na internet, wifi nastavit ako AP (ale neroutovat!)
 	-nainstalovat OpenCV, nastavit kameru
 	-pripojit a nastavit senzor teploty a vlhkosti, mikrofon
