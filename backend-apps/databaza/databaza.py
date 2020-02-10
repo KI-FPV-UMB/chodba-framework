@@ -7,6 +7,15 @@ __email__ = "michal.vagac@gmail.com"
 # apt-get install mongodb
 # je potrebna starsia verzia mongo: pip3 install pymongo==3.4.0
 
+# praca s db v shelli:
+# mongo
+#   use chodbadb
+#   db.apps.find()
+#   db.apps.find().sort({ "timestamp" : 1 }).limit(5)
+#   db.apps.find().sort({ "timestamp" : -1 }).limit(5)
+#   db.apps.find({"name": "teplota_vlhkost"})
+
+
 # PYTHONPATH musi odkazovat na absolutnu cestu k .../chodba-framework/base
 
 import sys

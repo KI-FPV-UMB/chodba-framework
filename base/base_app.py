@@ -10,6 +10,7 @@ import paho.mqtt.client as mqtt
 import json
 import random
 import datetime
+import traceback
 
 WEBSOCKETS = False
 BROKER_URL = "localhost"
@@ -126,6 +127,7 @@ class BaseApp:
             print("[" + self.name + "] chyba pri vykonavani aplikacie: " + repr(e))
             log = { "log": "chyba pri vykonavani aplikacie: " + repr(e) }
             self.publish_message("log", log, "master" )
+            traceback.print_exc()
             # skonci
             self.stop()
 
