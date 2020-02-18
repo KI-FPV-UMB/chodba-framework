@@ -51,13 +51,11 @@ class Teplomer(base_app.BaseApp):
             cas.append(datetime.datetime.strptime(r["timestamp"], "%Y%m%d%H%M%S%f"))   #.timestamp())
             # teplota
             t = float(r["temperature"])
-            #teplota_avg.pop(0)                 # odstran prvy prvok
-            #teplota_avg.append(t)          # pridaj na koniec novy prvok
-            #teplota.append(np.mean(teplota_avg))
-            teplota.append(t)
+            teplota_avg.pop(0)              # odstran prvy prvok
+            teplota_avg.append(t)           # pridaj na koniec novy prvok
+            teplota.append(np.mean(teplota_avg))
             # vlhkost
             h = float(r["humidity"])
-            h = 20 if h > 60 else h     #TODO
             if vlhkost_last is not None:
                 #h = HUMIDITY_ALPHA * h + (1 - HUMIDITY_ALPHA) * vlhkost_last
                 h = HUMIDITY_ALPHA * (h - vlhkost_last) + vlhkost_last

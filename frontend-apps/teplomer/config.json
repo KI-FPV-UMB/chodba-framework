@@ -4,5 +4,5 @@
 	"type": "frontend",
 	"labels": ["app", "demo"],
 	"demo_time": 15,
-	"hist_dni": 5
+	"hist_dni": 2
 }
