@@ -20,6 +20,7 @@ __email__ = "michal.vagac@gmail.com"
 
 import sys
 import os
+import logging
 import paho.mqtt.client as mqtt
 import json
 import pymongo
@@ -65,7 +66,7 @@ class Databaza(base_app.BaseApp):
                 resp = { "resp": l }
                 self.publish_message("resultset", resp, msg["src"] )
             except Exception as e:
-                print("[" + self.name + "] chyba spustania dotazu " + str(msg["query"]) + ":\n" + repr(e))
+                logging.exception("[" + self.name + "] chyba spustania dotazu " + str(msg["query"]))
 
         else:
             super.on_msg(msg)
@@ -76,7 +77,7 @@ class Databaza(base_app.BaseApp):
         self.col = self.db["apps"]
         #dblist = dbc.list_database_names()
         #if "chodbadb" not in dblist:
-        #      print("Databaza neexistuje, vytvaram...")
+        #      logging.info("Databaza neexistuje, vytvaram...")
 
         self.client.message_callback_add("database", self.on_db_message)
         self.client.subscribe("database")

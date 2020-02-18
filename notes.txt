@@ -1,30 +1,12 @@
 ssh pi@194.160.41.39 -p 1194
 
 
-Fatal Python error: Inconsistent interned string state.
-
-Current thread 0xb3824460 (most recent call first):
-  File "/home/pi/.local/lib/python3.7/site-packages/paho/mqtt/client.py", line 2902 in _handle_on_message
-  File "/home/pi/.local/lib/python3.7/site-packages/paho/mqtt/client.py", line 2759 in _handle_publish
-  File "/home/pi/.local/lib/python3.7/site-packages/paho/mqtt/client.py", line 2560 in _packet_handle
-  File "/home/pi/.local/lib/python3.7/site-packages/paho/mqtt/client.py", line 2071 in _packet_read
-  File "/home/pi/.local/lib/python3.7/site-packages/paho/mqtt/client.py", line 1374 in loop_read
-  File "/home/pi/.local/lib/python3.7/site-packages/paho/mqtt/client.py", line 1072 in loop
-  File "/home/pi/.local/lib/python3.7/site-packages/paho/mqtt/client.py", line 1578 in loop_forever
-  File "/home/pi/.local/lib/python3.7/site-packages/paho/mqtt/client.py", line 2913 in _thread_main
-  File "/usr/lib/python3.7/threading.py", line 865 in run
-  File "/usr/lib/python3.7/threading.py", line 917 in _bootstrap_inner
-  File "/usr/lib/python3.7/threading.py", line 885 in _bootstrap
-
-Thread 0xb6f72ad0 (most recent call first):
-  File "teplomer.py", line 167 in run
-  File "/opt/chodba-framework/base/base_app.py", line 123 in start
-  File "teplomer.py", line 185 in <module>
-
-
-
 
 TODO:
+	-ostatne skusit ci ide - skusit napr. vyhodit daky import a ze ked to padne, ci to pekne uvidim v err
+	-dole scrolling s rss s novinkami (root, zive, ...). asi to spravit tak, ze vsetky horne appky musia byt implementovane nie fullscreen, ale
+	 v okne s pevnym rozmerom (ktory bude vracat framework) a bez dekoracii. okrem toho by nezavisle bezala 2. appka, ktora by robila ten
+	 scrolling. alebo este lepsie - terajsie appky rovnako ako doteraz, a ta druha by bezala ponad tie aktualne; ako dake priehladne okno
 	-technologie na zvazenie (ROS 2.0):
 		-databaza: https://redis.io/
 		-messaging: https://zeromq.org/

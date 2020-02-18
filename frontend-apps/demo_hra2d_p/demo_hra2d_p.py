@@ -10,6 +10,7 @@ import sys
 import os
 import paho.mqtt.client as mqtt
 import json
+import logging
 
 import os.path
 import importlib
@@ -34,7 +35,7 @@ class AktivnyObjekt:
     def __init__(self, nazov, pozicia, dlazdica_sirka, dlazdica_vyska, bludisko):
         self.data = sdl2.SDL_LoadBMP(str.encode(nazov))
         if not self.data:
-            print(sdl2.SDL_GetError())
+            logging.error(sdl2.SDL_GetError())
         # zdroj
         self.frame = 0
         self.sr = sdl2.SDL_Rect()
@@ -100,7 +101,7 @@ class Bludisko:
             s = "obrazky/" + naz.rstrip()
             dlazdica = sdl2.SDL_LoadBMP(str.encode(s))
             if not dlazdica:
-                print(sdl2.SDL_GetError())
+                logging.error(sdl2.SDL_GetError())
             self.dlazdice.append(dlazdica)
 
         # nacitaj hraca
@@ -192,7 +193,7 @@ class DemoHra2Dp(base_app.BaseApp):
             for ctrl in CONTROL_LAYOUT:
                 ctrls_list.append(ctrl.__dict__)
             resp = { "grid_width": 6, "grid_height": 4, "type": "static", "control_elements": ctrls_list }
-            print(json.dumps(resp))            #TODO
+            logging.debug(json.dumps(resp))            #TODO
             self.publish_message("control_layout", resp, self.user_topic)
 
         # inicializacia SDL2

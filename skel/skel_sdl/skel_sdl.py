@@ -10,6 +10,7 @@ import sys
 import os
 import paho.mqtt.client as mqtt
 import json
+import logging
 
 import sys
 import ctypes

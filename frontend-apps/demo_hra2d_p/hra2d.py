@@ -5,6 +5,7 @@ __author__ = "Michal Vagac"
 __email__ = "michal.vagac@gmail.com"
 
 import os.path
+import logging
 import importlib
 from types import MethodType
 import sys
@@ -20,7 +21,7 @@ class AktivnyObjekt:
     def __init__(self, nazov, pozicia, dlazdica_sirka, dlazdica_vyska, bludisko):
         self.data = sdl2.SDL_LoadBMP(str.encode(nazov))
         if not self.data:
-            print(sdl2.SDL_GetError())
+            logging.error(sdl2.SDL_GetError())
         # zdroj
         self.frame = 0
         self.sr = sdl2.SDL_Rect()
@@ -86,7 +87,7 @@ class Bludisko:
             s = "obrazky/" + naz.rstrip()
             dlazdica = sdl2.SDL_LoadBMP(str.encode(s))
             if not dlazdica:
-                print(sdl2.SDL_GetError())
+                logging.error(sdl2.SDL_GetError())
             self.dlazdice.append(dlazdica)
 
         # nacitaj hraca

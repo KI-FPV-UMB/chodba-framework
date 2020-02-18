@@ -12,10 +12,10 @@ import paho.mqtt.client as mqtt
 import json
 import random
 import time
+import logging
 import threading
 import base_app
 import app_utils
-
 
 # ak user nespravi ziadnu akciu viac ako USER_TIMEOUT sekund, tak je tato appka vypnuta a nahradena inou
 USER_TIMEOUT = 45
@@ -67,7 +67,7 @@ class Master(base_app.BaseApp):
 
     def read_config(self, path):
         if not os.path.isfile(os.path.join(path, "config.json")):
-            print("[" + self.name + "] v adresari " + path + " nebol najdeny konfiguracny subor")
+            logging.error("[" + self.name + "] v adresari " + path + " nebol najdeny konfiguracny subor")
             return
         with open(os.path.join(path, "config.json"), "r") as read_file:
             return json.load(read_file)
@@ -111,11 +111,11 @@ class Master(base_app.BaseApp):
             if a.demo_time > 0:
                 candidates.append(a)
         if len(candidates) == 0:
-            print("[" + self.name + "] neboli najdeni ziadni kandidati na spustenie na uzle " + str(node))
+            logging.warning("[" + self.name + "] neboli najdeni ziadni kandidati na spustenie na uzle " + str(node))
             return
         app = candidates[random.randint(0, len(candidates)-1)]
         # spusti aplikaciu na danom node
-        print("[" + self.name + "] spustam " + app.name + " na " + node)
+        logging.info("[" + self.name + "] spustam " + app.name + " na " + node)
         msg2pub = { "type":"frontend", "run": app.name }
         self.publish_message("run", msg2pub, "node/" + node )
         # app je vytvorena z offline apps, takze node nie je definovany - dopln kde to spustame
@@ -135,38 +135,38 @@ class Master(base_app.BaseApp):
                             # zisti, ci uz na tom uzle bezi
                             if not self.is_running(app.name, nmapp.node):
                                 # este tam nebezi - spusti
-                                print("[" + self.name + "] spustam " + app.name + " na " + nmapp.node)
+                                logging.info("[" + self.name + "] spustam " + app.name + " na " + nmapp.node)
                                 msg2pub = { "type":"backend", "run": app.name }
                                 self.publish_message("run", msg2pub, "node/" + nmapp.node )
                             else:
                                 # uz tam bezi!
-                                print("[" + self.name + "] app " + app.name + " je uz na " + nmapp.node + " spustena!")
+                                logging.warning("[" + self.name + "] app " + app.name + " je uz na " + nmapp.node + " spustena!")
                 elif app.runon == "?":
                     # spusti na nahodnom (ak este nikde nebezi)
                     nodes = []
                     for nmapp in self.running_apps:
                         if nmapp.name == app.name:
-                            print("[" + self.name + "] app " + app.name + " je uz spustena na " + nmapp.node + "!")
+                            logging.warning("[" + self.name + "] app " + app.name + " je uz spustena na " + nmapp.node + "!")
                             return
                         if nmapp.name == "node_manager":
                             nodes.append(nmapp.node)
                     # este nebezi, vyber nahodny uzol a spusti
                     node = nodes[random.randint(0, len(nodes)-1)]
-                    print("[" + self.name + "] spustam " + app.name + " na " + node)
+                    logging.info("[" + self.name + "] spustam " + app.name + " na " + node)
                     msg2pub = { "type":"backend", "run": app.name }
                     self.publish_message("run", msg2pub, "node/" + node )
                 else:
                     # spusti na specifikovanom (ak tam este nebezi)
                     if not self.is_running(app.name, app.runon):
                         # este tam nebezi - spusti
-                        print("[" + self.name + "] spustam " + app.name + " na " + app.runon)
+                        logging.info("[" + self.name + "] spustam " + app.name + " na " + app.runon)
                         msg2pub = { "type":"backend", "run": app.name }
                         self.publish_message("run", msg2pub, "node/" + app.runon )
                     else:
                         # uz tam bezi!
-                        print("[" + self.name + "] app " + app.name + " je uz na " + app.runon + " spustena!")
+                        logging.warning("[" + self.name + "] app " + app.name + " je uz na " + app.runon + " spustena!")
             except Exception as e:
-                print("[" + self.name + "] chyba pri spustani " + app.name + ": " + str(e))
+                logging.exception("[" + self.name + "] chyba pri spustani " + app.name)
 
 
     def init_node_manager(self, node):
@@ -175,7 +175,7 @@ class Master(base_app.BaseApp):
         self.run_backends()
 
     def show_apps_status(self):
-        print("[" + self.name + "] apps: ") # + str(self.running_apps))
+        logging.info("[" + self.name + "] apps: ") # + str(self.running_apps))
         apps_sys = []
         apps_back = []
         apps_frnt = []
@@ -192,7 +192,7 @@ class Master(base_app.BaseApp):
         
         def show_status(l):
             for app in l:
-                print("  " + "{:<20} {:<10} {:<12} {:<15}".format(app.name, app.type, app.node, app.status))
+                logging.info("  " + "{:<20} {:<10} {:<12} {:<15}".format(app.name, app.type, app.node, app.status))
 
         show_status(apps_sys)
         show_status(apps_back)
@@ -201,7 +201,7 @@ class Master(base_app.BaseApp):
     def on_message(self, client, userdata, message):
         msg = json.loads(message.payload.decode())
         if not "msg" in msg:
-            print("[" + self.name + "] neznamy typ spravy: " + str(msg))
+            logging.warning("[" + self.name + "] neznamy typ spravy: " + str(msg))
             return
 
         if msg["msg"] == "lifecycle":
@@ -256,14 +256,14 @@ class Master(base_app.BaseApp):
         elif msg["msg"] == "log":
             # loguj spravu aplikacie
             src = "???" if not "src" in msg else msg["src"]
-            print("[" + src + "] " + msg["log"])
+            logging.info("[" + src + "] " + msg["log"])
 
         elif msg["msg"] == "info":
             # loguj spravu aplikacie
             src = "???" if not "src" in msg else msg["src"]
-            print("[" + src + "] " + msg["type"])
-            print("  pub: " + msg["pub"])
-            print("  sub: " + msg["sub"])
+            logging.info("[" + src + "] " + msg["type"])
+            logging.info("  pub: " + msg["pub"])
+            logging.info("  sub: " + msg["sub"])
 
         elif msg["msg"] == "run_backends":
             # pospustaj vsetky backend aplikacie
@@ -271,7 +271,7 @@ class Master(base_app.BaseApp):
 
         elif msg["msg"] == "applications":
             if not "src" in msg:
-                print("[" + self.name + "] neznamy odosielatel!")
+                logging.warning("[" + self.name + "] neznamy odosielatel!")
                 return
             # state: all|running
             # type: system|backend|frontend
@@ -289,12 +289,12 @@ class Master(base_app.BaseApp):
                     if not "type" in msg or msg["type"] == app.type:
                         apps_list.append(app.__dict__)      # aby bol objekt serializovatelny do json
             resp = { "applications": apps_list }
-            print(json.dumps(resp), msg["src"])         #TODO
+            logging.debug(json.dumps(resp), msg["src"])         #TODO
             self.publish_message("applications", resp, msg["src"])
 
         elif msg["msg"] == "workspaces":
             if not "src" in msg:
-                print("[" + self.name + "] neznamy odosielatel!")
+                logging.warning("[" + self.name + "] neznamy odosielatel!")
                 return
             wrkspcs_list = []
             for app in self.running_apps:
@@ -305,20 +305,20 @@ class Master(base_app.BaseApp):
                 WORKSPACES_LAYOUT[k].name = k
                 wrkspcs_list.append(WORKSPACES_LAYOUT[k].__dict__)
             resp = { "grid_width": "4", "grid_height": "2", "workspaces": wrkspcs_list }
-            print(json.dumps(resp))         #TODO
+            logging.debug(json.dumps(resp))         #TODO
             self.publish_message("workspaces", resp, msg["src"])
 
         elif msg["msg"] == "approbations":
             if not "src" in msg:
-                print("[" + self.name + "] neznamy odosielatel!")
+                logging.warning("[" + self.name + "] neznamy odosielatel!")
                 return
             apprs_list = [ "AI1", "AI2", "UIN1", "UIN2" ]
             resp = { "approbations": apprs_list }
-            print(json.dumps(resp))         #TODO
+            logging.debug(json.dumps(resp))         #TODO
             self.publish_message("approbations", resp, msg["src"])
 
         else:
-            print("[" + self.name + "] neznamy typ spravy: " + str(msg))
+            logging.warning("[" + self.name + "] neznamy typ spravy: " + str(msg))
 
     def check_inactive_users(self):
         last_timestamp_check = time.time()
@@ -329,7 +329,7 @@ class Master(base_app.BaseApp):
                 if getattr(app, "nickname", None) is not None and getattr(app, "approbation", None) is not None:
                     # user aplikacia, skontroluj cas poslednej aktivity
                     if time.time() - app.timestamp > USER_TIMEOUT:
-                        print("[" + self.name + "] timeout user app " + app.name)
+                        logging.info("[" + self.name + "] timeout user app " + app.name)
                         self.stop_app(app)
             # v ovela dlhsom intervale pingni vsetky aplikacie, ktore sa davno neozvali (neupdatli lifecycle)
             if time.time() - last_timestamp_check > TIMESTAMP_CHECK:
@@ -337,7 +337,7 @@ class Master(base_app.BaseApp):
                 for app in self.running_apps:
                     if last_timestamp_check - app.timestamp > 3*TIMESTAMP_CHECK and app.status == "refreshing":
                         # prilis dlho sa neozvali, asi uz nebezia. odstran ich zo zoznamu
-                        print("[" + self.name + "] odstranovanie neodpovedajucej app " + app.name)
+                        logging.info("[" + self.name + "] odstranovanie neodpovedajucej app " + app.name)
                         self.running_apps.remove(app)
                         # ak tam nic nebezi, tak tam automaticky spusti novu nahodnu appku
                         if not self.quitting and not app.replaced:
@@ -350,7 +350,7 @@ class Master(base_app.BaseApp):
                                 self.run_random(app.node)
                     elif last_timestamp_check - app.timestamp > TIMESTAMP_CHECK:
                         # daj im este sancu - posli poziadavku na refresh
-                        print("[" + self.name + "] refresh stavu " + app.name + " na " + app.node)
+                        logging.info("[" + self.name + "] refresh stavu " + app.name + " na " + app.node)
                         app.status = "refreshing"
                         self.publish_message("status", {}, "node/" + app.node + "/" + app.name)
 
@@ -372,11 +372,11 @@ class Master(base_app.BaseApp):
         for app in self.running_apps:
             if app.name == self.name:
                 continue
-            print("[" + self.name + "] vypinam app/" + app.name)
+            logging.info("[" + self.name + "] vypinam app/" + app.name)
             self.publish_message("quit", {}, "app/" + app.name)
         # skonci
         self.client.disconnect()
-        print("[" + self.name + "] koncim na uzle " + self.node)
+        logging.info("[" + self.name + "] koncim na uzle " + self.node)
 
 
 if __name__ == '__main__':

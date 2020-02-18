@@ -10,6 +10,7 @@ import sys
 import paho.mqtt.client as mqtt
 import json
 import os
+import logging
 import subprocess
 import random
 import base_app
@@ -66,7 +67,7 @@ class NodeManager(base_app.BaseApp):
                     approb = msg["approbation"] if "approbation" in msg else None
                     self.run_app(FRONTEND_APPS_PATH, msg["run"], src, nick, approb)
             except Exception as e:
-                print("[" + self.name + "] chyba pri spustani " + msg["run"] + ": " + str(e))
+                logging.exception("[" + self.name + "] chyba pri spustani " + msg["run"])
                 log = { "name": self.name, "node": self.node, "log": "chyba pri spustani " + msg["run"] + ": " + str(e) }
                 self.publish_message("log", log, "master" )
 

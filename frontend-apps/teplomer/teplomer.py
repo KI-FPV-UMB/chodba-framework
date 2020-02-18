@@ -140,7 +140,6 @@ class Teplomer(base_app.BaseApp):
         #st = datetime.now().strftime('%Y%m%d%H%M%S%f') #TODO
         #hist = datetime.strftime(datetime.now() - timedelta(self.hist_dni), '%Y%m%d%H%M%S%f')
         msg = { "msg": "find", "name": "teplota_vlhkost", "src": self.get_src(), "query": { "timestamp": { "$gt": hist } } }
-        #print("posielaaaam", str(msg))          #TODO
         self.client.publish(topic="database", payload=json.dumps(msg), qos=0, retain=False)
 
         # kym sa budu nacitavat data, zobraz logo KI

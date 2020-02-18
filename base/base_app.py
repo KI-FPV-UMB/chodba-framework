@@ -10,6 +10,7 @@ import paho.mqtt.client as mqtt
 import json
 import random
 import datetime
+import logging
 import traceback
 
 WEBSOCKETS = False
@@ -24,6 +25,8 @@ else:
 class BaseApp:
 
     def __init__(self):
+        logging.basicConfig(level=logging.DEBUG)
+
         # inicializuj id a node
         self.id = hex(random.getrandbits(128))[2:-1]
         self.node = socket.gethostname()
@@ -33,10 +36,10 @@ class BaseApp:
             for k in config.keys():
                 setattr(self, k, config[k])
         # zaloguj start
-        print("[" + self.name + "] spustam na uzle " + self.node)
-        print("[" + self.name + "]   id = " + self.id)
+        logging.info("[" + self.name + "] spustam na uzle " + self.node)
+        logging.info("[" + self.name + "]   id = " + self.id)
         for k in config.keys():
-            print("[" + self.name + "]   " + k + " = " + str(config[k]))
+            logging.debug("[" + self.name + "]   " + k + " = " + str(config[k]))
 
     def process_args(self, args):
         self.user_topic = None
@@ -95,7 +98,13 @@ class BaseApp:
         elif msg["msg"] == "status":
             self.publish_lifecycle_message("running")
         else:
-            self.on_msg(msg)
+            try:
+                self.on_msg(msg)
+            except Exception as e:
+                # zaloguj chybu
+                logging.exception("[" + self.name + "] chyba pri spracovavani spravy " + msg["msg"])
+                log = { "log": "chyba pri spracovavani spravy " + msg["msg"] }
+                self.publish_message("log", log, "master" )
 
     def start(self):
         # priprava klienta
@@ -124,10 +133,10 @@ class BaseApp:
             self.run()
         except Exception as e:
             # zaloguj chybu
-            print("[" + self.name + "] chyba pri vykonavani aplikacie: " + repr(e))
+            logging.exception("[" + self.name + "] chyba pri vykonavani aplikacie")     # repr(e)
             log = { "log": "chyba pri vykonavani aplikacie: " + repr(e) }
             self.publish_message("log", log, "master" )
-            traceback.print_exc()
+            #traceback.print_exc()      #TODO malo by byt obsiahnute v logging.exception()
             # skonci
             self.stop()
 
@@ -136,7 +145,7 @@ class BaseApp:
 
     def stop(self):
         # posli spravu o ukoncovani
-        print("[" + self.name + "] koncim na uzle " + self.node)
+        logging.info("[" + self.name + "] koncim na uzle " + self.node)
         self.publish_lifecycle_message("quitting")
         self.client.disconnect()
 

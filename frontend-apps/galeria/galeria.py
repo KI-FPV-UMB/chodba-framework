@@ -12,6 +12,7 @@ import paho.mqtt.client as mqtt
 import json
 import random
 import time
+import logging
 
 import sys
 import ctypes
@@ -43,7 +44,7 @@ class Galeria(base_app.BaseApp):
         else:
             # nahodny
             n = random.randint(0, len(self.files)-1)
-        print("[" + self.name + "]   kreslim ", n, self.files[n])
+        logging.info("[" + self.name + "]   kreslim " + str(n) + ": " + self.files[n])
         self.obrazok = sdl2.sdlimage.IMG_Load(str.encode(self.files[n]))
 
     def kresli_obrazok(self):
@@ -98,7 +99,7 @@ class Galeria(base_app.BaseApp):
             self.publish_message("log", log, "master" )
             return
         d = random.choice(subdirs)
-        print("[" + self.name + "] vyberam ", d)
+        logging.info("[" + self.name + "] vyberam " + d)
         self.folder = d
         self.files = [os.path.join(d, f) for f in os.listdir(d) if os.path.isfile(os.path.join(d, f))]
         self.sorted = os.path.isfile(os.path.join(d, SORTED_FILE))
