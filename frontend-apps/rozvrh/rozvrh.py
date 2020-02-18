@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 """rozvrh.py: ..."""
 __author__ = "Robert Zentko"
 __email__ = "robert.zentko@studenti.umb.sk"
@@ -17,6 +19,8 @@ HEIGHT = 768  # 624  # 768
 APP_NAME = "rozvrh"
 APP_TYPE = "app"
 
+#HOST_URL = "http://rozvrh.umb.sk/api/current-class/"
+HOST_URL = "http://194.160.44.36/api/current-class/"
 STUDY_PROGRAMMES = ("1nAIn", "2nAIn", "3nAIn")
 TIME_UPDATE_INTERVAL = 1000
 STUDY_PROGRAMME_UPDATE_INTERVAL = 4000
@@ -70,8 +74,9 @@ class CurrentClass(base_app.BaseApp):
 
     # fetch subject
     def fetch_subject(self):
+        logger.debug("fetch_subject request url: " + HOST_URL + STUDY_PROGRAMMES[self.current_programme])
         response = requests.get(
-            url="http://rozvrh.umb.sk/api/current-class/" + STUDY_PROGRAMMES[self.current_programme],
+            url=HOST_URL + STUDY_PROGRAMMES[self.current_programme],
             headers={
                 "Accept": "application/json",
                 "Content-Type": "application/json"
