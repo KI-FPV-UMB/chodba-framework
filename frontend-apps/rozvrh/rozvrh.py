@@ -8,6 +8,7 @@ __email__ = "robert.zentko@studenti.umb.sk"
 import sys
 import tkinter as tk
 from datetime import datetime
+import logging
 from PIL import ImageTk, Image
 import requests
 import base_app
@@ -74,7 +75,7 @@ class CurrentClass(base_app.BaseApp):
 
     # fetch subject
     def fetch_subject(self):
-        logger.debug("fetch_subject request url: " + HOST_URL + STUDY_PROGRAMMES[self.current_programme])
+        logging.debug("fetch_subject request url: " + HOST_URL + STUDY_PROGRAMMES[self.current_programme])
         response = requests.get(
             url=HOST_URL + STUDY_PROGRAMMES[self.current_programme],
             headers={
