@@ -128,7 +128,10 @@ class Galeria(base_app.BaseApp):
         # zisti a zapamataj rozmery vytvoreneho okna
         w, h = ctypes.c_int(), ctypes.c_int()
         sdl2.SDL_GetWindowSize(self.window, ctypes.byref(w), ctypes.byref(h))
-        self.window_w, self.window_h = w.value, h.value
+        if self.screen_width is not None and self.screen_height is not None:
+            self.window_w, self.window_h = self.screen_width, self.screen_height
+        else:
+            self.window_w, self.window_h = w.value, h.value
 
         # priprav pristup na kreslenie do okna
         self.renderer = sdl2.SDL_CreateRenderer(self.window, -1, sdl2.SDL_RENDERER_SOFTWARE)

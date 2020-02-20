@@ -66,18 +66,27 @@ class BaseApp:
             logging.debug("[" + self.name + "]   " + k + " = " + str(config[k]))
 
     def process_args(self, args):
-        self.user_topic = None
-        self.nickname = None
-        self.approbation = None
-
-        if len(args) > 1:
-            self.user_topic = args[1]
-
-        if len(args) > 2:
-            self.nickname = args[2]
+        if args[1] != "-" and args[2] != "-":
+            self.screen_width = int(args[1])
+            self.screen_height = int(args[2])
+        else:
+            self.screen_width = None
+            self.screen_height = None
 
         if len(args) > 3:
-            self.approbation = args[3]
+            self.user_topic = args[3]
+        else:
+            self.user_topic = None
+
+        if len(args) > 4:
+            self.nickname = args[4]
+        else:
+            self.nickname = None
+
+        if len(args) > 5:
+            self.approbation = args[5]
+        else:
+            self.approbation = None
 
     def publish_lifecycle_message(self, status):
         state = dict()

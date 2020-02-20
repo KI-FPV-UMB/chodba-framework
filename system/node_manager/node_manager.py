@@ -21,30 +21,29 @@ FRONTEND_APPS_PATH = "../../frontend-apps/"
 
 class NodeManager(base_app.BaseApp):
 
-    def run_app(self, path, name, arg1=None, arg2=None, arg3=None):
+    def run_app(self, path, name, arg1=None, arg2=None, arg3=None, arg4=None, arg5=None):
         p = os.path.join(path, name)
         # test pre python app
         f = os.path.join(p, name) + ".py"
         if os.path.isfile(f):
-            if arg1 is None:
-                # ak je bez parametrov, spusti na pozadi
-                subprocess.Popen(["/usr/bin/python3", name + ".py"], cwd=p)
-                return None
-            elif arg1 is not None and arg2 is None:
-                # ak je 1 parameter, spusti na pozadi
-                subprocess.Popen(["/usr/bin/python3", name + ".py", arg1], cwd=p)
-                return None
-                # ak je prave 1 parameter, spusti a vrat vystup
-                #result = subprocess.run([f, arg1], stdout=subprocess.PIPE)
-                #return result.stdout.decode("utf-8").strip("\n")
-            elif arg1 is not None and arg2 is not None and arg3 is None:
-                # ak su 2 parametre, spusti na pozadi
-                subprocess.Popen(["/usr/bin/python3", name + ".py", arg1, arg2], cwd=p)
-                return None
+            if arg1 is None or arg2 is None:
+                arg1 = "-"
+                arg2 = "-"
             else:
-                # ak su 3 parametre, spusti na pozadi
+                arg1 = str(arg1)
+                arg2 = str(arg2)
+            if arg3 is None:
+                subprocess.Popen(["/usr/bin/python3", name + ".py", arg1, arg2], cwd=p)
+            elif arg3 is not None and arg4 is None:
                 subprocess.Popen(["/usr/bin/python3", name + ".py", arg1, arg2, arg3], cwd=p)
-                return None
+            elif arg3 is not None and arg4 is not None and arg5 is None:
+                subprocess.Popen(["/usr/bin/python3", name + ".py", arg1, arg2, arg3, arg4], cwd=p)
+            else:
+                subprocess.Popen(["/usr/bin/python3", name + ".py", arg1, arg2, arg3, arg4, arg5], cwd=p)
+            return None
+            # ... spusti a vrat vystup
+            #result = subprocess.run([f, arg1], stdout=subprocess.PIPE)
+            #return result.stdout.decode("utf-8").strip("\n")
         # test pre java app
         #TODO
         raise Exception("aplikacia nebola najdena alebo neznamy typ aplikacie!")
@@ -65,13 +64,20 @@ class NodeManager(base_app.BaseApp):
                     src = msg["src"] if "src" in msg else None
                     nick = msg["nickname"] if "nickname" in msg else None
                     approb = msg["approbation"] if "approbation" in msg else None
-                    self.run_app(FRONTEND_APPS_PATH, msg["run"], src, nick, approb)
+                    self.run_app(FRONTEND_APPS_PATH, msg["run"], self.screen_width, self.screen_height, src, nick, approb)
             except Exception as e:
                 logging.exception("[" + self.name + "] chyba pri spustani " + msg["run"])
                 log = { "name": self.name, "node": self.node, "log": "chyba pri spustani " + msg["run"] + ": " + str(e) }
                 self.publish_message("log", log, "master" )
 
+        if msg["msg"] == "screen_size":
+            self.screen_width = msg["width"]
+            self.screen_height = msg["height"]
+
+
     def run(self):
+        self.screen_width = None
+        self.screen_height = None
         self.client.message_callback_add("node/" + self.node, self.on_node_message)
         self.client.subscribe("node/" + self.node)
         # spracovavaj mqtt spravy
