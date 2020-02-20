@@ -1,29 +1,19 @@
 #!/usr/bin/python3
 
-"""news_scroll.py: Skrolujuci text s novinkami z predefinovanych webov."""
-__author__ = "Miroslav Melicherčík"
-__email__ = "miroslav.melichercik@umb.sk"
-
-# PYTHONPATH musi odkazovat na absolutnu cestu k .../chodba-framework/base
+# pip3 install googletrans feedparser html2text
+# apt-get install python3-pyqt5 python3-bs4
 
 import sys
-import os
-import paho.mqtt.client as mqtt
-import json
-import random
-import time
-import logging
 import feedparser
 import html2text
-from bs4 import BeautifulSoup
-from googletrans import Translator
+
 from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QSizeGrip, QLabel, QDesktopWidget
 from PyQt5.QtCore import QEvent, QTimer, pyqtSlot, Qt
 from PyQt5.QtGui import QTextDocument, QPainter, QFontMetrics, QFontDatabase, QFont
 
-import base_app
+from bs4 import BeautifulSoup
 
-SCROLL_HEIGHT = 110
+from googletrans import Translator
 
 class Marquee(QLabel):
 
@@ -38,7 +28,8 @@ class Marquee(QLabel):
         super().__init__(parent,Qt.WindowStaysOnTopHint)
         #self.fm = QFontMetrics(self.font())
         sg = QDesktopWidget().screenGeometry()
-        self.setFixedSize(sg.width(), SCROLL_HEIGHT)
+        #TODO oznamit svojmu node manageru, ze kolko miesta okupuje (resp. aky obdlznik na obrazovke je dostupny)
+        self.setFixedSize(sg.width(), 110)
         flags = Qt.WindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)
         self.setWindowFlags(flags)
         vboxlayout = QVBoxLayout()
@@ -53,8 +44,6 @@ class Marquee(QLabel):
         y = sg.height() - widget.height()
         self.move(x, y)
 
-        self.remaining_screen_width = sg.width()
-        self.remaining_screen_height = sg.height() - widget.height()
 
     def setText(self, value):
         #self.x = 0
@@ -75,6 +64,7 @@ class Marquee(QLabel):
             self.timer = QTimer(self)
             self.timer.timeout.connect(self.translate)
             self.timer.start((1 / self.speed) * 1000)
+
 
     @pyqtSlot()
     def translate(self):
@@ -101,63 +91,42 @@ class Marquee(QLabel):
             self.document.drawContents(p)
         return super().paintEvent(event)
 
+def ReadRSS_root(link):
+    translator = Translator()
+    NewsFeed = feedparser.parse(link)
+    text='             root.cz            '
+    for i in range(0,len(NewsFeed.entries)):
+      entry = NewsFeed.entries[i]
+      sentences = translator.translate(entry.title, src='cs', dest='sk').text
+      if sentences.find("školeni") < 0 :
+        text += sentences + '   ***   '
+    return text
+
+def ReadRSS_quark(link):
+    NewsFeed = feedparser.parse(link)
+    text='             Quark            '
+    for i in range(0,len(NewsFeed.entries)):
+      entry = NewsFeed.entries[i]
+      text += entry.title + ' --- '
+      sentences = str(BeautifulSoup(entry.description, "lxml").get_text().replace('\n','')).split('…')[0].split('.')
+      for j in range(0,len(sentences)-1):
+        text += sentences[j] + '.'
+      text += '   ***   '
+    return text
 
 
-class NewsScroll(base_app.BaseApp):
-
-    def run(self):
-        # spracovavaj mqtt spravy
-        self.client.loop_start()
-
-        # vytvor Qt aplikaciu
-        app = QApplication(sys.argv)
-        w = Marquee()
-
-        # oznam node manageru, ako ma obmedzit obrazovku
-        msg = { "width": w.remaining_screen_width, "height": w.remaining_screen_height }
-        self.publish_message("screen_size", msg, "node/" + self.node)
-
-        # napln rss feedy
-        #TODO z konfiguracie
-        text  = self.read_RSS("https://www.root.cz/rss/zpravicky/", "root.cz", ["školeni"], True)
-        text += self.read_RSS("https://www.quark.sk/feed", "Quark", None)
-        #TODO nastavit text by sa malo dako pravidelne; napr. kazdu hodinu
-        w.setText(text)
-
-        # spusti
-        w.show()
-        app.exec_()
-
-    def read_RSS(self, link, title, filt, translate=False):
-        if translate:
-            translator = Translator()
-        NewsFeed = feedparser.parse(link)
-        ret = title.center(30)
-        for i in range(0, len(NewsFeed.entries)):
-            entry = NewsFeed.entries[i]
-            if translate:
-                text = translator.translate(entry.title, src='cs', dest='sk').text
-            else:
-                text = entry.title
-                # osetri specialne pripady
-                if title == "Quark":
-                    text += ' --- '
-                    sentences = str(BeautifulSoup(entry.description, "lxml").get_text().replace('\n','')).split('…')[0].split('.')
-                    for j in range(0,len(sentences)-1):
-                        text += sentences[j] + '.'
-
-            je_tam = False
-            for f in filt:
-                if text.find(f) >= 0:
-                    je_tam = True
-            if not je_tam:
-                ret += text + '   ***   '
-
-        return ret
 
 
 if __name__ == '__main__':
-    app = NewsScroll()
-    app.process_args(sys.argv)
-    app.start()
+
+    app = QApplication(sys.argv)
+
+    w = Marquee()
+
+    text  = ReadRSS_root("https://www.root.cz/rss/zpravicky/")
+    text += ReadRSS_quark("https://www.quark.sk/feed")
+
+    w.setText(text)
+    w.show()
+    sys.exit(app.exec_())
 
