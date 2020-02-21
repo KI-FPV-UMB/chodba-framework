@@ -6,6 +6,9 @@ __email__ = "miroslav.melichercik@umb.sk"
 
 # PYTHONPATH musi odkazovat na absolutnu cestu k .../chodba-framework/base
 
+# pip3 install googletrans
+# apt-get install python3-pyqt5 python3-bs4 python3-html2text python3-feedparser
+
 import sys
 import os
 import paho.mqtt.client as mqtt
@@ -67,7 +70,8 @@ class Marquee(QLabel):
         self.document.setDefaultFont(font)
         fm = QFontMetrics(font)
         # I multiplied by 1.06 because otherwise the text goes on 2 lines
-        self.document.setTextWidth(fm.width(value) * 1.06)
+        #self.document.setTextWidth(fm.width(value) * 1.06)
+        self.document.setTextWidth(fm.width(value))
         self.document.setUseDesignMetrics(True)
         self.x = int(self.width() * 0.9)
 
@@ -132,7 +136,7 @@ class NewsScroll(base_app.BaseApp):
         if translate:
             translator = Translator()
         NewsFeed = feedparser.parse(link)
-        ret = title.center(30)
+        ret = ("Zdroj: " + title).center(30)
         for i in range(0, len(NewsFeed.entries)):
             entry = NewsFeed.entries[i]
             if translate:
