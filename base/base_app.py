@@ -34,7 +34,6 @@ class BaseApp:
 
     def __init__(self):
         #logging.basicConfig(level=logging.DEBUG)
-        #TODO datum cas
         logger = logging.getLogger()
         logger.setLevel(logging.NOTSET)
 
