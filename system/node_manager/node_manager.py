@@ -23,30 +23,40 @@ class NodeManager(base_app.BaseApp):
 
     def run_app(self, path, name, arg1=None, arg2=None, arg3=None, arg4=None, arg5=None):
         p = os.path.join(path, name)
-        # test pre python app
-        f = os.path.join(p, name) + ".py"
-        if os.path.isfile(f):
-            if arg1 is None or arg2 is None:
-                arg1 = "-"
-                arg2 = "-"
-            else:
-                arg1 = str(arg1)
-                arg2 = str(arg2)
-            if arg3 is None:
-                subprocess.Popen(["/usr/bin/python3", name + ".py", arg1, arg2], cwd=p)
-            elif arg3 is not None and arg4 is None:
-                subprocess.Popen(["/usr/bin/python3", name + ".py", arg1, arg2, arg3], cwd=p)
-            elif arg3 is not None and arg4 is not None and arg5 is None:
-                subprocess.Popen(["/usr/bin/python3", name + ".py", arg1, arg2, arg3, arg4], cwd=p)
-            else:
-                subprocess.Popen(["/usr/bin/python3", name + ".py", arg1, arg2, arg3, arg4, arg5], cwd=p)
-            return None
-            # ... spusti a vrat vystup
-            #result = subprocess.run([f, arg1], stdout=subprocess.PIPE)
-            #return result.stdout.decode("utf-8").strip("\n")
-        # test pre java app
-        #TODO
-        raise Exception("aplikacia nebola najdena alebo neznamy typ aplikacie!")
+        args = []
+        if os.path.isfile(os.path.join(p, name) + ".py"):
+            # python app
+            args.append("/usr/bin/python3")
+            args.append(name + ".py")
+        elif os.path.isfile(os.path.join(p, name) + ".jar"):
+            # java app
+            args.append("/usr/bin/java")
+            args.append("-jar")
+            args.append(name + ".jar")
+        else:
+            raise Exception("aplikacia nebola najdena alebo neznamy typ aplikacie!")
+        args.append(base_app.BROKER_HOST)
+        args.append(str(base_app.BROKER_PORT))
+
+        if arg1 is None or arg2 is None:
+            arg1 = "-"
+            arg2 = "-"
+        else:
+            arg1 = str(arg1)
+            arg2 = str(arg2)
+        args.append(arg1)
+        args.append(arg2)
+        if arg3 is not None:
+            args.append(arg3)
+        if arg4 is not None:
+            args.append(arg4)
+        if arg5 is not None:
+            args.append(arg5)
+        subprocess.Popen(args, cwd=p)
+        return None
+        # ... spusti a vrat vystup
+        #result = subprocess.run([f, arg1], stdout=subprocess.PIPE)
+        #return result.stdout.decode("utf-8").strip("\n")
 
     def on_node_message(self, client, userdata, message):
         msg = json.loads(message.payload.decode())

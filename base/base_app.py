@@ -14,7 +14,7 @@ import logging
 import traceback
 
 WEBSOCKETS = False
-BROKER_URL = "localhost"
+BROKER_HOST = "localhost"
 if WEBSOCKETS:
     BROKER_PORT = 9001
 else:
@@ -65,25 +65,27 @@ class BaseApp:
             logging.debug("[" + self.name + "]   " + k + " = " + str(config[k]))
 
     def process_args(self, args):
-        if args[1] != "-" and args[2] != "-":
-            self.screen_width = int(args[1])
-            self.screen_height = int(args[2])
+        self.broker_host = args[1]
+        self.broker_port = args[2]
+        if args[3] != "-" and args[4] != "-":
+            self.screen_width = int(args[3])
+            self.screen_height = int(args[4])
         else:
             self.screen_width = None
             self.screen_height = None
 
-        if len(args) > 3:
-            self.user_topic = args[3]
+        if len(args) > 5:
+            self.user_topic = args[5]
         else:
             self.user_topic = None
 
-        if len(args) > 4:
-            self.nickname = args[4]
+        if len(args) > 6:
+            self.nickname = args[6]
         else:
             self.nickname = None
 
-        if len(args) > 5:
-            self.approbation = args[5]
+        if len(args) > 7:
+            self.approbation = args[7]
         else:
             self.approbation = None
 
@@ -146,7 +148,7 @@ class BaseApp:
             self.client = mqtt.Client(self.node + "_" + self.name + "_" + self.id)
 
         # pripojenie k brokeru
-        self.client.connect(BROKER_URL, BROKER_PORT)
+        self.client.connect(BROKER_HOST, BROKER_PORT)
 
         # posli spravu o startovani (je potrebne rozlisit prve spustanie od opakujuceho sa stavu running)
         self.publish_lifecycle_message("starting")

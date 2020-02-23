@@ -1,0 +1,7 @@
+{
+	"enabled": true,
+	"name": "demo_hra2d_j",
+	"type": "frontend",
+	"labels": ["game"],
+	"demo_time": 5
+}
