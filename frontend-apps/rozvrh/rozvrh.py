@@ -50,7 +50,7 @@ class CurrentClass(base_app.BaseApp):
         # subject
         self.subject.set("Predmet")
         subject = tk.Label(self.window, textvariable=self.subject, anchor="center", font="{Open Sans} 48 bold",
-                           fg="#6e4a31", wraplengt=WIDTH - 100)
+                           fg="#6e4a31", wraplengt=self.screen_width - 100)
         subject.pack(side="top", fill="both", expand="true")
 
     # get current time
@@ -90,14 +90,20 @@ class CurrentClass(base_app.BaseApp):
         # init window
         window = tk.Tk()
         window.title("Aktuálny rozvrh - UMB")
-        window.geometry(str(WIDTH) + "x" + str(HEIGHT))
-        #        self.top = tkinter.Tk()
-        #        self.top.wm_attributes('-type', 'splash')       # bez dekoracii
-        #        self.top.wm_attributes('-fullscreen','true')
-        #        self.top.geometry("{0}x{1}+0+0".format(self.top.winfo_screenwidth()-3, self.top.winfo_screenheight()-3))    # na celu obrazovku
-        #        self.top.resizable(False, False)
-        #        self.top.update_idletasks()
-        #        self.top.overrideredirect(True)
+        window.wm_attributes("-type", "splash")       # bez dekoracii
+        window.wm_attributes("-fullscreen", True)
+        window.configure(background=bgcol)
+        if self.screen_width is None or self.screen_height is None:
+            #window.geometry(str(WIDTH) + "x" + str(HEIGHT))
+            self.screen_width = window.winfo_screenwidth()
+            self.screen_height = window.winfo_screenheight()
+        window.geometry("{0}x{1}+0+0".format(self.screen_width-3, self.screen_height-3))
+#        window.resizable(False, False)
+#        window.update_idletasks()
+#        window.overrideredirect(True)
+
+
+
         # fill window with content
         self.window = window
         self.clock = tk.StringVar()

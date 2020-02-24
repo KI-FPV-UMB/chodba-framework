@@ -125,7 +125,10 @@ class Teplomer(base_app.BaseApp):
         # zisti a zapamataj rozmery vytvoreneho okna
         w, h = ctypes.c_int(), ctypes.c_int()
         sdl2.SDL_GetWindowSize(self.window, ctypes.byref(w), ctypes.byref(h))
-        self.window_w, self.window_h = w.value, h.value
+        if self.screen_width is not None and self.screen_height is not None:
+            self.window_w, self.window_h = self.screen_width, self.screen_height
+        else:
+            self.window_w, self.window_h = w.value, h.value
 
         # priprav pristup na kreslenie do okna
         self.renderer = sdl2.SDL_CreateRenderer(self.window, -1, sdl2.SDL_RENDERER_SOFTWARE)
@@ -150,11 +153,20 @@ class Teplomer(base_app.BaseApp):
             # kresli
             sdl2.SDL_SetRenderDrawColor(self.renderer, 0, 0, 0, 0)
             sdl2.SDL_RenderClear(self.renderer)
-            # kresli obrazok
+            # vypocitaj mierku zvacsenia/zmensenia
+            aw = self.obrazok.contents.w / self.window_w
+            ah = self.obrazok.contents.h / self.window_h
             r = sdl2.SDL_Rect()
-            r.x, r.y = 0, 0
-            r.w, r.h = self.obrazok.contents.w, self.obrazok.contents.h
-            sdl2.SDL_BlitSurface(self.obrazok, None, self.windowsurface, r)
+            a = max(aw, ah)
+            nw, nh = self.obrazok.contents.w / a, self.obrazok.contents.h / a
+            r.x, r.y = int(self.window_w/2 - nw/2), int(self.window_h/2 - nh/2)
+            r.w, r.h = int(nw), int(nh)
+            # vykresli
+            sdl2.SDL_BlitScaled(self.obrazok, None, self.windowsurface, r)
+            #r.x, r.y = 0, 0
+            #r.w, r.h = self.obrazok.contents.w, self.obrazok.contents.h
+            #sdl2.SDL_BlitSurface(self.obrazok, None, self.windowsurface, r)
+
             if self.status != "hotovo":
                 # vypis spravu
                 nazov = sdl2.sdlttf.TTF_RenderUTF8_Blended(self.font, self.status.encode(FS_ENCODING), sdl2.SDL_Color(255, 255, 255))
