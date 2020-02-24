@@ -38,7 +38,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>sk.umb.prog3.demohra2d.demohra2d.HlavnaSwing</mainClass>
+							<mainClass>sk.umb.prog3.hra2d.HlavnaSwing</mainClass>
 						</manifest>
 					</archive>
 					<descriptorRefs>
