@@ -1,4 +1,4 @@
-package sk.umb.prog3.demohra2d.mqtt;
+package sk.umb.prog3.hra2d.mqtt;
 
 import org.eclipse.paho.client.mqttv3.*;
 import org.json.JSONArray;

@@ -1,7 +1,7 @@
-package sk.umb.prog3.demohra2d;
+package sk.umb.prog3.hra2d;
 
-import sk.umb.prog3.demohra2d.gui.HlavneOkno;
-import sk.umb.prog3.demohra2d.mqtt.MqttParams;
+import sk.umb.prog3.hra2d.gui.HlavneOkno;
+import sk.umb.prog3.hra2d.mqtt.MqttParams;
 
 import javax.swing.JFrame;
 import java.io.IOException;

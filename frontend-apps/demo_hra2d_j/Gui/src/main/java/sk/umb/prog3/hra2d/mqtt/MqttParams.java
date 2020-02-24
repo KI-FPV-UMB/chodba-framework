@@ -1,4 +1,4 @@
-package sk.umb.prog3.demohra2d.mqtt;
+package sk.umb.prog3.hra2d.mqtt;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
