@@ -115,4 +115,14 @@ public class HlavneOkno extends JPanelMqtt implements Runnable, KeyListener {
 		bludisko.klavesaPustena(key.getKeyCode());
 	}
 
+	@Override
+	public void keyPressed(int keyCode) {
+		bludisko.klavesaStlacena(keyCode);
+	}
+
+	@Override
+	public void keyReleased(int keyCode) {
+		bludisko.klavesaPustena(keyCode);
+	}
+
 }
