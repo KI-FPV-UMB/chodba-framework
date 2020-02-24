@@ -1,1 +1,7 @@
 __pycache__
+/.idea
+target
+build
+*.iml
+.project
+.settings
