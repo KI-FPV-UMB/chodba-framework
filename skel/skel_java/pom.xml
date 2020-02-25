@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>sk.umb.chodba.frontend</groupId>
+	<artifactId>ChodbaFrontend</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
+	<packaging>jar</packaging>
+	<name>ChodbaFrontend</name>
+
+	<distributionManagement>
+		<!-- upload repozitar cez "mvn deploy" -->
+		<repository>
+			<id>maven2-snapshot-repository</id>
+			<name>Maven2 Snapshot Repository</name>
+			<url>scp://devel.umb.sk/var/www/mavenrepo/</url>
+			<uniqueVersion>false</uniqueVersion>
+		</repository>
+		<snapshotRepository>
+			<id>maven2-snapshot-repository</id>
+			<name>Maven2 Snapshot Repository</name>
+			<url>scp://devel.umb.sk/var/www/mavenrepo-snapshots/</url>
+			<uniqueVersion>false</uniqueVersion>
+		</snapshotRepository>
+	</distributionManagement>
+
+	<build>
+		<extensions>
+			<extension>
+				<!-- aby bolo mozne pouzivat scp (maven2-snapshot-repository) -->
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-ssh</artifactId>
+				<version>1.0</version>
+			</extension>
+		</extensions>
+	</build>
+
+</project>
