@@ -14,7 +14,15 @@ import logging
 import traceback
 
 WEBSOCKETS = False
-BROKER_HOST = "localhost"
+
+#with open ("/etc/hostname", "r") as f:
+#    hn=f.readlines()
+#if hn.trim()=="chodba-ki01":
+#        BROKER_HOST = "localhost"
+#    else:
+#        BROKER_HOST = "localhost"
+
+BROKER_HOST = "chodba-ki01"
 if WEBSOCKETS:
     BROKER_PORT = 9001
 else:

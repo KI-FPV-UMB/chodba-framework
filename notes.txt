@@ -1,8 +1,16 @@
 ssh pi@194.160.41.39 -p 1194
+ssh pi@194.160.41.64 -p 1194
 
 
 
 TODO:
+	vcgencmd display_power 0
+	vcgencmd display_power 1
+	export DISPLAY=:0.0 ; xset s off ; xset -display :0.0 -dpms ; xset -display :0.0 s off ; xset -display :0.0 s noblank ; export PYTHONPATH=/opt/chodba-framework/base
+
+
+
+
 	-ostatne skusit ci ide - skusit napr. vyhodit daky import a ze ked to padne, ci to pekne uvidim v err
 	-dole scrolling s rss s novinkami (root, zive, ...). asi to spravit tak, ze vsetky horne appky musia byt implementovane nie fullscreen, ale
 	 v okne s pevnym rozmerom (ktory bude vracat framework) a bez dekoracii. okrem toho by nezavisle bezala 2. appka, ktora by robila ten
