@@ -48,7 +48,7 @@ class Galeria(base_app.BaseApp):
         self.obrazok = sdl2.sdlimage.IMG_Load(str.encode(self.files[n]))
 
     def kresli_obrazok(self):
-        if self.obrazok is None:
+        if self.obrazok is None or self.obrazok.contents is None:
             self.dalsi_obrazok()
         # vymaz pozadie
         sdl2.SDL_SetRenderDrawColor(self.renderer, 0, 0, 0, 0)

@@ -1,5 +1,5 @@
 {
-	"enabled": true,
+	"enabled": false,
 	"name": "rozvrh",
 	"type": "frontend",
 	"labels": ["demo"],
