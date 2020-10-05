@@ -1,5 +1,6 @@
 ssh pi@194.160.41.39 -p 1194
 ssh pi@194.160.41.64 -p 1194
+ssh pi@194.160.41.90 -p 1194
 
 
 
@@ -7,6 +8,13 @@ TODO:
 	vcgencmd display_power 0
 	vcgencmd display_power 1
 	export DISPLAY=:0.0 ; xset s off ; xset -display :0.0 -dpms ; xset -display :0.0 s off ; xset -display :0.0 s noblank ; export PYTHONPATH=/opt/chodba-framework/base
+Galeria problem:
+	Záverečné práce/Platonske telesa.mp4
+	Záverečné práce/Michal Brozman - Vyuzitie kniznice OMPL - trasa.png
+	Záverečné práce/Daniel Glos - VID_20190412_144713587.mp4
+	Záverečné práce/TODO
+	Záverečné práce/Martin Schmidt - Konstrukcia drona - ladenie.mp4
+	Záverečné práce/Daniel Glos - VID_20190412_144713587.mp4
 
 
 
@@ -54,6 +62,7 @@ TEMY
 -oznamy z webu ki
 	http://www.fpv.umb.sk/rss/katedry-katedra-informatiky.xml
 	https://www.tutorialspoint.com/python_text_processing/python_reading_rss_feed.htm
+	rss
 2) meet-and-code
 -hra2d (java aj python) - aby to islo ako ma
 -status [frontend] - ake su aplikacie, ake workspaces; teplotu kazdeho rpi
@@ -69,6 +78,8 @@ TEMY
 -rozvrh-cely [frontend] - zobrazi cely rozvrh. user by mal v mobile mat nastavenu aj aprobaciu, tak mu zobrazi len tu
 -obedy-dnes [frontend] - zobrazi len, ze co je dnes na obed
 -obedy-tyzden [frontend] - zobrazi obedy na cely tyzden
+	aj z ikm, ...
+-parkovanie
 -mhd-teraz [frontend] - zobrazi, co ide najblizsich N minut (od skoly, ale aj od tajaku)
 -mhd-cely [frontend] - celkovy prehlad co/kedy ide
 -hra-... [frontend] - ovladanie musi reagovat na mqtt spravy
@@ -90,7 +101,7 @@ TEMY
 FRAMEWORK
 -rpi4:
 	-instalacia
-		apt-get install mosquitto python3-paho-mqtt libsdl2-2.0-0 libsdl2-image-2.0-0 libsdl2-ttf-2.0-0 python3-pil.imagetk
+		apt-get install python3-pip python3-paho-mqtt libsdl2-2.0-0 libsdl2-image-2.0-0 libsdl2-ttf-2.0-0 python3-pil.imagetk mosquitto
 		pip3 install pysdl2
 	-spustit mqtt (mosquitto)
 	-pripojit ethernetom na internet, wifi nastavit ako AP (ale neroutovat!)
