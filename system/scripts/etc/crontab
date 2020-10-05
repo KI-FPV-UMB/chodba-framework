@@ -2,6 +2,7 @@
 */2 * * * *	root	/opt/chodba-framework/system/scripts/usr/local/bin/chodba.sh
 */2 * * * *	pi	/opt/chodba-framework/system/scripts/usr/local/bin/git-pull.sh
 */10 * * * *	pi	/opt/chodba-framework/system/scripts/usr/local/bin/stat2io.sh
+# aj na mastri, aj na nodoch
 0 7 * * 1-5	root	/opt/chodba-framework/system/scripts/usr/local/bin/hdmi-ctrl.sh on
 0 20 * * 1-5	root	/opt/chodba-framework/system/scripts/usr/local/bin/hdmi-ctrl.sh off
 

@@ -2,6 +2,8 @@
 Description=chodba node_manager service
 After=chodba-master.service
 Wants=chodba-master.service
+#After=network-online.target
+#Wants=network-online.target
 
 [Service]
 Type=simple

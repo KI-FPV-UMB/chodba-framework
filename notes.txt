@@ -1,13 +1,5 @@
-ssh pi@194.160.41.39 -p 1194
-ssh pi@194.160.41.64 -p 1194
-ssh pi@194.160.41.90 -p 1194
-
-
 
 TODO:
-	vcgencmd display_power 0
-	vcgencmd display_power 1
-	export DISPLAY=:0.0 ; xset s off ; xset -display :0.0 -dpms ; xset -display :0.0 s off ; xset -display :0.0 s noblank ; export PYTHONPATH=/opt/chodba-framework/base
 Galeria problem:
 	Záverečné práce/Platonske telesa.mp4
 	Záverečné práce/Michal Brozman - Vyuzitie kniznice OMPL - trasa.png
@@ -76,6 +68,12 @@ TEMY
 -rozvrh-prestavky [backend] - sleduje cas, a vzdy cez prestavku vysle signal na spustenie rozvrh-teraz
 -rozvrh-teraz [frontend] - zobrazi co sa prave kde uci, + co bude najblizsie kde nasledovat (asi podla ucebni)
 -rozvrh-cely [frontend] - zobrazi cely rozvrh. user by mal v mobile mat nastavenu aj aprobaciu, tak mu zobrazi len tu
+	TODO:
+		https://www.pdf.umb.sk/~rozvrh/Rozvrhy/2020-21%20ZS/rozvrh.html
+		view-source:https://www.pdf.umb.sk/~rozvrh/Rozvrhy/2020-21%20ZS/rozvrh_Trieda_Menu.html
+		https://www.pdf.umb.sk/~rozvrh/Rozvrhy/2020-21%20ZS/rozvrh_Trieda_1nAIN.html
+			rozvrh_Trieda_2nAIN.html
+			rozvrh_Trieda_3nAIN.html
 -obedy-dnes [frontend] - zobrazi len, ze co je dnes na obed
 -obedy-tyzden [frontend] - zobrazi obedy na cely tyzden
 	aj z ikm, ...
@@ -99,22 +97,6 @@ TEMY
 
 
 FRAMEWORK
--rpi4:
-	-instalacia
-		apt-get install python3-pip python3-paho-mqtt libsdl2-2.0-0 libsdl2-image-2.0-0 libsdl2-ttf-2.0-0 python3-pil.imagetk mosquitto
-		pip3 install pysdl2
-	-spustit mqtt (mosquitto)
-	-pripojit ethernetom na internet, wifi nastavit ako AP (ale neroutovat!)
-	-nainstalovat OpenCV, nastavit kameru
-	-pripojit a nastavit senzor teploty a vlhkosti, mikrofon
-	-pri starte:
-		-na hlavnom uzle spustit app master
-			systemctl enable chodba-master.service 
-		-na vsetkych spustit node_manager
-			systemctl enable chodba-node_manager.service 
-		-na hlavnom uzle cronom opakovane posielat mastrovi spravu run_backends
-	-verejnu ip dohodnut na 194.160.41.3
-	 ssh pi@194.160.41.39 -p 1194
 	
 
 -mobilna appka, ktora zobrazi daky predefinovany screen
@@ -139,4 +121,35 @@ TODO
 -docker??
 -rozvrh: https://ws-gw.umb.sk/doc
 
+
+INSTALACIA A KONFIGURACIA
+*************************
+-na vsetkych (master aj nodes)
+	sudo apt-get install python3-pip python3-paho-mqtt libsdl2-2.0-0 libsdl2-image-2.0-0 libsdl2-ttf-2.0-0 python3-pil.imagetk fortunes-cs python3-numpy python3-matplotlib fonts-freefont-ttf
+	sudo pip3 install pysdl2
+	sudo cp /opt/chodba-framework/system/scripts/usr/share/xsessions/sleep-inf.desktop /usr/share/xsessions/
+	sudo chown root:root /usr/share/xsessions/sleep-inf.desktop
+	sudo vi /etc/lightdm/lightdm.conf
+		autologin-session=sleep-inf
+	sudo mkdir /var/log/chodba/
+	sudo cp /opt/chodba-framework/system/scripts/etc/systemd/system/chodba-node_manager.service /etc/systemd/system/
+	sudo systemctl enable chodba-node_manager.service 
+-master
+	apt-get install mosquitto
+	-spustit mqtt (mosquitto)
+	-pripojit ethernetom na internet, wifi nastavit ako AP (ale neroutovat!)
+	-nainstalovat OpenCV, nastavit kameru
+	-pripojit a nastavit senzor teploty a vlhkosti, mikrofon
+	-povolit sluzby
+		systemctl enable chodba-master.service
+	-na hlavnom uzle cronom opakovane posielat mastrovi spravu run_backends
+
+
+export DISPLAY=:0.0 ; xset s off ; xset -display :0.0 -dpms ; xset -display :0.0 s off ; xset -display :0.0 s noblank ; export PYTHONPATH=/opt/chodba-framework/base
+
+
+
+ssh pi@194.160.41.39 -p 1194
+ssh pi@194.160.41.64 -p 1194
+ssh pi@194.160.41.90 -p 1194
 
