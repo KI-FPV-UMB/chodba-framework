@@ -43,11 +43,12 @@ class Galeria(base_app.BaseApp):
                 self.current = 0
         else:
             # nahodny
-            n = random.randint(0, len(self.files)-1)
+            n = self.current = random.randint(0, len(self.files)-1)
         logging.info("[" + self.name + "]   kreslim " + str(n) + ": " + self.files[n])
         self.obrazok = sdl2.sdlimage.IMG_Load(str.encode(self.files[n]))
 
     def kresli_obrazok(self):
+        #logging.error("[" + self.name + "]   kreslim : " + self.files[self.current])
         if self.obrazok is None or self.obrazok.contents is None:
             self.dalsi_obrazok()
         # vymaz pozadie
@@ -101,15 +102,17 @@ class Galeria(base_app.BaseApp):
         d = random.choice(subdirs)
         logging.info("[" + self.name + "] vyberam " + d)
         self.folder = d
-        self.files = [os.path.join(d, f) for f in os.listdir(d) if os.path.isfile(os.path.join(d, f))]
-        self.sorted = os.path.isfile(os.path.join(d, SORTED_FILE))
-        if self.sorted:
-            self.files.remove(os.path.join(d, SORTED_FILE))
+        self.files = [os.path.join(d, f) for f in os.listdir(d) if os.path.isfile(os.path.join(d, f)) and (f.endswith(".png") or f.endswith(".jpg"))]
+        ssorted = os.path.join(d, SORTED_FILE)
+        self.sorted = os.path.isfile(ssorted)
+        if self.sorted and ssorted in self.files:
+            self.files.remove(ssorted)
             self.files.sort()
-            self.current = 0                # ak sa obrazky budu zobrazovat sorted, musime si pamatat, ktory bol zobrazeny ako posledny
-        self.notitle = os.path.isfile(os.path.join(d, NOTITLE_FILE))
-        if self.notitle:
-            self.files.remove(os.path.join(d, NOTITLE_FILE))
+        self.current = 0                # ak sa obrazky budu zobrazovat sorted, musime si pamatat, ktory bol zobrazeny ako posledny
+        snotitle = os.path.join(d, NOTITLE_FILE)
+        self.notitle = os.path.isfile(snotitle)
+        if self.notitle and snotitle in self.files:
+            self.files.remove(snotitle)
 
         # inicializacia SDL2
         if sdl2.SDL_Init(sdl2.SDL_INIT_VIDEO) < 0:
