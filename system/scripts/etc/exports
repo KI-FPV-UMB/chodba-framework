@@ -1,4 +1,0 @@
-# pridat na mastra
-/home                   192.168.0.0/25(rw,crossmnt,no_subtree_check,async)
-/opt/chodba-framework   192.168.0.0/25(rw,crossmnt,no_subtree_check,async)
-

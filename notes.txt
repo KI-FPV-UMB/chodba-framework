@@ -134,8 +134,49 @@ INSTALACIA A KONFIGURACIA
 	sudo mkdir /var/log/chodba/
 	sudo cp /opt/chodba-framework/system/scripts/etc/systemd/system/chodba-node_manager.service /etc/systemd/system/
 	sudo systemctl enable chodba-node_manager.service 
+	sudo vi /etc/crontab
+		0 7 * * 1-5	root	/opt/chodba-framework/system/scripts/usr/local/bin/hdmi-ctrl.sh on
+		0 20 * * 1-5	root	/opt/chodba-framework/system/scripts/usr/local/bin/hdmi-ctrl.sh off
+	# len na uzly
+	sudo vi /etc/fstab
+		192.168.0.1:/home       /home   nfs     _netdev,vers=3,auto     0 0
+		192.168.0.1:/opt/chodba-framework       /opt/chodba-framework   nfs     _netdev,vers=3,auto     0 0
+
 -master
+	sudo vi /etc/network/interfaces
+		source-directory /etc/network/interfaces.d
+
+		auto br0 eth0 wlan0 eth1
+		allow-hotplug wlan0
+
+		iface eth0 inet manual
+		iface wlan0 inet manual
+
+		iface br0 inet static
+			bridge_ports eth0 wlan0
+			address 192.168.0.1
+			broadcast 192.168.0.255
+			netmask 255.255.255.0
+
+		iface eth1 inet dhcp
+
 	apt-get install mosquitto
+	sudo vi /etc/mosquitto/mosquitto.conf
+		pid_file /var/run/mosquitto.pid
+
+		persistence true
+		persistence_location /var/lib/mosquitto/
+
+		log_dest file /var/log/mosquitto/mosquitto.log
+
+		include_dir /etc/mosquitto/conf.d
+
+		listener 1883
+		protocol mqtt
+
+		listener 9001
+		protocol websockets
+
 	-spustit mqtt (mosquitto)
 	-pripojit ethernetom na internet, wifi nastavit ako AP (ale neroutovat!)
 	-nainstalovat OpenCV, nastavit kameru
@@ -143,6 +184,14 @@ INSTALACIA A KONFIGURACIA
 	-povolit sluzby
 		systemctl enable chodba-master.service
 	-na hlavnom uzle cronom opakovane posielat mastrovi spravu run_backends
+
+	sudo vi /etc/crontab
+		*/2 * * * *	root	/opt/chodba-framework/system/scripts/usr/local/bin/chodba.sh
+		*/2 * * * *	pi	/opt/chodba-framework/system/scripts/usr/local/bin/git-pull.sh
+		*/10 * * * *	pi	/opt/chodba-framework/system/scripts/usr/local/bin/stat2io.sh
+	sudo vi /etc/exports
+		/home                   192.168.0.0/25(rw,crossmnt,no_subtree_check,async)
+		/opt/chodba-framework   192.168.0.0/25(rw,crossmnt,no_subtree_check,async)
 
 
 export DISPLAY=:0.0 ; xset s off ; xset -display :0.0 -dpms ; xset -display :0.0 s off ; xset -display :0.0 s noblank ; export PYTHONPATH=/opt/chodba-framework/base
