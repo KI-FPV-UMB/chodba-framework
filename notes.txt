@@ -1,55 +1,38 @@
 
-TODO:
-Galeria problem:
-	Záverečné práce/Platonske telesa.mp4
-	Záverečné práce/Michal Brozman - Vyuzitie kniznice OMPL - trasa.png
-	Záverečné práce/Daniel Glos - VID_20190412_144713587.mp4
-	Záverečné práce/TODO
-	Záverečné práce/Martin Schmidt - Konstrukcia drona - ladenie.mp4
-	Záverečné práce/Daniel Glos - VID_20190412_144713587.mp4
-
-
-
-
-	-ostatne skusit ci ide - skusit napr. vyhodit daky import a ze ked to padne, ci to pekne uvidim v err
-	-dole scrolling s rss s novinkami (root, zive, ...). asi to spravit tak, ze vsetky horne appky musia byt implementovane nie fullscreen, ale
-	 v okne s pevnym rozmerom (ktory bude vracat framework) a bez dekoracii. okrem toho by nezavisle bezala 2. appka, ktora by robila ten
-	 scrolling. alebo este lepsie - terajsie appky rovnako ako doteraz, a ta druha by bezala ponad tie aktualne; ako dake priehladne okno
-	-technologie na zvazenie (ROS 2.0):
-		-databaza: https://redis.io/
-		-messaging: https://zeromq.org/
-		-vymena dat: https://en.wikipedia.org/wiki/Data_Distribution_Service
-		-konfiguracia siete: https://en.wikipedia.org/wiki/Zero-configuration_networking
-	-kazda n-ta (7?) appka by malo byt logo ki
-	-do galerie dorobit prehravanie videa; dohrat tam videa
-	-android appka
-		-ovladacie tlacidla asi kreslit graficky
-		-na tom ovladacom screene aj dake tlacidlo na restart
-		-spustanie aplikacie by malo byt asi na predposlednom screene, nie na tom ovladacom. lebo ked sa uspi a zobudi mobil, tak sa to spusti znova (aj sprava na spustenie appky)
-		 tym padom tu pracu s mqtt treba dako vynat do novej triedy; mozno ako staticke metody
-		-prvy screen preusporiadat nanovo - lebo teraz sa to zle formatuje, ked sa to nezmesti
-	-app_type nastavovat rovno podla adresara
-	-dorobit rpi hw: kameru https://www.makexyz.com/3d-models/order/f3677c995f2832e1a5c7413595707bbc
-	-ukladat dake statistiky (db backend) - ktora aplikacia sa ako casto spustila, ako dlho s nou niekto robil, ...
-	 potom na mobile, ked sa bude nieco spustat, tak defaultne to bude triedit podla oblubenosti
-	 dako tak to organizovat, ze aj po rokoch. cize napr. ak kazdy rok budu ziaci robit na grafike arkanoid, tak v zozname to bude ako
-	 arkanoid '19 (ale zotriedene podla popularity). cize vsetky arkanoidy
-
-	-citlive miesto: ked sa prave vypina aplikacia s spusta nova; ak do toho niekto (user) spusti aplikaciu, tak sa neaktivuje ten sposob
-	 nahradenia aplikacie. vysledkom bude, ze budu naraz 2 frontend aplikacie. mozno to spravit tak, ze v tej kontrole na pozadi stale aj
-	 zistovat, ci aj napriek vsetkemu nie su na 1 uzle naraz 2 frontend aplikacie - ak ano, tak jednu zrusit (tu, ktora nie je user app - t.j.
-	 ta s nickom). tato kontrola sa moze robit aj relativne casto (kazdych par sekund); nemala by byt draha
-
-	-wiki: zhrnut podmienky na appku (na ake spravy ma ako reagovat); quickstart ze ako to cele rozchodit
-		aj detailne opisat vsetky "sluzby" - s prikladmi sprav
-	-pripravit priklad TkInter frontendu. bude podporovat 2 mody: 1 obrazovkova / viac obrazovkova. pricom sama oznami, kolko obrazoviek v tom
-		multi mode vyzaduje (0=nepodporuje) podla toho by na tych 8 monitoroch mohlo ist naraz niekolko viac-obrazovkovych aplikacii
-		(napr. 3 a 5, alebo 3 a 3 a 2, a pod.)
-	-pri dynamickom ovladani sa pri kazdom odoslani vyziada novy layout (aby bolo mozne podla potreby menit formular)
+TODO
+****
+-dokumentaciu updatnut; dorobit. ake spravy poslat na tie bezne veci (spustenie, vypnutie). spisat ako to startuje
+ vsetko si pripomenut a v ramci toho to spisat
+-wiki: zhrnut podmienky na appku (na ake spravy ma ako reagovat); quickstart ze ako to cele rozchodit
+	aj detailne opisat vsetky "sluzby" - s prikladmi sprav
+-umoznit spustanie appiek aj bez frameworku (aspon obmedzene)
+-skontrolovat reagovanie na chyby - skusit napr. vyhodit daky import a ze ked to padne, ci to pekne uvidim v err
+-app_type nastavovat rovno podla adresara
+-ukladat dake statistiky (db backend) - ktora aplikacia sa ako casto spustila, ako dlho s nou niekto robil, ...
+ potom na mobile, ked sa bude nieco spustat, tak defaultne to bude triedit podla oblubenosti
+ dako tak to organizovat, ze aj po rokoch. cize napr. ak kazdy rok budu ziaci robit na grafike arkanoid, tak v zozname to bude ako
+ arkanoid '19 (ale zotriedene podla popularity). cize vsetky arkanoidy
+-citlive miesto: ked sa prave vypina aplikacia s spusta nova; ak do toho niekto (user) spusti aplikaciu, tak sa neaktivuje ten sposob
+ nahradenia aplikacie. vysledkom bude, ze budu naraz 2 frontend aplikacie. mozno to spravit tak, ze v tej kontrole na pozadi stale aj
+ zistovat, ci aj napriek vsetkemu nie su na 1 uzle naraz 2 frontend aplikacie - ak ano, tak jednu zrusit (tu, ktora nie je user app - t.j.
+ ta s nickom). tato kontrola sa moze robit aj relativne casto (kazdych par sekund); nemala by byt draha
+-moze byt, ze sa strati sprava? akoby sa stalo, ze master posle quit a client to nedostane. master si mysli, ze skoncil a spusti tam nieco dalsie
+ to by sa ale asi nemalo stat; master asi caka kym pride potvrdenie quit-u
+-Galeria problem: Záverečné práce/Michal Brozman - Vyuzitie kniznice OMPL - trasa.png
 
 
 TEMY
+****
 1) top priority
+-rozvrh-prestavky [backend] - sleduje cas, a vzdy cez prestavku vysle signal na spustenie rozvrh-teraz
+-rozvrh-teraz [frontend] - zobrazi co sa prave kde uci, + co bude najblizsie kde nasledovat (asi podla ucebni)
+-rozvrh-cely [frontend] - zobrazi cely rozvrh. user by mal v mobile mat nastavenu aj aprobaciu, tak mu zobrazi len tu
+	https://www.pdf.umb.sk/~rozvrh/Rozvrhy/2020-21%20ZS/rozvrh.html
+	view-source:https://www.pdf.umb.sk/~rozvrh/Rozvrhy/2020-21%20ZS/rozvrh_Trieda_Menu.html
+	https://www.pdf.umb.sk/~rozvrh/Rozvrhy/2020-21%20ZS/rozvrh_Trieda_1nAIN.html
+		rozvrh_Trieda_2nAIN.html
+		rozvrh_Trieda_3nAIN.html
+-do galerie dorobit prehravanie videa; dohrat tam videa
 -qr kod pre mobilnu appku [frontend] - aj taka reklama: "Skus to!" a qr kod
 -oznamy z webu ki
 	http://www.fpv.umb.sk/rss/katedry-katedra-informatiky.xml
@@ -65,15 +48,6 @@ TEMY
 	alebo aj nahodne klavesy (ake - to vie vdaka layoutu)
 -teplomer-range [backend] - prijima spravy s nameranou teplotou; ak klesne/stupne cez daku hodnotu, tak spusti teplomer-alert
 -teplomer-alert [frontend] - zobrazi (vtipnu?) spravu, ze teplota je prilis vysoka/nizka
--rozvrh-prestavky [backend] - sleduje cas, a vzdy cez prestavku vysle signal na spustenie rozvrh-teraz
--rozvrh-teraz [frontend] - zobrazi co sa prave kde uci, + co bude najblizsie kde nasledovat (asi podla ucebni)
--rozvrh-cely [frontend] - zobrazi cely rozvrh. user by mal v mobile mat nastavenu aj aprobaciu, tak mu zobrazi len tu
-	TODO:
-		https://www.pdf.umb.sk/~rozvrh/Rozvrhy/2020-21%20ZS/rozvrh.html
-		view-source:https://www.pdf.umb.sk/~rozvrh/Rozvrhy/2020-21%20ZS/rozvrh_Trieda_Menu.html
-		https://www.pdf.umb.sk/~rozvrh/Rozvrhy/2020-21%20ZS/rozvrh_Trieda_1nAIN.html
-			rozvrh_Trieda_2nAIN.html
-			rozvrh_Trieda_3nAIN.html
 -obedy-dnes [frontend] - zobrazi len, ze co je dnes na obed
 -obedy-tyzden [frontend] - zobrazi obedy na cely tyzden
 	aj z ikm, ...
@@ -86,31 +60,10 @@ TEMY
 	spy vs spy (kazdy hrac na svojej obrazovke)
 	najlepsie studentske hry prerobit
 -firmy [frontend] - reklama, oznamy ze niekoho hladaju, ...
-3) bc/mgr prace
--osoba-poloha [backend] - posle spravu, ze na definovanej pozicii (napr. pred kazdym monitorom) stoji nejaka osoba
--osoba-gesto [backend] - posle spravu, ze nejaka osoba spravila na kinect nejake gesto
--osoby-pozicie [backend] - ked pride sprava (poziadavka) tak zisti kde ktora osoba stoji a posle to inou spravou
--osoby-zapcha [backend] - dotazuje sa na pocty ludi a zaznamenava to do db. po dlhsom case bude vediet, kedy tam byva plno. potom bude dopredu
- vysielat spravu, ze sa blizi zapcha
--osoby-zapcha-alert [frontend] - zobrazi varovanie, ze bude plno...
--pocuvanie hovorenych povelov (pomocou google sluzby)
 
-
-FRAMEWORK
-	
-
--mobilna appka, ktora zobrazi daky predefinovany screen
-	-posielanie sprav ovladania (dola/doprava/...)
-	-posielanie sprav na spustenie frontend appky (zoznam dostane zo servera!)
-	-instalovana pomocou qr kodu
-	-vzdy musi poslat aj dake svoje id (povedzme ze v appke si kazdy vyplni nick); aby bolo mozne rozlisit viac hracov
-	-tiez by si mal mat moznost nastavit aprobaciu (napr. pre rozvrh, ale aj pre oznamy a pod.)
-	-musi informovat (rovno umoznit?), ze ked chce user s tym pracovat, musi sa prihlasit na lokalnu rpi wifi
--moznost instalovania dalsich apiek studentami (brat to rovno s gitu?)
-
-
-
-TODO
+-pripravit priklad TkInter frontendu. bude podporovat 2 mody: 1 obrazovkova / viac obrazovkova. pricom sama oznami, kolko obrazoviek v tom
+	multi mode vyzaduje (0=nepodporuje) podla toho by na tych 8 monitoroch mohlo ist naraz niekolko viac-obrazovkovych aplikacii
+	(napr. 3 a 5, alebo 3 a 3 a 2, a pod.)
 -moznost pustenia rezimu streamovania videa. to by mala mat appka pod kontrolou; resp. spravit appku, ktora pusti stream a bude zobrazovat jeho patricne casti na prislusnej obrazovke. pricom nemusi byt zrovna na vsetkych 8.  omxplayer --crop '0 0 320 347' http://192.168.0.20:8080
 -farebne ovladatelne svetla
 -automaticke otvaranie okna von
@@ -118,12 +71,48 @@ TODO
 -polievanie kvetu, fontanka???
 -home automation (milan!)
 -mysliet na nase temy (pv, robotika, vysokovykonne pocitanie, iot, ...)
--docker??
 -rozvrh: https://ws-gw.umb.sk/doc
+
+
+3) bc/mgr prace
+-osoba-poloha [backend] - posle spravu, ze na definovanej pozicii (napr. pred kazdym monitorom) stoji nejaka osoba
+-osoba-gesto [backend] - posle spravu, ze nejaka osoba spravila na kinect nejake gesto
+-osoby-pozicie [backend] - ked pride sprava (poziadavka) tak zisti kde ktora osoba stoji a posle to inou spravou
+-osoby-zapcha [backend] - dotazuje sa na pocty ludi a zaznamenava to do db. po dlhsom case bude vediet, kedy tam byva plno. potom bude dopredu
+ vysielat spravu, ze sa blizi zapcha
+-osoby-zapcha-alert [frontend] - zobrazi varovanie, ze bude plno...
+-hlasove-ovladanie [backend?] - pocuvanie hovorenych povelov (pomocou google sluzby)
+
+
+FRAMEWORK
+*********
+-technologie na zvazenie (ROS 2.0):
+	-databaza: https://redis.io/
+	-messaging: https://zeromq.org/
+	-vymena dat: https://en.wikipedia.org/wiki/Data_Distribution_Service
+	-konfiguracia siete: https://en.wikipedia.org/wiki/Zero-configuration_networking
+-moznost instalovania dalsich apiek studentami (brat to rovno s gitu?)
+
+
+MOBIL
+*****
+-instalovana pomocou qr kodu
+-vzdy musi poslat aj dake svoje id (povedzme ze v appke si kazdy vyplni nick); aby bolo mozne rozlisit viac hracov
+-tiez by si mal mat moznost nastavit aprobaciu (napr. pre rozvrh, ale aj pre oznamy a pod.)
+-musi informovat (rovno umoznit?), ze ked chce user s tym pracovat, musi sa prihlasit na lokalnu rpi wifi
+-ovladacie tlacidla asi kreslit graficky
+-na tom ovladacom screene aj dake tlacidlo na restart
+-spustanie aplikacie by malo byt asi na predposlednom screene, nie na tom ovladacom. lebo ked sa uspi a zobudi mobil, tak sa to spusti znova
+ (aj sprava na spustenie appky)
+ tym padom tu pracu s mqtt treba dako vynat do novej triedy; mozno ako staticke metody
+-prvy screen preusporiadat nanovo - lebo teraz sa to zle formatuje, ked sa to nezmesti
+-pri dynamickom ovladani sa pri kazdom odoslani vyziada novy layout (aby bolo mozne podla potreby menit formular)
 
 
 INSTALACIA A KONFIGURACIA
 *************************
+-TODO
+	-dorobit rpi hw: kameru https://www.makexyz.com/3d-models/order/f3677c995f2832e1a5c7413595707bbc
 -na vsetkych (master aj nodes)
 	sudo apt-get install python3-pip python3-paho-mqtt libsdl2-2.0-0 libsdl2-image-2.0-0 libsdl2-ttf-2.0-0 python3-pil.imagetk fortunes-cs python3-numpy python3-matplotlib fonts-freefont-ttf
 	sudo pip3 install pysdl2
@@ -195,7 +184,6 @@ INSTALACIA A KONFIGURACIA
 
 
 export DISPLAY=:0.0 ; xset s off ; xset -display :0.0 -dpms ; xset -display :0.0 s off ; xset -display :0.0 s noblank ; export PYTHONPATH=/opt/chodba-framework/base
-
 
 
 ssh pi@194.160.41.39 -p 1194
