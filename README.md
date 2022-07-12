@@ -9,6 +9,8 @@ Aktuálny hardvér pozostáva z:
   * teplomer
   * vlhkomer
 
+## Ako na to
+
 Aby mohol byť Váš program spustený v tomto prostredí, musí spĺňať niekoľko podmienok.
 
 1. posiela informacie o zivotnom cykle na topic "master":
@@ -49,7 +51,7 @@ priklad:
 
 3. pocuva topic "app/<svoj_nazov>/<hostname>"; moze byt rovnaky kod ako pri "app/<svoj_nazov>"
 
-Prehľad štruktúry MQTT topicov
+## Prehľad štruktúry MQTT topicov
 
 * master - spravy pre master uzol (aplikaciu)
   * msg=lifecycle => udrziava zoznam beziacich aplikacii

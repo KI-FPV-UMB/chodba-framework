@@ -1,9 +1,0 @@
-Aktuálny hardvér pozostáva z:
-* mozaiky z 8 monitorov a RPI1
-* projektora s RPI4, na ktoré je pripojené
-  * kamera
-  * kinect
-  * mikrofón
-  * teplomer
-  * vlhkomer
-

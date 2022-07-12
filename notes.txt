@@ -1,6 +1,7 @@
 
 TODO
 ****
+-appky: casopis (root, quark, zive, chip); hw status (cpu, mem, ipcka!)
 -dokumentaciu updatnut; dorobit. ake spravy poslat na tie bezne veci (spustenie, vypnutie). spisat ako to startuje
  vsetko si pripomenut a v ramci toho to spisat
 -wiki: zhrnut podmienky na appku (na ake spravy ma ako reagovat); quickstart ze ako to cele rozchodit
@@ -54,6 +55,7 @@ TEMY
 -parkovanie
 -mhd-teraz [frontend] - zobrazi, co ide najblizsich N minut (od skoly, ale aj od tajaku)
 -mhd-cely [frontend] - celkovy prehlad co/kedy ide
+-pridat do ucebni senzory (vlhkost, teplota, pohybovy) a sledovat vyuzitie ucebni
 -hra-... [frontend] - ovladanie musi reagovat na mqtt spravy
 	jackbox: https://www.youtube.com/watch?v=UZfNc_kbxKQ
 	dyna blaster (vsetci hraci na jednej obrazovke)
