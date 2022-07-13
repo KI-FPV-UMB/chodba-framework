@@ -65,19 +65,19 @@ class NodeManager(base_app.BaseApp):
             self.pub_msg("log", log, "master" )
             return
 
-        if msg["msg"] == "run":
+        if msg["msg"] == "start":
             # spusti danu app
             try:
                 if msg["type"] == "backend":
-                    self.run_app(BACKEND_APPS_PATH, msg["run"])
+                    self.run_app(BACKEND_APPS_PATH, msg["name"])
                 if msg["type"] == "frontend":
                     src = msg["src"] if "src" in msg else None
                     nick = msg["nickname"] if "nickname" in msg else None
                     approb = msg["approbation"] if "approbation" in msg else None
-                    self.run_app(FRONTEND_APPS_PATH, msg["run"], self.screen_width, self.screen_height, src, nick, approb)
+                    self.run_app(FRONTEND_APPS_PATH, msg["name"], self.screen_width, self.screen_height, src, nick, approb)
             except Exception as e:
-                logging.exception("[" + self.name + "] chyba pri spustani " + msg["run"])
-                log = { "name": self.name, "node": self.node, "log": "chyba pri spustani " + msg["run"] + ": " + str(e) }
+                logging.exception("[" + self.name + "] chyba pri spustani " + msg["name"])
+                log = { "name": self.name, "node": self.node, "log": "chyba pri spustani " + msg["name"] + ": " + str(e) }
                 self.pub_msg("log", log, "master" )
 
         if msg["msg"] == "screen_size":

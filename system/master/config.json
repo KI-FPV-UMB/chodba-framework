@@ -2,5 +2,12 @@
 	"enabled": true,
 	"name": "master",
 	"type": "system",
-	"runon": "chodba-ki01"
+	"runon": "chodba-ki01",
+	"workspace_layout": {
+		"mvagac-X230": [0, 0, 1, 1],
+		"chodba-ki01": [1, 0, 1, 1],
+		"chodba-ki02": [0, 1, 1, 1],
+		"chodba-ki03": [1, 1, 1, 1],
+		"chodba-ki04": [2, 0, 2, 2]
+	}
 }

@@ -6,21 +6,14 @@ __email__ = "michal.vagac@gmail.com"
 
 import sys
 import socket
+import os
 import paho.mqtt.client as mqtt
 import json
 import random
 import datetime
 import logging
 import traceback
-
-#with open ("/etc/hostname", "r") as f:
-#    hn=f.readlines()
-#if hn.trim()=="chodba-ki01":
-#        BROKER_HOST = "localhost"
-#    else:
-#        BROKER_HOST = "localhost"
-
-MAIN_TOPIC = "main"
+import app_utils
 
 class LessThanFilter(logging.Filter):
     def __init__(self, exclusive_maximum, name=""):
@@ -31,8 +24,8 @@ class LessThanFilter(logging.Filter):
         # non-zero return means we log this message
         return 1 if record.levelno < self.max_level else 0
 
-# basic class defining common properties for all applications
 class BaseApp:
+    """Basic class defining common properties for all applications"""
 
     def __init__(self):
         #logging.basicConfig(level=logging.DEBUG)
@@ -57,14 +50,20 @@ class BaseApp:
         self.node = socket.gethostname()
 
         # read config file and set each property as an attribute
-        with open("config.json", "r") as read_file:
-            self.config = json.load(read_file)
+        self.config = self.read_config("./")
 
         # start
         logging.info("[" + self.name + "] starting on node " + self.node)
         logging.info("[" + self.name + "]   id = " + self.id)
         for k in self.config.keys():
             logging.debug("[" + self.name + "]   " + k + " = " + str(self.config[k]))
+
+    def read_config(self, path: str):
+        if not os.path.isfile(os.path.join(path, "config.json")):
+            logging.error("[" + self.name + "] config file was not found in directory " + path)
+            return
+        with open(os.path.join(path, "config.json"), "r") as read_file:
+            return json.load(read_file)
 
     def process_args(self, args):
         self.args = {}
@@ -96,8 +95,8 @@ class BaseApp:
     # def get_src(self):
     #     return "node/" + self.node + "/" + self.name
 
-    def pub_msg(self, msg_type, msg_body, topic):
-        """basic method for publishing messages"""
+    def pub_msg(self, msg_type: str, msg_body: dict, topic: str) -> None:
+        """Main method for publishing messages"""
         header = {
             "msg": msg_type,
             "timestamp": datetime.datetime.now().strftime('%Y%m%d%H%M%S%f'),
@@ -111,21 +110,21 @@ class BaseApp:
             msg['body'] = msg_body
         self.client.publish(topic=topic, payload=json.dumps(msg), qos=0, retain=False)
 
-    def pub_lifecycle(self, status):
-        """publish lifecycle message, such as starting/running/stopping/etc."""
-        self.pub_msg("lifecycle", { "status": status }, MAIN_TOPIC)
+    def pub_lifecycle(self, status: str) -> None:
+        """Publish lifecycle message, such as starting/running/stopping/etc."""
+        self.pub_msg("lifecycle", { "status": status }, app_utils.MAIN_TOPIC)
 
     def on_msg(self, client, userdata, message):
         """basic method for retrieving messages"""
         msg = json.loads(message.payload.decode())
-        if not "msg" in msg:
+        if not "header" in msg or not "msg" in msg.header:
             log = { "log": "unsupported message type: " + str(msg) }
-            self.pub_msg("log", log, MAIN_TOPIC)
+            self.pub_msg("log", log, app_utils.MAIN_TOPIC)
             return
 
-        if msg["msg"] == "stop":
+        if msg.header.msg == "stop":
             self.stop()
-        elif msg["msg"] == "status":
+        elif msg.header.msg == "status":
             self.pub_lifecycle("running")
         else:
             try:
@@ -135,12 +134,15 @@ class BaseApp:
                 # zaloguj chybu
                 logging.exception("[" + self.name + "] message processing error " + msg["msg"])
                 log = { "log": "message processing error " + msg["msg"] }
-                self.pub_msg("log", log, MAIN_TOPIC)
+                self.pub_msg("log", log, app_utils.MAIN_TOPIC)
 
     def on_app_msg(self, msg):
-        """method for processing specific application messages (can be overloaded in child classes)"""
+        """Method for processing specific application messages (can be overloaded in child classes)"""
         log = { "log": "unknown message type: " + str(msg) }
-        self.pub_msg("log", log, MAIN_TOPIC)
+        self.pub_msg("log", log, app_utils.MAIN_TOPIC)
+
+    def get_specific_topic(self, name: str, node: str) -> str:
+        return "node/" + node + "/" + name
 
     def start(self):
         # prepare client
@@ -153,10 +155,8 @@ class BaseApp:
         self.pub_lifecycle("starting")
 
         # list to incoming messages
-        self.client.message_callback_add("app/" + self.name, self.on_msg)
-        self.client.subscribe("app/" + self.name)
-        self.client.message_callback_add("node/" + self.node + "/" + self.name, self.on_msg)
-        self.client.subscribe("node/" + self.node + "/" + self.name)
+        self.client.message_callback_add(self.get_specific_topic(self.name, self.node), self.on_msg)
+        self.client.subscribe(self.get_specific_topic(self.name, self.node))
 
         # send lifecycle status 'running'
         self.pub_lifecycle("running")
@@ -168,7 +168,7 @@ class BaseApp:
             # log exception
             logging.exception("[" + self.name + "] exception running application")     # repr(e)
             log = { "log": "exception running application: " + repr(e) }
-            self.pub_msg("log", log, MAIN_TOPIC)
+            self.pub_msg("log", log, app_utils.MAIN_TOPIC)
             #traceback.print_exc()      #TODO malo by byt obsiahnute v logging.exception()
             # skonci
             self.stop()

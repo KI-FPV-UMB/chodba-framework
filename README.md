@@ -18,7 +18,7 @@ and loads application config file.
 
 The running application has following two attributes:
   * _id_ - randomly generated hash
-  * _node_ - name of node the application is running on (automatically set to hostname)
+  * _node_ - name of node (computer) the application is running on (automatically set to hostname)
 
 Further, it provides methods for handling messages and starting and stopping the application:
   * _pub_msg(msg_type, msg_body, topic)_ - basic method for sending messages
@@ -88,15 +88,46 @@ Example of a lifecycle message:
 
 ## Topics
 
+Each application listens on topic ```node/<node>/<name>```. AppController listens on topic ```main```.
+
 # Basic application types
 
-## app_controller
+Three types of applications are supported:
+  * system - supporting applications (AppController and NodeManager)
+  * frontend - applications displayed on monitor
+  * backend - applications running in background
 
-Main task of the app_controller is controlling (starting and stopping) applications on
-application nodes.
+## AppController
 
-List of main node responsibilities:
-  * Starting and stopping applications on application nodes
+Main task of the AppController application is controlling (starting and stopping)
+other applications running on different nodes. It maintains a list of running applications
+and periodically checks status of the applications.
+
+List of main AppController responsibilities:
+  * Start application on a node. This is done by sending following message to a node_manager, running on specified node (i.e. to topic 'node/\<node\>')
+ ```json
+{
+  "header": {
+    "msg": "start",
+    ...
+  },
+  "body": {
+    "type": "frontend",
+    "name": "demo"
+  }
+}
+```
+  * Stop specified application. Accomplished by sending following message to the application (i.e. to topic 'node/\<node\>/\<name\>'):
+```json
+{
+  "header": {
+    "msg": "stop",
+    ...
+  },
+}
+```
+  * Starting all backend applications. This action is invoked once upon overall system startup. Backend applications are invoked according to its runon configuration parameter.
+  * Starting random demo applications. A demo application (with label 'demo') is automatically stoped after specified amount (demo_time) of time and replaced with another demo application.
   * Layout of application nodes
 
 
@@ -163,7 +194,7 @@ priklad:
 Niekoľko príkladov publikovania správ:
 ```shell
 mosquitto_sub -d -t master
-mosquitto_pub -t master -m '{"msg": "run_backends"}'
+mosquitto_pub -t master -m '{"msg": "start_backends"}'
 mosquitto_pub -t master -m '{"msg": "applications", "response_topic": "qwe"}'
 mosquitto_pub -t master -m '{"msg": "applications", "response_topic": "qwe", "filter": "running"}'
 mosquitto_pub -t master -m '{"msg": "applications", "response_topic": "qwe", "filter": "running", "type":"system"}'
