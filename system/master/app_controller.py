@@ -58,9 +58,6 @@ class AppController(base_app.BaseApp):
         self.running_apps = []
         self.quitting = False
 
-    def get_specific_topic(self, name: str, node: str) -> str:
-        return app_utils.APP_CONTROLLER_TOPIC
-
     def list_offline_apps(self, type: str, labels: list, as_json: bool) -> list:
         """Build list of all available (offline) and enabled applications.
         If labels is specified, only applications with specified labels are returned."""
@@ -189,11 +186,11 @@ class AppController(base_app.BaseApp):
         apps_back = []
         apps_frnt = []
         for app in self.running_apps:
-            if app.type == "system":
+            if app.type == app_utils.APP_TYPE_SYSTEM:
                 apps_sys.append(app)
-            elif app.type == "backend":
+            elif app.type == app_utils.APP_TYPE_BACKEND:
                 apps_back.append(app)
-            elif app.type == "frontend":
+            elif app.type == app_utils.APP_TYPE_FRONTEND:
                 apps_frnt.append(app)
         apps_sys.sort(key=lambda x: x.name)
         apps_back.sort(key=lambda x: x.name)
@@ -206,6 +203,9 @@ class AppController(base_app.BaseApp):
         log_status(apps_sys)
         log_status(apps_back)
         log_status(apps_frnt)
+
+    def get_specific_topic(self, name: str, node: str) -> str:
+        return app_utils.APP_CONTROLLER_TOPIC
 
     #def on_main_msg(self, client, userdata, message):
     def on_app_msg(self, msg):
@@ -225,7 +225,7 @@ class AppController(base_app.BaseApp):
             # process stopping of any application
             if app.status == "stopping":
                 self.running_apps.remove(app)
-                if not self.quitting and app.type == 'frontend':
+                if not self.quitting and app.type == app_utils.APP_TYPE_FRONTEND:
                     self.start_random_frontend_app(app.node)
             # log current status
             self.log_apps_status()
@@ -254,11 +254,11 @@ class AppController(base_app.BaseApp):
             # labels: ...
             apps_list = []
             if not "state" in msg.body or msg.body.state == "all":
-                if not "type" in msg.body or msg.body.type == "system":
+                if not "type" in msg.body or msg.body.type == app_utils.APP_TYPE_SYSTEM:
                     apps_list += self.list_offline_apps(SYSTEM_APPS_PATH, msg.get("labels", None), True)
-                if not "type" in msg.body or msg.body.type == "backend":
+                if not "type" in msg.body or msg.body.type == app_utils.APP_TYPE_BACKEND:
                     apps_list += self.list_offline_apps(app_utils.APP_TYPE_BACKEND, msg.get("labels", None), True)
-                if not "type" in msg.body or msg.body.type == "frontend":
+                if not "type" in msg.body or msg.body.type == app_utils.APP_TYPE_FRONTEND:
                     apps_list += self.list_offline_apps(app_utils.APP_TYPE_FRONTEND, msg.get("labels", None), True)
             elif msg.state == "running":
                 for app in self.running_apps:
@@ -321,7 +321,7 @@ class AppController(base_app.BaseApp):
                         if not self.quitting and not app.replaced:
                             obsadeny = False
                             for app2 in self.running_apps:
-                                if app2.type == "frontend" and app2.node == app.node:
+                                if app2.type == app_utils.APP_TYPE_FRONTEND and app2.node == app.node:
                                     obsadeny = True
                                     break
                             if not obsadeny:

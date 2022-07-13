@@ -103,8 +103,25 @@ Main task of the AppController application is controlling (starting and stopping
 other applications running on different nodes. It maintains a list of running applications
 and periodically checks status of the applications.
 
-List of main AppController responsibilities:
-  * Start application on a node. This is done by sending following message to a node_manager, running on specified node (i.e. to topic ```node/<node>```)
+There must be only one instance in the environment (managed nodes). The instance must be
+started from OS (for example using systemd).
+
+After starting up, AppController binds to a ```app_controller``` topic. In current version it
+responds to following message types:
+  * _lifecycle_ - updates lifecycle status for running applications
+  * _start_backends_ - starts all backends applications. This action is invoked once upon overall system startup. Backend applications are invoked according to its runon configuration parameter.
+  * _stop_all_ - stops all running applications (both backend and frontend)
+  * _applications_ - returns required list of applications. Supported arguments are: state (all|running), type (system|backend|frontend), labels (list)
+  * _workspaces_ - returns list of all workspaces
+  * _approbations_ - returns list of all known approbations
+
+All the responses are asynchronously sent to topic of requiring application.
+
+After stopping frontend application on a node, new random frontend demo application
+(with label 'demo') is chosen and started. A demo application is automatically stopped
+after specified amount (demo_time) of time and replaced with another demo application.
+
+Example message used to start application. The message is sent to node_manager (i.e. to topic ```node/<node>```)
  ```json
 {
   "header": {
@@ -117,33 +134,32 @@ List of main AppController responsibilities:
   }
 }
 ```
-  * Stop specified application. Accomplished by sending following message to the application (i.e. to topic ```node/<node>/<name>```):
+Example message used to stop application. The message is sent directly to the application (i.e. to topic ```node/<node>/<name>```):
 ```json
 {
   "header": {
     "msg": "stop",
     ...
-  },
+  }
 }
 ```
-  * Starting all backend applications. This action is invoked once upon overall system startup. Backend applications are invoked according to its runon configuration parameter.
-  * Starting random frontend demo application. A demo application (with label 'demo') is automatically stoped after specified amount (demo_time) of time and replaced with another demo application.
-  * Updating lifecycle status about running applications.
-  * Layout of application nodes
-  * Handling various requests, such as list of applications, workspaces, approbations, etc.
-
-After starting up, AppController binds to a ```app_controller``` topic. In current version it
-responds to following message types:
-  * _lifecycle_ - updates lifecycle for the application
-  * _start_backends_ - starts all backends applications (see above)
-  * _stop_all_ - stops all running applications (both backend and frontend)
-  * _applications_ - returns required list of applications. Supported arguments are: state (all|running), type (system|backend|frontend), labels (list)
-  * _workspaces_ - returns list of all workspaces
-  * _approbations_ - returns list of all known approbations
-
-All the responses are asynchronously sent to topic of requiring application.
 
 ## NodeManager
+
+NodeManager is second (and last) system application. It's purpose is starting applications
+on nodes. Each node (controlled computer) should run one NodeManager application. 
+
+There must be one instance on each managed node (computer). The instance must be
+started from OS (for example using systemd).
+
+After starting up, NodeManager binds to a ```node/<node>``` topic. In current version it
+responds to following message types:
+  * _start_ - starts specified application (invokes os process)
+  * _screen_size_ - updates screen size of the node
+
+
+
+
 
 
 ## Ako na to
