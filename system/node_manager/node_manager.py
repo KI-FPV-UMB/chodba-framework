@@ -4,6 +4,9 @@
 __author__ = "Michal Vagac"
 __email__ = "michal.vagac@gmail.com"
 
+# set PYTHONPATH to project root (chodba-framework)
+
+import sys
 import os
 import logging
 import subprocess
@@ -84,5 +87,6 @@ class NodeManager(base_app.BaseApp):
 
 if __name__ == '__main__':
     app = NodeManager()
+    app.process_args(sys.argv)
     app.start()
 

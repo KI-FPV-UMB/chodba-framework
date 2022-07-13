@@ -13,7 +13,7 @@ import random
 import datetime
 import logging
 import traceback
-import app_utils
+from base import app_utils
 
 class LessThanFilter(logging.Filter):
     def __init__(self, exclusive_maximum, name=""):
@@ -23,6 +23,13 @@ class LessThanFilter(logging.Filter):
     def filter(self, record):
         # non-zero return means we log this message
         return 1 if record.levelno < self.max_level else 0
+
+class Config:
+    def __init__(self):
+        self.name = None
+
+class Args:
+    pass
 
 class BaseApp:
     """Basic class defining common properties for all applications"""
@@ -50,35 +57,42 @@ class BaseApp:
         self.node = socket.gethostname()
 
         # read config file and set each property as an attribute
-        self.config = self.read_config("./")
+        self.config = Config()
+        conf = self.read_config("./")
+        for k in conf.keys():
+            setattr(self.config, k, conf[k])
 
         # start
-        logging.info("[" + self.name + "] starting on node " + self.node)
-        logging.info("[" + self.name + "]   id = " + self.id)
-        for k in self.config.keys():
-            logging.debug("[" + self.name + "]   " + k + " = " + str(self.config[k]))
+        logging.info("[" + self.config.name + "] starting on node " + self.node)
+        logging.info("[" + self.config.name + "]   id = " + self.id)
+        for k in conf.keys():
+            logging.debug("[" + self.config.name + "]   " + k + " = " + str(conf[k]))
 
     def read_config(self, path: str):
         if not os.path.isfile(os.path.join(path, "config.json")):
-            logging.error("[" + self.name + "] config file was not found in directory " + path)
+            logging.error("[" + self.config.name + "] config file was not found in directory " + path)
             return
         with open(os.path.join(path, "config.json"), "r") as read_file:
             ret = json.load(read_file)
             if not "enabled" in ret:
-                ret.enabled = True
+                ret["enabled"] = True
             return ret
 
     def process_args(self, args):
-        self.args = {}
+        self.args = Args()
+        if len(args) < 3:
+            logging.error("[" + self.config.name + "] You must provide at least following 3 mandatory arguments: broker_host broker_port broker_transport")
+            sys.exit(1)
         self.args.broker_host = args[1]
         self.args.broker_port = args[2]
         self.args.broker_transport = args[3]        # tcp / websockets
-        if args[4] != "-" and args[5] != "-":
-            self.args.screen_width = int(args[4])
-            self.args.screen_height = int(args[5])
-        else:
+
+        if len(args) < 5 or args[4] == "-" or args[5] == "-":
             self.args.screen_width = None
             self.args.screen_height = None
+        else:
+            self.args.screen_width = int(args[4])
+            self.args.screen_height = int(args[5])
 
         if len(args) > 5:
             self.args.user_topic = args[6]
@@ -96,7 +110,7 @@ class BaseApp:
             self.args.approbation = None
 
     # def get_src(self):
-    #     return "node/" + self.node + "/" + self.name
+    #     return "node/" + self.node + "/" + self.config.name
 
     def pub_msg(self, msg_type: str, msg_body: dict, topic: str) -> None:
         """Main method for publishing messages"""
@@ -104,8 +118,8 @@ class BaseApp:
             app_utils.MSG_TYPE: msg_type,
             "timestamp": datetime.datetime.now().strftime('%Y%m%d%H%M%S%f'),
             "id": self.id,
-            "name": self.name,
-            "type": self.type,
+            "name": self.config.name,
+            "type": self.config.type,
             "node": self.node
         }
         msg = {"header": header}
@@ -120,14 +134,15 @@ class BaseApp:
     def on_msg(self, client, userdata, message):
         """basic method for retrieving messages"""
         msg = json.loads(message.payload.decode())
-        if not "header" in msg or not app_utils.MSG_TYPE in msg.header:
+        if not "header" in msg or not app_utils.MSG_TYPE in msg["header"]:
             log = { "log": "unsupported message type: " + str(msg) }
             self.pub_msg("log", log, app_utils.APP_CONTROLLER_TOPIC)
             return
 
-        if msg.header[app_utils.MSG_TYPE] == "stop":
+        msg_type = msg["header"][app_utils.MSG_TYPE]
+        if msg_type == "stop":
             self.stop()
-        elif msg.header[app_utils.MSG_TYPE] == app_utils.LIFECYCLE_STATUS:
+        elif msg_type == app_utils.LIFECYCLE_STATUS:
             self.pub_lifecycle("running")
         else:
             try:
@@ -135,8 +150,8 @@ class BaseApp:
                 self.on_app_msg(msg)
             except Exception as e:
                 # zaloguj chybu
-                logging.exception("[" + self.name + "] message processing error " + msg[app_utils.MSG_TYPE])
-                log = { "log": "message processing error " + msg[app_utils.MSG_TYPE] }
+                logging.exception("[" + self.config.name + "] message processing error " + msg_type)
+                log = { "log": "message processing error " + msg_type }
                 self.pub_msg("log", log, app_utils.APP_CONTROLLER_TOPIC)
 
     def on_app_msg(self, msg):
@@ -149,18 +164,18 @@ class BaseApp:
 
     def start(self):
         # prepare client
-        self.client = mqtt.Client(self.node + "_" + self.name + "_" + self.id, transport=self.args.broker_transport)
+        self.client = mqtt.Client(self.node + "_" + self.config.name + "_" + self.id, transport=self.args.broker_transport)
 
         # connect to the broker
-        self.client.connect(self.args.broker_host, self.args.broker_port)
+        self.client.connect(self.args.broker_host, int(self.args.broker_port))
 
         # send lifecycle status 'starting' (it is necessary to distinguish starting status from repeating running status)
         self.pub_lifecycle("starting")
 
         # list to incoming messages
-        logging.info("[" + self.name + "] binding to " + self.get_specific_topic(self.name, self.node) + " topic")
-        self.client.message_callback_add(self.get_specific_topic(self.name, self.node), self.on_msg)
-        self.client.subscribe(self.get_specific_topic(self.name, self.node))
+        logging.info("[" + self.config.name + "] binding to " + self.get_specific_topic(self.config.name, self.node) + " topic")
+        self.client.message_callback_add(self.get_specific_topic(self.config.name, self.node), self.on_msg)
+        self.client.subscribe(self.get_specific_topic(self.config.name, self.node))
 
         # send lifecycle status 'running'
         self.pub_lifecycle("running")
@@ -170,7 +185,7 @@ class BaseApp:
             self.run()
         except Exception as e:
             # log exception
-            logging.exception("[" + self.name + "] exception running application")     # repr(e)
+            logging.exception("[" + self.config.name + "] exception running application")     # repr(e)
             log = { "log": "exception running application: " + repr(e) }
             self.pub_msg("log", log, app_utils.APP_CONTROLLER_TOPIC)
             #traceback.print_exc()      #TODO malo by byt obsiahnute v logging.exception()
@@ -182,7 +197,7 @@ class BaseApp:
 
     def stop(self):
         # send lifecycle status 'stopping'
-        logging.info("[" + self.name + "] stopping on node " + self.node)
+        logging.info("[" + self.config.name + "] stopping on node " + self.node)
         self.pub_lifecycle("stopping")
         self.client.disconnect()
 

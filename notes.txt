@@ -153,7 +153,7 @@ INSTALACIA A KONFIGURACIA
 
 		iface eth1 inet dhcp
 
-	apt-get install mosquitto
+	apt-get install mosquitto		# libcjson1 libdlt2 libmosquitto1 libwebsockets16 mosquitto
 	sudo vi /etc/mosquitto/mosquitto.conf
 		pid_file /var/run/mosquitto.pid
 

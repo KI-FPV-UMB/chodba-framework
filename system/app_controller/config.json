@@ -1,6 +1,5 @@
 {
-	"enabled": true,
-	"name": "master",
+	"name": "app_controller",
 	"type": "system",
 	"runon": "chodba-ki01",
 	"workspace_layout": {
