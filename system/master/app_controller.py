@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-"""master.py: uzol ma na starosti hlavne lifecycle aplikacii. tato aplikacia sa spusta priamo z os (najlepsie pri starte os), a to len na hlavnom uzle. musi sa spustit ako prva."""
+"""app_controller.py: uzol ma na starosti hlavne lifecycle aplikacii. tato aplikacia sa spusta priamo z os (najlepsie pri starte os), a to len na hlavnom uzle. musi sa spustit ako prva."""
 __author__ = "Michal Vagac"
 __email__ = "michal.vagac@gmail.com"
 
@@ -100,7 +100,7 @@ class Master(base_app.BaseApp):
 
     def stop_app(self, app):
         # vypni spustene demo
-        self.publish_message("quit", {}, "node/" + app.node + "/" + app.name)
+        self.pub_msg("quit", {}, "node/" + app.node + "/" + app.name)
         return
 
     def run_random(self, node):
@@ -117,7 +117,7 @@ class Master(base_app.BaseApp):
         # spusti aplikaciu na danom node
         logging.info("[" + self.name + "] spustam " + app.name + " na " + node)
         msg2pub = { "type":"frontend", "run": app.name }
-        self.publish_message("run", msg2pub, "node/" + node )
+        self.pub_msg("run", msg2pub, "node/" + node )
         # app je vytvorena z offline apps, takze node nie je definovany - dopln kde to spustame
         app.node = node
         # naplanuj rovno aj jej skoncenie
@@ -137,7 +137,7 @@ class Master(base_app.BaseApp):
                                 # este tam nebezi - spusti
                                 logging.info("[" + self.name + "] spustam " + app.name + " na " + nmapp.node)
                                 msg2pub = { "type":"backend", "run": app.name }
-                                self.publish_message("run", msg2pub, "node/" + nmapp.node )
+                                self.pub_msg("run", msg2pub, "node/" + nmapp.node )
                             else:
                                 # uz tam bezi!
                                 logging.warning("[" + self.name + "] app " + app.name + " je uz na " + nmapp.node + " spustena!")
@@ -154,14 +154,14 @@ class Master(base_app.BaseApp):
                     node = nodes[random.randint(0, len(nodes)-1)]
                     logging.info("[" + self.name + "] spustam " + app.name + " na " + node)
                     msg2pub = { "type":"backend", "run": app.name }
-                    self.publish_message("run", msg2pub, "node/" + node )
+                    self.pub_msg("run", msg2pub, "node/" + node )
                 else:
                     # spusti na specifikovanom (ak tam este nebezi)
                     if not self.is_running(app.name, app.runon):
                         # este tam nebezi - spusti
                         logging.info("[" + self.name + "] spustam " + app.name + " na " + app.runon)
                         msg2pub = { "type":"backend", "run": app.name }
-                        self.publish_message("run", msg2pub, "node/" + app.runon )
+                        self.pub_msg("run", msg2pub, "node/" + app.runon )
                     else:
                         # uz tam bezi!
                         logging.warning("[" + self.name + "] app " + app.name + " je uz na " + app.runon + " spustena!")
@@ -229,7 +229,7 @@ class Master(base_app.BaseApp):
                     if a.node == app.node and a.type == "frontend":
                         # na uzle uz bezi nejaka frontend app-ka - vypni ju
                         a.replaced = True               # oznac ze je replaced, aby jej vypnutie nesposobilo nasledne spustenie niecoho ineho
-                        self.publish_message("quit", {}, "node/" + a.node + "/" + a.name)
+                        self.pub_msg("quit", {}, "node/" + a.node + "/" + a.name)
                         is_replacing = True
                 if is_replacing and (app.nickname is None or app.approbation is None):
                     # nie je user aplikacia a nasilym vytlaca inu beziacu aplikaciu
@@ -290,7 +290,7 @@ class Master(base_app.BaseApp):
                         apps_list.append(app.__dict__)      # aby bol objekt serializovatelny do json
             resp = { "applications": apps_list }
             logging.debug(json.dumps(resp), msg["src"])         #TODO
-            self.publish_message("applications", resp, msg["src"])
+            self.pub_msg("applications", resp, msg["src"])
 
         elif msg["msg"] == "workspaces":
             if not "src" in msg:
@@ -306,7 +306,7 @@ class Master(base_app.BaseApp):
                 wrkspcs_list.append(WORKSPACES_LAYOUT[k].__dict__)
             resp = { "grid_width": "4", "grid_height": "2", "workspaces": wrkspcs_list }
             logging.debug(json.dumps(resp))         #TODO
-            self.publish_message("workspaces", resp, msg["src"])
+            self.pub_msg("workspaces", resp, msg["src"])
 
         elif msg["msg"] == "approbations":
             if not "src" in msg:
@@ -315,7 +315,7 @@ class Master(base_app.BaseApp):
             apprs_list = [ "AI1", "AI2", "UIN1", "UIN2" ]
             resp = { "approbations": apprs_list }
             logging.debug(json.dumps(resp))         #TODO
-            self.publish_message("approbations", resp, msg["src"])
+            self.pub_msg("approbations", resp, msg["src"])
 
         else:
             logging.warning("[" + self.name + "] neznamy typ spravy: " + str(msg))
@@ -352,7 +352,7 @@ class Master(base_app.BaseApp):
                         # daj im este sancu - posli poziadavku na refresh
                         logging.info("[" + self.name + "] refresh stavu " + app.name + " na " + app.node)
                         app.status = "refreshing"
-                        self.publish_message("status", {}, "node/" + app.node + "/" + app.name)
+                        self.pub_msg("status", {}, "node/" + app.node + "/" + app.name)
 
     def run(self):
         self.client.on_message = self.on_message
@@ -373,7 +373,7 @@ class Master(base_app.BaseApp):
             if app.name == self.name:
                 continue
             logging.info("[" + self.name + "] vypinam app/" + app.name)
-            self.publish_message("quit", {}, "app/" + app.name)
+            self.pub_msg("quit", {}, "app/" + app.name)
         # skonci
         self.client.disconnect()
         logging.info("[" + self.name + "] koncim na uzle " + self.node)

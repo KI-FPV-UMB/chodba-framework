@@ -39,7 +39,7 @@ import sdl2.sdlttf          # libsdl2-ttf-2.0-0
 
 class Teplomer(base_app.BaseApp):
 
-    def on_msg(self, msg):
+    def on_app_msg(self, msg):
         self.status = "teplomer: kreslim graf"
         resp = msg["resp"]
         cas = []

@@ -32,7 +32,7 @@ class Databaza(base_app.BaseApp):
         msg = json.loads(message.payload.decode())
         if not "msg" in msg:
             log = { "log": "neznamy typ spravy: " + str(msg) }
-            self.publish_message("log", log, "master" )
+            self.pub_msg("log", log, "master" )
             return
 
         if msg["msg"] == "insert":
@@ -40,13 +40,13 @@ class Databaza(base_app.BaseApp):
             del msg["msg"]
             x = self.col.insert_one(msg)
             resp = { "id": str(x.inserted_id) }
-            self.publish_message("insert-id", resp, msg["src"] )
+            self.pub_msg("insert-id", resp, msg["src"] )
 
         elif msg["msg"] == "find":
             # vyber zaznamy z db
             if not "query" in msg:
                 log = { "log": "chyba parameter 'query'!" }
-                self.publish_message("log", log, "master" )
+                self.pub_msg("log", log, "master" )
                 return
             try:
                 q1 = { "name": msg["name"] }
@@ -64,12 +64,12 @@ class Databaza(base_app.BaseApp):
                     del doc["_id"]
                     l.append(doc)
                 resp = { "resp": l }
-                self.publish_message("resultset", resp, msg["src"] )
+                self.pub_msg("resultset", resp, msg["src"] )
             except Exception as e:
                 logging.exception("[" + self.name + "] chyba spustania dotazu " + str(msg["query"]))
 
         else:
-            super.on_msg(msg)
+            super.on_app_msg(msg)
 
     def run(self):
         self.dbc = pymongo.MongoClient("mongodb://localhost:27017/")

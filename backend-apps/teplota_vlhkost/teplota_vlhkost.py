@@ -21,7 +21,7 @@ POCET_MERANI = 5
 
 class TeplotaVlhkost(base_app.BaseApp):
 
-    def on_msg(self, msg):
+    def on_app_msg(self, msg):
         None
 
     # vypocitaj smerodajnu odchilku z niekolkych merani a uplne odstran hodnoty, ktore prilis vybocuju (outliers)
@@ -53,7 +53,7 @@ class TeplotaVlhkost(base_app.BaseApp):
             temperature = np.mean(self.odstran_sum(temps))
             # zapis do db
             msg = { "humidity": humidity, "temperature": temperature }
-            self.publish_message("insert", msg, "database")
+            self.pub_msg("insert", msg, "database")
             # cakaj
             time.sleep(self.measurement_pause_s)
 

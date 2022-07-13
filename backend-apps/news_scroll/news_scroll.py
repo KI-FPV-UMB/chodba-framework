@@ -119,7 +119,7 @@ class NewsScroll(base_app.BaseApp):
 
         # oznam node manageru, ako ma obmedzit obrazovku
         msg = { "width": w.remaining_screen_width, "height": w.remaining_screen_height }
-        self.publish_message("screen_size", msg, "node/" + self.node)
+        self.pub_msg("screen_size", msg, "node/" + self.node)
 
         # napln rss feedy
         #TODO z konfiguracie

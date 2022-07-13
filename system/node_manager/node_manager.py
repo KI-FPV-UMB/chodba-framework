@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-"""node_manager.py: spravuje konkretny uzol. tato aplikacia sa spusta priamo z os (najlepsie pri starte os), a to na kazdom uzle (1 instancia). este predtym musi byt na jednom uzle spusteny master.py"""
+"""node_manager.py: spravuje konkretny uzol. tato aplikacia sa spusta priamo z os (najlepsie pri starte os), a to na kazdom uzle (1 instancia). este predtym musi byt na jednom uzle spusteny app_controller.py"""
 __author__ = "Michal Vagac"
 __email__ = "michal.vagac@gmail.com"
 
@@ -62,7 +62,7 @@ class NodeManager(base_app.BaseApp):
         msg = json.loads(message.payload.decode())
         if not "msg" in msg:
             log = { "name": self.name, "node": self.node, "log": "neznamy typ spravy: " + str(msg) }
-            self.publish_message("log", log, "master" )
+            self.pub_msg("log", log, "master" )
             return
 
         if msg["msg"] == "run":
@@ -78,7 +78,7 @@ class NodeManager(base_app.BaseApp):
             except Exception as e:
                 logging.exception("[" + self.name + "] chyba pri spustani " + msg["run"])
                 log = { "name": self.name, "node": self.node, "log": "chyba pri spustani " + msg["run"] + ": " + str(e) }
-                self.publish_message("log", log, "master" )
+                self.pub_msg("log", log, "master" )
 
         if msg["msg"] == "screen_size":
             self.screen_width = msg["width"]

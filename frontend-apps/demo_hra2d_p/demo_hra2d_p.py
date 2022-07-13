@@ -159,7 +159,7 @@ class Bludisko:
 
 class DemoHra2Dp(base_app.BaseApp):
 
-    def on_msg(self, msg):
+    def on_app_msg(self, msg):
         if msg["msg"] == "control_action":
             if msg["type"] == "keydown":
                 if msg["name"] == "hore":
@@ -179,9 +179,9 @@ class DemoHra2Dp(base_app.BaseApp):
                     self.bludisko.hrac.dolava= False
                 if msg["name"] == "doprava":
                     self.bludisko.hrac.doprava = False
-            self.publish_lifecycle_message("playing")
+            self.pub_lifecycle("playing")
         else:
-            super.on_msg(msg)
+            super.on_app_msg(msg)
 
     def run(self):
         # spracovavaj mqtt spravy
@@ -194,7 +194,7 @@ class DemoHra2Dp(base_app.BaseApp):
                 ctrls_list.append(ctrl.__dict__)
             resp = { "grid_width": 6, "grid_height": 4, "type": "static", "control_elements": ctrls_list }
             logging.debug(json.dumps(resp))            #TODO
-            self.publish_message("control_layout", resp, self.user_topic)
+            self.pub_msg("control_layout", resp, self.user_topic)
 
         # inicializacia SDL2
         if sdl2.SDL_Init(sdl2.SDL_INIT_VIDEO) < 0:

@@ -1,13 +1,104 @@
 # chodba-framework
 
-Aktuálny hardvér pozostáva z:
-* mozaiky z 8 monitorov a RPI1
-* projektora s RPI4, na ktoré je pripojené
-  * kamera
-  * kinect
-  * mikrofón
-  * teplomer
-  * vlhkomer
+Simple framework for managing distributed applications used (mostly) to display information.
+In our case, we use it in the department corridors to show course timetable, news,
+interesting/funny quotes, bus timetable, etc.
+
+Set PYTHONPATH to location of chodba-framework/base/
+
+# Main framework elements
+
+The system consists of **applications**, communicating via MQTT protocol
+(sending and receiving **messages**).
+
+## Applications
+
+Each application extends BaseApp Python class. This class initializes logging
+and loads application config file.
+
+The running application has following two attributes:
+  * _id_ - randomly generated hash
+  * _node_ - name of node the application is running on (automatically set to hostname)
+
+Further, it provides methods for handling messages and starting and stopping the application:
+  * _pub_msg(msg_type, msg_body, topic)_ - basic method for sending messages
+  * _pub_lifecycle(status)_ - helper method for sending lifecycle status
+  * _on_msg_ - method for handling all application messages. Several specific messages (quit, info, status) are handled immediately. For all other (unknown) messages the method *on_app_msg* is called.
+  * _on_app_msg_ - method for handling specific application messages (extended by offspring class)
+  * _start_ - initializes mqtt client and connects to configured MQTT broker. Immediately it sends lifecycle message 'starting'. Then it subscribes to 'app/<app_name>' and 'node/<node_name>/<app_name>' topics. After initialization, it sends lifecycle message 'running'.
+  * _run_ - method with implementation of application business logic
+  * _stop_ - Sends lifecycle message 'stopping' and disconnects from MQTT broker.
+
+Each application needs minimal configuration containing:
+  * _enabled_ - only enabled applications can be run
+  * _name_ - application name
+  * _type_ - one of: system / backend / frontend
+
+Besides that there are several optional configuration properties, such as:
+  * _runon_ - if specified, the application can be invoked only on here specified node
+  * _labels_ - list of labels (e.g. app, demo, fun, ...)
+  * _demo_time_ - how long will application run
+
+Example of main system application configuration:
+```json
+{
+  "enabled": true,
+  "name": "demo",
+  "type": "frontend",
+  "runon": "chodba-ki01"
+}
+```
+
+When starting the application, several command line arguments are expected:
+  * _broker_host_
+  * _broker_port_
+  * _broker_transport_
+  * _screen_width_ or -
+  * _screen_height_ or -
+  * _[user_topic]_ - optional argument used when application is invoked manually by user
+  * _[nickname]_ - nickname of user who invoked the application (if any)
+  * _[approbation]_ - study approbation of user who invoked the application (if any)
+
+## Messages
+
+Each message must contain header and body parts. The header contains following attributes:
+  * _msg_ - type of message
+  * _timestamp_ - datetime of creation of the message
+  * _id_ - generated id of source application
+  * _name_ - name of source application
+  * _type_ - type of source application
+  * _node_ - node source application runs on
+
+Example of a lifecycle message:
+```json
+{
+  "header": {
+    "msg": "lifecycle",
+    "timestamp": "",
+    "id": "",
+    "name": "demo",
+    "type": "frontend",
+    "node": "chodba-ki01"
+  },
+  "body": {
+    "status": "running"
+  }
+}
+```
+
+## Topics
+
+# Basic application types
+
+## app_controller
+
+Main task of the app_controller is controlling (starting and stopping) applications on
+application nodes.
+
+List of main node responsibilities:
+  * Starting and stopping applications on application nodes
+  * Layout of application nodes
+
 
 ## Ako na to
 
@@ -85,4 +176,15 @@ mosquitto_pub -t app/master -m '{"msg": "quit"}'
 mosquitto_pub -t app/master/mvagac-X230 -m '{"msg": "quit"}'
 mosquitto_pub -t node/mvagac-X230 -m '{"msg": "run", "type": "frontend", "name": "demo_hra2d_p"}'
 ```
+
+## Our hardware
+
+Aktuálny hardvér pozostáva z:
+* mozaiky z 8 monitorov a RPI1
+* projektora s RPI4, na ktoré je pripojené
+  * kamera
+  * kinect
+  * mikrofón
+  * teplomer
+  * vlhkomer
 

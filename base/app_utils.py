@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-"""app_utils.py: pomocne programy"""
+"""app_utils.py: helper programs"""
 __author__ = "Michal Vagac"
 __email__ = "michal.vagac@gmail.com"
 
@@ -20,6 +20,6 @@ class ControlElement:
         self.w = w
         self.h = h
         self.title = title
-        self.type = typ          # button/button_submit/input_text/input_number/kreslenie
+        self.type = typ          # button/button_submit/input_text/input_number/drawing
 
 

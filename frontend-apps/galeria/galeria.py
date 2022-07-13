@@ -97,7 +97,7 @@ class Galeria(base_app.BaseApp):
         #subdirs = [x[0] for x in os.walk(".")]
         if len(subdirs) <= 1:
             log = { "log": "galeria neobsahuje ziadne podadresare s obrazkami!" }
-            self.publish_message("log", log, "master" )
+            self.pub_msg("log", log, "master" )
             return
         d = random.choice(subdirs)
         logging.info("[" + self.name + "] vyberam " + d)
