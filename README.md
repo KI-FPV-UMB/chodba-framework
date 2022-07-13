@@ -25,16 +25,16 @@ Further, it provides methods for handling messages and starting and stopping the
   * _pub_lifecycle(status)_ - helper method for sending lifecycle status
   * _on_msg_ - method for handling all application messages. Several specific messages (quit, info, status) are handled immediately. For all other (unknown) messages the method *on_app_msg* is called.
   * _on_app_msg_ - method for handling specific application messages (extended by offspring class)
-  * _start_ - initializes mqtt client and connects to configured MQTT broker. Immediately it sends lifecycle message 'starting'. Then it subscribes to 'app/<app_name>' and 'node/<node_name>/<app_name>' topics. After initialization, it sends lifecycle message 'running'.
+  * _start_ - initializes mqtt client and connects to configured MQTT broker. Immediately it sends lifecycle message 'starting'. Then it subscribes to ```node/<node_name>/<app_name>``` topics. After initialization, it sends lifecycle message 'running'.
   * _run_ - method with implementation of application business logic
   * _stop_ - Sends lifecycle message 'stopping' and disconnects from MQTT broker.
 
 Each application needs minimal configuration containing:
-  * _enabled_ - only enabled applications can be run
   * _name_ - application name
   * _type_ - one of: system / backend / frontend
 
 Besides that there are several optional configuration properties, such as:
+  * _enabled_ - only enabled applications can be run
   * _runon_ - if specified, the application can be invoked only on here specified node
   * _labels_ - list of labels (e.g. app, demo, fun, ...)
   * _demo_time_ - how long will application run
@@ -42,9 +42,9 @@ Besides that there are several optional configuration properties, such as:
 Example of main system application configuration:
 ```json
 {
-  "enabled": true,
   "name": "demo",
   "type": "frontend",
+  "enabled": true,
   "runon": "chodba-ki01"
 }
 ```
@@ -88,7 +88,7 @@ Example of a lifecycle message:
 
 ## Topics
 
-Each application listens on topic ```node/<node>/<name>```. AppController listens on topic ```main```.
+Each application listens on topic ```node/<node>/<name>```. AppController listens on topic ```app_controller```.
 
 # Basic application types
 
@@ -104,7 +104,7 @@ other applications running on different nodes. It maintains a list of running ap
 and periodically checks status of the applications.
 
 List of main AppController responsibilities:
-  * Start application on a node. This is done by sending following message to a node_manager, running on specified node (i.e. to topic 'node/\<node\>')
+  * Start application on a node. This is done by sending following message to a node_manager, running on specified node (i.e. to topic ```node/<node>```)
  ```json
 {
   "header": {
@@ -117,7 +117,7 @@ List of main AppController responsibilities:
   }
 }
 ```
-  * Stop specified application. Accomplished by sending following message to the application (i.e. to topic 'node/\<node\>/\<name\>'):
+  * Stop specified application. Accomplished by sending following message to the application (i.e. to topic ```node/<node>/<name>```):
 ```json
 {
   "header": {
@@ -127,8 +127,23 @@ List of main AppController responsibilities:
 }
 ```
   * Starting all backend applications. This action is invoked once upon overall system startup. Backend applications are invoked according to its runon configuration parameter.
-  * Starting random demo applications. A demo application (with label 'demo') is automatically stoped after specified amount (demo_time) of time and replaced with another demo application.
+  * Starting random frontend demo application. A demo application (with label 'demo') is automatically stoped after specified amount (demo_time) of time and replaced with another demo application.
+  * Updating lifecycle status about running applications.
   * Layout of application nodes
+  * Handling various requests, such as list of applications, workspaces, approbations, etc.
+
+After starting up, AppController binds to a ```app_controller``` topic. In current version it
+responds to following message types:
+  * _lifecycle_ - updates lifecycle for the application
+  * _start_backends_ - starts all backends applications (see above)
+  * _stop_all_ - stops all running applications (both backend and frontend)
+  * _applications_ - returns required list of applications. Supported arguments are: state (all|running), type (system|backend|frontend), labels (list)
+  * _workspaces_ - returns list of all workspaces
+  * _approbations_ - returns list of all known approbations
+
+All the responses are asynchronously sent to topic of requiring application.
+
+## NodeManager
 
 
 ## Ako na to

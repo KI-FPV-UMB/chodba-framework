@@ -4,7 +4,14 @@
 __author__ = "Michal Vagac"
 __email__ = "michal.vagac@gmail.com"
 
-MAIN_TOPIC = "main"
+APP_CONTROLLER_TOPIC = "app_controller"
+MSG_TYPE = "msg"
+MSG_TYPE_LIFECYCLE = "lifecycle"
+LIFECYCLE_STATUS = "status"
+
+APP_TYPE_SYSTEM = "system"
+APP_TYPE_BACKEND = "backend"
+APP_TYPE_FRONTEND = "frontend"
 
 class Rect:
     def __init__(self, x: int, y: int, w: int, h: int):

@@ -26,8 +26,7 @@ USER_TIMEOUT = 45
 TIMESTAMP_CHECK = 60
 
 SYSTEM_APPS_PATH = "../../system/"
-BACKEND_APPS_PATH = "../../backend-apps/"
-FRONTEND_APPS_PATH = "../../frontend-apps/"
+APPS_PATH = "../../apps/"
 
 class App:
     """Class storing necessary information about running application"""
@@ -59,20 +58,25 @@ class AppController(base_app.BaseApp):
         self.running_apps = []
         self.quitting = False
 
-    def list_offline_apps(self, path: str, labels: list, as_json: bool) -> list:
+    def get_specific_topic(self, name: str, node: str) -> str:
+        return app_utils.APP_CONTROLLER_TOPIC
+
+    def list_offline_apps(self, type: str, labels: list, as_json: bool) -> list:
         """Build list of all available (offline) and enabled applications.
         If labels is specified, only applications with specified labels are returned."""
         ret = []
-        for entry in os.listdir(path):
-            if os.path.isdir(os.path.join(path, entry)):
+        for entry in os.listdir(APPS_PATH):
+            if os.path.isdir(os.path.join(APPS_PATH, entry)):
                 app = App()
                 # read application's configuration
-                app_config = self.read_config(os.path.join(path, entry))
+                app_config = self.read_config(os.path.join(APPS_PATH, entry))
                 has_labels = False
                 for k in app_config.keys():
                     setattr(app, k, app_config[k])
                     if k == "labels":
                         has_labels = True
+                if app.type != type:
+                    continue
                 if app.enabled and (labels is None or (has_labels and (set(labels) & set(app.labels)))):
                     # the application is enabled and has corresponding labels (if required)
                     if as_json:
@@ -96,16 +100,14 @@ class AppController(base_app.BaseApp):
     def stop_app(self, app: App) -> None:
         """Stop specified application. The application is removed from list of applications only after message confirming
         stopping is retrieved."""
-        topic = self.get_specific_topic(app.name, app.node)
+        topic = super().get_specific_topic(app.name, app.node)
         self.pub_msg("stop", {}, topic)
 
     def start_all_backends(self, node_managers: list):
         """Run all backend applications according to their runon configuration."""
         # iterate over list of all backend applications
-        apps_list = self.list_offline_apps(BACKEND_APPS_PATH, None, False)
+        apps_list = self.list_offline_apps(app_utils.APP_TYPE_BACKEND, None, False)
         for app in apps_list:
-            if app.type != 'backend':
-                continue
             try:
                 if app.runon == "*":
                     # start on each node
@@ -137,11 +139,9 @@ class AppController(base_app.BaseApp):
     def start_random_frontend_app(self, node: str):
         """Choose a random application and run it. Only frontend applications with label 'demo' and config demo_time > 0 are considered."""
         # build a list of candidate applications
-        apps_list = self.list_offline_apps(FRONTEND_APPS_PATH, ["demo"], False)
+        apps_list = self.list_offline_apps(app_utils.APP_TYPE_FRONTEND, ["demo"], False)
         candidates = []
         for app in apps_list:
-            if app.type != 'frontend':
-                continue
             if app.demo_time > 0:
                 candidates.append(app)
         if len(candidates) == 0:
@@ -175,7 +175,7 @@ class AppController(base_app.BaseApp):
         for k in msg.header.keys():
             setattr(app, k, msg.header[k])
         app.timestamp = time.time()
-        app.status = msg.body.status
+        app.status = msg.body[app_utils.LIFECYCLE_STATUS]
 
         # add app to list of running apps
         if app not in self.running_apps:
@@ -207,14 +207,15 @@ class AppController(base_app.BaseApp):
         log_status(apps_back)
         log_status(apps_frnt)
 
-    def on_main_msg(self, client, userdata, message):
+    #def on_main_msg(self, client, userdata, message):
+    def on_app_msg(self, msg):
         """basic method for retrieving messages"""
-        msg = json.loads(message.payload.decode())
-        if not "header" in msg or not "msg" in msg.header:
-            log = { "log": "unsupported message type: " + str(msg) }
-            return
+        # msg = json.loads(message.payload.decode())
+        # if not "header" in msg or not app_utils.MSG_TYPE in msg.header:
+        #     log = { "log": "unsupported message type: " + str(msg) }
+        #     return
 
-        if msg.header.msg == "lifecycle":
+        if msg.header[app_utils.MSG_TYPE] == app_utils.MSG_TYPE_LIFECYCLE:
             # update and process lifecycle of application
             prevstat, app = self.update_app_lifecycle_status(msg)
             # process starting of node_manager
@@ -229,7 +230,7 @@ class AppController(base_app.BaseApp):
             # log current status
             self.log_apps_status()
 
-        elif msg.header.msg == "start_backends":
+        elif msg.header[app_utils.MSG_TYPE] == "start_backends":
             # start required backends on particular nodes
             node_managers = []
             for app in self.running_apps:
@@ -237,7 +238,17 @@ class AppController(base_app.BaseApp):
                     node_managers.append(app.node)
             self.start_all_backends(node_managers)
 
-        elif msg.header.msg == "applications":
+        elif msg.header[app_utils.MSG_TYPE] == "stop_all":
+            # stop all applications
+            self.quitting = True
+            for app in self.running_apps:
+                if app.name == self.name:
+                    continue
+                topic = super().get_specific_topic(app.name, app.node)
+                logging.info("[" + self.name + "] stopping " + topic)
+                self.pub_msg("stop", {}, topic)
+
+        elif msg.header[app_utils.MSG_TYPE] == "applications":
             # state: all|running
             # type: system|backend|frontend
             # labels: ...
@@ -246,19 +257,19 @@ class AppController(base_app.BaseApp):
                 if not "type" in msg.body or msg.body.type == "system":
                     apps_list += self.list_offline_apps(SYSTEM_APPS_PATH, msg.get("labels", None), True)
                 if not "type" in msg.body or msg.body.type == "backend":
-                    apps_list += self.list_offline_apps(BACKEND_APPS_PATH, msg.get("labels", None), True)
+                    apps_list += self.list_offline_apps(app_utils.APP_TYPE_BACKEND, msg.get("labels", None), True)
                 if not "type" in msg.body or msg.body.type == "frontend":
-                    apps_list += self.list_offline_apps(FRONTEND_APPS_PATH, msg.get("labels", None), True)
-            elif msg["state"] == "running":
+                    apps_list += self.list_offline_apps(app_utils.APP_TYPE_FRONTEND, msg.get("labels", None), True)
+            elif msg.state == "running":
                 for app in self.running_apps:
                     if not "type" in msg.body or msg.body.type == app.type:
                         apps_list.append(app.__dict__)
             resp = { "applications": apps_list }
-            topic = self.get_specific_topic(msg.header.name, msg.header.node)
+            topic = super().get_specific_topic(msg.header.name, msg.header.node)
             logging.debug(json.dumps(resp), topic)         #TODO
             self.pub_msg("applications", resp, topic)
 
-        elif msg.header.msg == "workspaces":
+        elif msg.header[app_utils.MSG_TYPE] == "workspaces":
             wrkspcs_list = []
             """
             TODO moved to configuration file
@@ -272,14 +283,14 @@ class AppController(base_app.BaseApp):
                 wrkspcs_list.append(WORKSPACES_LAYOUT[k].__dict__)
             """
             resp = { "grid_width": "4", "grid_height": "2", "workspaces": wrkspcs_list }
-            topic = self.get_specific_topic(msg.header.name, msg.header.node)
+            topic = super().get_specific_topic(msg.header.name, msg.header.node)
             logging.debug(json.dumps(resp), topic)         #TODO
             self.pub_msg("workspaces", resp, topic)
 
-        elif msg.header.msg == "approbations":
+        elif msg.header[app_utils.MSG_TYPE] == "approbations":
             apprs_list = [ "AI1", "AI2", "UIN1", "UIN2" ]
             resp = { "approbations": apprs_list }
-            topic = self.get_specific_topic(msg.header.name, msg.header.node)
+            topic = super().get_specific_topic(msg.header.name, msg.header.node)
             logging.debug(json.dumps(resp), topic)         #TODO
             self.pub_msg("approbations", resp, topic)
 
@@ -319,12 +330,12 @@ class AppController(base_app.BaseApp):
                         # daj im este sancu - posli poziadavku na refresh
                         logging.info("[" + self.name + "] refresh stavu " + app.name + " na " + app.node)
                         app.status = "refreshing"
-                        topic = self.get_specific_topic(app.name, app.node)
-                        self.pub_msg("status", {}, topic)
+                        topic = super().get_specific_topic(app.name, app.node)
+                        self.pub_msg(app_utils.LIFECYCLE_STATUS, {}, topic)
 
     def run(self):
-        self.client.on_message = self.on_main_msg
-        self.client.subscribe(app_utils.MAIN_TOPIC)
+        # self.client.on_message = self.on_main_msg
+        # self.client.subscribe(app_utils.APP_CONTROLLER_TOPIC)
 
         # create scheduler for checking inactive user applications
         """t = threading.Thread(target=self.check_inactive_users)
@@ -333,19 +344,6 @@ class AppController(base_app.BaseApp):
 
         # start processing of mqtt messages
         self.client.loop_forever()
-
-    def stop(self):
-        self.quitting = True
-        # stop all applications
-        for app in self.running_apps:
-            if app.name == self.name:
-                continue
-            topic = self.get_specific_topic(app.name, app.node)
-            logging.info("[" + self.name + "] stopping " + topic)
-            self.pub_msg("stop", {}, topic)
-        # skonci
-        self.client.disconnect()
-        logging.info("[" + self.name + "] stopping on node " + self.node)
 
 
 if __name__ == '__main__':

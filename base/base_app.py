@@ -63,7 +63,10 @@ class BaseApp:
             logging.error("[" + self.name + "] config file was not found in directory " + path)
             return
         with open(os.path.join(path, "config.json"), "r") as read_file:
-            return json.load(read_file)
+            ret = json.load(read_file)
+            if not "enabled" in ret:
+                ret.enabled = True
+            return ret
 
     def process_args(self, args):
         self.args = {}
@@ -98,33 +101,33 @@ class BaseApp:
     def pub_msg(self, msg_type: str, msg_body: dict, topic: str) -> None:
         """Main method for publishing messages"""
         header = {
-            "msg": msg_type,
+            app_utils.MSG_TYPE: msg_type,
             "timestamp": datetime.datetime.now().strftime('%Y%m%d%H%M%S%f'),
             "id": self.id,
             "name": self.name,
             "type": self.type,
             "node": self.node
         }
-        msg = {'header': header}
+        msg = {"header": header}
         if msg_body is not None:
-            msg['body'] = msg_body
+            msg["body"] = msg_body
         self.client.publish(topic=topic, payload=json.dumps(msg), qos=0, retain=False)
 
     def pub_lifecycle(self, status: str) -> None:
         """Publish lifecycle message, such as starting/running/stopping/etc."""
-        self.pub_msg("lifecycle", { "status": status }, app_utils.MAIN_TOPIC)
+        self.pub_msg(app_utils.MSG_TYPE_LIFECYCLE, { app_utils.LIFECYCLE_STATUS: status }, app_utils.APP_CONTROLLER_TOPIC)
 
     def on_msg(self, client, userdata, message):
         """basic method for retrieving messages"""
         msg = json.loads(message.payload.decode())
-        if not "header" in msg or not "msg" in msg.header:
+        if not "header" in msg or not app_utils.MSG_TYPE in msg.header:
             log = { "log": "unsupported message type: " + str(msg) }
-            self.pub_msg("log", log, app_utils.MAIN_TOPIC)
+            self.pub_msg("log", log, app_utils.APP_CONTROLLER_TOPIC)
             return
 
-        if msg.header.msg == "stop":
+        if msg.header[app_utils.MSG_TYPE] == "stop":
             self.stop()
-        elif msg.header.msg == "status":
+        elif msg.header[app_utils.MSG_TYPE] == app_utils.LIFECYCLE_STATUS:
             self.pub_lifecycle("running")
         else:
             try:
@@ -132,14 +135,14 @@ class BaseApp:
                 self.on_app_msg(msg)
             except Exception as e:
                 # zaloguj chybu
-                logging.exception("[" + self.name + "] message processing error " + msg["msg"])
-                log = { "log": "message processing error " + msg["msg"] }
-                self.pub_msg("log", log, app_utils.MAIN_TOPIC)
+                logging.exception("[" + self.name + "] message processing error " + msg[app_utils.MSG_TYPE])
+                log = { "log": "message processing error " + msg[app_utils.MSG_TYPE] }
+                self.pub_msg("log", log, app_utils.APP_CONTROLLER_TOPIC)
 
     def on_app_msg(self, msg):
         """Method for processing specific application messages (can be overloaded in child classes)"""
         log = { "log": "unknown message type: " + str(msg) }
-        self.pub_msg("log", log, app_utils.MAIN_TOPIC)
+        self.pub_msg("log", log, app_utils.APP_CONTROLLER_TOPIC)
 
     def get_specific_topic(self, name: str, node: str) -> str:
         return "node/" + node + "/" + name
@@ -155,6 +158,7 @@ class BaseApp:
         self.pub_lifecycle("starting")
 
         # list to incoming messages
+        logging.info("[" + self.name + "] binding to " + self.get_specific_topic(self.name, self.node) + " topic")
         self.client.message_callback_add(self.get_specific_topic(self.name, self.node), self.on_msg)
         self.client.subscribe(self.get_specific_topic(self.name, self.node))
 
@@ -168,7 +172,7 @@ class BaseApp:
             # log exception
             logging.exception("[" + self.name + "] exception running application")     # repr(e)
             log = { "log": "exception running application: " + repr(e) }
-            self.pub_msg("log", log, app_utils.MAIN_TOPIC)
+            self.pub_msg("log", log, app_utils.APP_CONTROLLER_TOPIC)
             #traceback.print_exc()      #TODO malo by byt obsiahnute v logging.exception()
             # skonci
             self.stop()
