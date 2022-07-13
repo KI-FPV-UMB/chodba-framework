@@ -224,18 +224,18 @@ priklad:
 
 Niekoľko príkladov publikovania správ:
 ```shell
-mosquitto_sub -d -t master
-mosquitto_pub -t master -m '{"msg": "start_backends"}'
-mosquitto_pub -t master -m '{"msg": "applications", "response_topic": "qwe"}'
-mosquitto_pub -t master -m '{"msg": "applications", "response_topic": "qwe", "filter": "running"}'
-mosquitto_pub -t master -m '{"msg": "applications", "response_topic": "qwe", "filter": "running", "type":"system"}'
-mosquitto_pub -t master -m '{"msg": "applications", "type": "app", "response_topic": "qwe"}'
-mosquitto_pub -t master -m '{"msg": "workspaces", "response_topic": "qwe"}'
-mosquitto_pub -t master -m '{"msg": "approbations", "response_topic": "qwe"}'
-mosquitto_pub -t app/master -m '{"msg": "info"}'
-mosquitto_pub -t app/master -m '{"msg": "status"}'
-mosquitto_pub -t app/master -m '{"msg": "quit"}'
-mosquitto_pub -t app/master/mvagac-X230 -m '{"msg": "quit"}'
+mosquitto_sub -d -t app_controller
+mosquitto_pub -t app_controller -m '{"msg": "start_backends"}'
+mosquitto_pub -t app_controller -m '{"msg": "applications", "response_topic": "qwe"}'
+mosquitto_pub -t app_controller -m '{"msg": "applications", "response_topic": "qwe", "filter": "running"}'
+mosquitto_pub -t app_controller -m '{"msg": "applications", "response_topic": "qwe", "filter": "running", "type":"system"}'
+mosquitto_pub -t app_controller -m '{"msg": "applications", "type": "app", "response_topic": "qwe"}'
+mosquitto_pub -t app_controller -m '{"msg": "workspaces", "response_topic": "qwe"}'
+mosquitto_pub -t app_controller -m '{"msg": "approbations", "response_topic": "qwe"}'
+mosquitto_pub -t app/app_controller -m '{"msg": "info"}'
+mosquitto_pub -t app/app_controller -m '{"msg": "status"}'
+mosquitto_pub -t app/app_controller -m '{"msg": "quit"}'
+mosquitto_pub -t app/app_controller/mvagac-X230 -m '{"msg": "quit"}'
 mosquitto_pub -t node/mvagac-X230 -m '{"msg": "run", "type": "frontend", "name": "demo_hra2d_p"}'
 ```
 

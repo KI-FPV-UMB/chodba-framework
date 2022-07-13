@@ -4,18 +4,14 @@
 __author__ = "Michal Vagac"
 __email__ = "michal.vagac@gmail.com"
 
-# PYTHONPATH must be set to absolute path .../chodba-framework/base
-
-import sys
 import os
-import paho.mqtt.client as mqtt
 import json
 import random
 import time
 import logging
 import threading
-import base_app
-import app_utils
+from base import base_app
+from base import app_utils
 
 # timeout (in seconds) after which can be user executed application replaced by another one
 USER_TIMEOUT = 45

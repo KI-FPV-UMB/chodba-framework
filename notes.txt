@@ -1,6 +1,8 @@
 
 TODO
 ****
+-lokalne spustanie a vyvijanie pomocou dockeru (to bude aj dalsia cast dokumentacie)
+
 -appky: casopis (root, quark, zive, chip); hw status (cpu, mem, ipcka!)
 -dokumentaciu updatnut; dorobit. ake spravy poslat na tie bezne veci (spustenie, vypnutie). spisat ako to startuje
  vsetko si pripomenut a v ramci toho to spisat

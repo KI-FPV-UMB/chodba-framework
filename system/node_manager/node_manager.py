@@ -4,17 +4,11 @@
 __author__ = "Michal Vagac"
 __email__ = "michal.vagac@gmail.com"
 
-# PYTHONPATH musi odkazovat na absolutnu cestu k .../chodba-framework/base
-
-import sys
-import paho.mqtt.client as mqtt
-import json
 import os
 import logging
 import subprocess
-import random
-import base_app
-
+from base import base_app
+from base import app_utils
 
 APPS_PATH = "../../apps/"
 
@@ -72,7 +66,7 @@ class NodeManager(base_app.BaseApp):
             except Exception as e:
                 logging.exception("[" + self.name + "] chyba pri spustani " + msg["name"])
                 log = { "name": self.name, "node": self.node, "log": "chyba pri spustani " + msg["name"] + ": " + str(e) }
-                self.pub_msg("log", log, "master" )
+                self.pub_msg("log", log, "app_controller" )
 
         if msg.header[app_utils.MSG_TYPE] == "screen_size":
             self.screen_width = msg["width"]

@@ -32,7 +32,7 @@ class Databaza(base_app.BaseApp):
         msg = json.loads(message.payload.decode())
         if not "msg" in msg:
             log = { "log": "neznamy typ spravy: " + str(msg) }
-            self.pub_msg("log", log, "master" )
+            self.pub_msg("log", log, "app_controller" )
             return
 
         if msg["msg"] == "insert":
@@ -46,7 +46,7 @@ class Databaza(base_app.BaseApp):
             # vyber zaznamy z db
             if not "query" in msg:
                 log = { "log": "chyba parameter 'query'!" }
-                self.pub_msg("log", log, "master" )
+                self.pub_msg("log", log, "app_controller" )
                 return
             try:
                 q1 = { "name": msg["name"] }

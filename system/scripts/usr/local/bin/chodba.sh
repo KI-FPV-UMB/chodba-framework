@@ -14,6 +14,6 @@ fi
 #NM_CHECK=$(ps -ef |grep "node_manager.py" | grep -v grep)
 #if [ "$NM_CHECK" == "" ]
 #then
-#	/home/pi/chodba-framework-master/system/node_manager/node_manager.sh
+#	/home/pi/chodba-framework-app_controller/system/node_manager/node_manager.sh
 #fi
 
