@@ -60,7 +60,8 @@ class News(base_app.BaseApp):
         feed_entry = feedparser.parse(feed["url"]).entries[random.randint(0, self.config.no_feeds)]
         title = feed_entry['title']
         text = feed_entry['summary']
-        text = text[0:text.find(feed["stop_string"])] + "&#8230;"
+        if "stop_string" in feed:
+            text = text[0:text.find(feed["stop_string"])] + "&#8230;"
         text = self.clean_text(text)
 
         # window content

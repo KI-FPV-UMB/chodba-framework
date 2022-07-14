@@ -6,7 +6,8 @@
 	"demo_time": 25,
 	"feeds": [
 		{"url": "https://www.quark.sk/feed/", "stop_string": "&#8230;"},
-		{"url": "https://zive.aktuality.sk/rss/najnovsie/", "stop_string": "&#8230;"}
+		{"url": "https://www.root.cz/rss/zpravicky/"},
+		{"url": "https://zive.aktuality.sk/rss/najnovsie/"}
 	],
 	"no_feeds": 5
 }
