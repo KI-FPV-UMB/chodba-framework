@@ -44,7 +44,7 @@ class BaseApp:
         h1 = logging.StreamHandler(sys.stdout)
         h1.setLevel(logging.DEBUG)
         h1.setFormatter(formatter)
-        h1.addFilter(LessThanFilter(logging.WARNING))
+        # h1.addFilter(LessThanFilter(logging.WARNING))
         logger.addHandler(h1)
 
         h2 = logging.StreamHandler(sys.stderr)
@@ -69,14 +69,21 @@ class BaseApp:
             logging.debug("[" + self.config.name + "]   " + k + " = " + str(conf[k]))
 
     def read_config(self, path: str):
-        if not os.path.isfile(os.path.join(path, "config.json")):
+        cf = os.path.join(path, "config.json")
+        if not os.path.isfile(cf):
             logging.error("[" + self.config.name + "] config file was not found in directory " + path)
             return
-        with open(os.path.join(path, "config.json"), "r") as read_file:
-            ret = json.load(read_file)
-            if not "enabled" in ret:
-                ret["enabled"] = True
-            return ret
+
+        try:
+            with open(cf, "r") as read_file:
+                ret = json.load(read_file)
+                if not "enabled" in ret:
+                    ret["enabled"] = True
+                return ret
+        except Exception as e:
+            # log exception
+            logging.exception("[" + self.config.name + "] error reading file " + cf)     # repr(e)
+            return
 
     def process_args(self, args):
         self.args = Args()
@@ -178,6 +185,7 @@ class BaseApp:
         self.client.subscribe(self.get_specific_topic(self.config.name, self.node))
 
         # send lifecycle status 'running'
+        logging.info("[" + self.config.name + "] running")
         self.pub_lifecycle("running")
 
         # run

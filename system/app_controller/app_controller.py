@@ -66,12 +66,15 @@ class AppController(base_app.BaseApp):
                 app = App()
                 # read application's configuration
                 app_config = self.read_config(os.path.join(APPS_PATH, entry))
+                if app_config is None:
+                    logging.warning("[" + self.config.name + "] skipping " + entry)
+                    continue
                 has_labels = False
                 for k in app_config.keys():
                     setattr(app, k, app_config[k])
                     if k == "labels":
                         has_labels = True
-                if app.type != type:
+                if type is not None and app.type != type:
                     continue
                 if app.enabled and (labels is None or (has_labels and (set(labels) & set(app.labels)))):
                     # the application is enabled and has corresponding labels (if required)
@@ -179,12 +182,13 @@ class AppController(base_app.BaseApp):
 
         return prevstat, app
 
-    def log_apps_status(self):
-        logging.info("[" + self.config.name + "] apps: ")  # + str(self.running_apps))
+    def log_apps_status(self, title, apps):
+        logging.info("[" + self.config.name + "] " + title)  # + str(self.running_apps))
         apps_sys = []
         apps_back = []
         apps_frnt = []
-        for app in self.running_apps:
+        # apps_list =
+        for app in apps:
             if app.type == app_utils.APP_TYPE_SYSTEM:
                 apps_sys.append(app)
             elif app.type == app_utils.APP_TYPE_BACKEND:
@@ -197,7 +201,10 @@ class AppController(base_app.BaseApp):
 
         def log_status(l):
             for app in l:
-                logging.info("  " + "{:<20} {:<10} {:<12} {:<15}".format(app.name, app.type, app.node, app.status))
+                if app.node is not None and app.status is not None:
+                    logging.info("  " + "{:<20} {:<10} {:<12} {:<15}".format(app.name, app.type, app.node, app.status))
+                else:
+                    logging.info("  " + "{:<20} {:<10}".format(app.name, app.type))
 
         log_status(apps_sys)
         log_status(apps_back)
@@ -230,7 +237,7 @@ class AppController(base_app.BaseApp):
 
         elif msg_type == "stat":
             # log current status
-            self.log_apps_status()
+            self.log_apps_status("running apps:", self.running_apps)
 
         elif msg_type == "start_backends":
             # start required backends on particular nodes
@@ -343,6 +350,8 @@ class AppController(base_app.BaseApp):
         """t = threading.Thread(target=self.check_inactive_users)
         t.daemon = True
         t.start()"""        #TODO
+
+        self.log_apps_status("all available apps:", self.list_offline_apps(None, None, False))
 
         # start processing of mqtt messages
         self.client.loop_forever()

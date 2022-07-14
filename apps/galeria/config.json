@@ -1,5 +1,5 @@
 {
-	"enabled": true,
+	"enabled": false,
 	"name": "galeria",
 	"type": "frontend",
 	"labels": ["demo"],
