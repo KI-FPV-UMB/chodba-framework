@@ -64,13 +64,21 @@ class NodeManager(base_app.BaseApp):
 
         if msg_type == "start":
             # start specified application
+            name = msg["body"]["name"]
             try:
-                nick = msg["nickname"] if "nickname" in msg else None
-                approb = msg["approbation"] if "approbation" in msg else None
-                self.run_app(msg["body"]["name"], self.screen_width, self.screen_height, nick, approb)
+                app_config = self.read_config(os.path.join(APPS_PATH, name))
+                if app_config is not None:
+                    if app_config["enabled"]:
+                        nick = msg["nickname"] if "nickname" in msg else None
+                        approb = msg["approbation"] if "approbation" in msg else None
+                        self.run_app(name, self.screen_width, self.screen_height, nick, approb)
+                    else:
+                        logging.warning("[" + self.config.name + "] application " + name + " is disabled")
+                        log = {"name": self.config.name, "node": self.node, "level": "warning", "log": "application " + name + " is disabled"}
+                        self.pub_msg("log", log, app_utils.APP_CONTROLLER_TOPIC)
             except Exception as e:
-                logging.exception("[" + self.config.name + "] error starting application " + msg["body"]["name"] + ": " + str(e))
-                log = { "name": self.config.name, "node": self.node, "level": "error", "log": "error starting application " + msg["body"]["name"] + ": " + str(e) }
+                logging.exception("[" + self.config.name + "] error starting application " + name + ": " + str(e))
+                log = { "name": self.config.name, "node": self.node, "level": "error", "log": "error starting application " + name + ": " + str(e) }
                 self.pub_msg("log", log, app_utils.APP_CONTROLLER_TOPIC )
 
         elif msg_type == "screen_size":
