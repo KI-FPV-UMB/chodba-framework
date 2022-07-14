@@ -1,0 +1,9 @@
+{
+	"enabled": true,
+	"name": "news",
+	"type": "frontend",
+	"labels": ["fun", "demo"],
+	"demo_time": 15,
+	"feeds": [ {"url": "https://www.quark.sk/feed/", "stop_string": "&#8230;"}],
+	"no_feeds": 5
+}

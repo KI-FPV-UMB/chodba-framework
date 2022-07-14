@@ -13,7 +13,7 @@ import random
 import subprocess
 from base import base_app
 
-class Hlasky(base_app.BaseApp):
+class Quotes(base_app.BaseApp):
 
     def run(self):
         # start processing of mqtt messages
@@ -40,21 +40,21 @@ class Hlasky(base_app.BaseApp):
         if r < 2:
             # quote from fortune
             result = subprocess.run(["/usr/games/fortune", "sk"], stdout=subprocess.PIPE)
-            hlaska = result.stdout.decode("utf-8").replace("\t", "")
+            quote = result.stdout.decode("utf-8").replace("\t", "")
         else:
             # quote from file
-            hlasky = []
+            quotes = []
             with open("quotes.txt") as fp:
                 line = fp.readline()
                 while line:
                     if not line.startswith("#"):
-                        hlasky.append(line)
+                        quotes.append(line)
                     line = fp.readline()
             #n = random.randint(0, len(quotes)-1)
-            hlaska = random.choice(hlasky)
+            quote = random.choice(quotes)
 
         # window content
-        msg = tkinter.Message(self.top, text=hlaska)
+        msg = tkinter.Message(self.top, text=quote)
         msg.config(font=('times', 70, 'italic'), bg=bgcol)
         msg.pack(expand=True)          # center vertically
 
@@ -68,7 +68,7 @@ class Hlasky(base_app.BaseApp):
         self.top.quit()
 
 if __name__ == '__main__':
-    app = Hlasky()
+    app = Quotes()
     app.process_args(sys.argv)
     app.start()
 

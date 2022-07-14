@@ -3,7 +3,7 @@
 if [ $# -lt 1 ]
 then
 	echo "supported arguments:"
-	echo "  status"
+	echo "  stat"
 	echo "  start <name> <node>"
 	echo "  stop <name> <node>"
 	exit
