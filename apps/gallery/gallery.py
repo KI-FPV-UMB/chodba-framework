@@ -1,15 +1,12 @@
 #!/usr/bin/python3
 
-"""gallery.py: Slideshow obrazkov z podadresarov. Po spusteni nahodne vyberie podadresar a spusti na nom slideshow."""
+"""gallery.py: Slideshow of images from randomly selected subdirectory."""
 __author__ = "Michal Vagac"
 __email__ = "michal.vagac@gmail.com"
 
-# PYTHONPATH musi odkazovat na absolutnu cestu k .../chodba-framework/base
+# set PYTHONPATH to project root (chodba-framework)
 
-import sys
 import os
-import paho.mqtt.client as mqtt
-import json
 import random
 import time
 import logging
@@ -20,7 +17,7 @@ import sdl2
 import sdl2.sdlimage
 import sdl2.sdlttf          # libsdl2-ttf-2.0-0
 
-import base_app
+from base import base_app
 
 SORTED_FILE = "sorted"
 NOTITLE_FILE = "notitle"
@@ -31,90 +28,91 @@ FONT_SIZE = 120
 FONT_OUTLINE = 3
 FS_ENCODING = "utf-8"
 
-class Galeria(base_app.BaseApp):
+class Gallery(base_app.BaseApp):
 
-    def dalsi_obrazok(self):
-        # nacitaj obrazok
+    def next_image(self):
+        #TODO aj z videi => ak sa vyberie video, tak to sa da cele prehrat; ked prehravanie skonci, tak stop
+        # read an image
         if self.sorted:
-            # v poradi
+            # in order
             n = self.current
             self.current += 1
             if self.current >= len(self.files):
                 self.current = 0
         else:
-            # nahodny
+            # randomly
             n = self.current = random.randint(0, len(self.files)-1)
-        logging.info("[" + self.name + "]   kreslim " + str(n) + ": " + self.files[n])
-        self.obrazok = sdl2.sdlimage.IMG_Load(str.encode(self.files[n]))
+        logging.info("[" + self.config.name + "]   drawing " + str(n) + ": " + self.files[n])
+        self.image = sdl2.sdlimage.IMG_Load(str.encode(self.files[n]))
 
-    def kresli_obrazok(self):
-        #logging.error("[" + self.name + "]   kreslim : " + self.files[self.current])
-        if self.obrazok is None or self.obrazok.contents is None:
-            self.dalsi_obrazok()
-        # vymaz pozadie
+    def draw_image(self):
+        #logging.error("[" + self.config.name + "]   kreslim : " + self.files[self.current])
+        if self.image is None or self.image.contents is None:
+            self.next_image()
+        # clear background
         sdl2.SDL_SetRenderDrawColor(self.renderer, 0, 0, 0, 0)
         sdl2.SDL_RenderClear(self.renderer)
-        # vypocitaj mierku zvacsenia/zmensenia
-        aw = self.obrazok.contents.w / self.window_w
-        ah = self.obrazok.contents.h / self.window_h
+        # calculate scale
+        aw = self.image.contents.w / self.window_w
+        ah = self.image.contents.h / self.window_h
         r = sdl2.SDL_Rect()
         a = max(aw, ah)
-        nw, nh = self.obrazok.contents.w / a, self.obrazok.contents.h / a
+        nw, nh = self.image.contents.w / a, self.image.contents.h / a
         r.x, r.y = int(self.window_w/2 - nw/2), int(self.window_h/2 - nh/2)
         r.w, r.h = int(nw), int(nh)
-        # vykresli
-        sdl2.SDL_BlitScaled(self.obrazok, None, self.windowsurface, r)
+        # draw
+        sdl2.SDL_BlitScaled(self.image, None, self.windowsurface, r)
         #sdl2.SDL_UpdateWindowSurface(self.window)
 
-        # dopis nazov adresara
+        # display name of directory
         if not self.notitle:
-            # najprv vyrenderuj outlined text ciernou
+            # draw with black color outlined text
             nazov_outlined = sdl2.sdlttf.TTF_RenderUTF8_Blended(self.font_outlined, self.folder.encode(FS_ENCODING), sdl2.SDL_Color(0, 0, 0))
             r = sdl2.SDL_Rect()
             r.x, r.y = int(self.window_w/2 - nazov_outlined.contents.w / 2), int(self.window_h - nazov_outlined.contents.h - 10)
             r.w, r.h = nazov_outlined.contents.w, nazov_outlined.contents.h
             sdl2.SDL_BlitSurface(nazov_outlined, None, self.windowsurface, r)
-            # potom vyrenderuj normalny text bielou
+            # draw smaller text with white color
             nazov = sdl2.sdlttf.TTF_RenderUTF8_Blended(self.font, self.folder.encode(FS_ENCODING), sdl2.SDL_Color(255, 255, 255))
             r = sdl2.SDL_Rect()
             r.x, r.y = int(self.window_w/2 - nazov.contents.w / 2 + FONT_OUTLINE / 2), int(self.window_h - nazov.contents.h - 10 + FONT_OUTLINE / 2)
             r.w, r.h = nazov.contents.w, nazov.contents.h
             sdl2.SDL_BlitSurface(nazov, None, self.windowsurface, r)
 
-
-        # update obrazovky (premietnutie zmien)
+        # display changes
         sdl2.SDL_RenderPresent(self.renderer)
-
-        #sdl2.SDL_FreeSurface(self.obrazok)             # s tymto to pada
+        #sdl2.SDL_FreeSurface(self.image)             # TODO s tymto to pada
         #sdl2.SDL_FreeSurface(nazov)
 
     def run(self):
-        # spracovavaj mqtt spravy
+        # start processing of mqtt messages
         self.client.loop_start()
 
-        # nahodne vyber adresar s obrazkami
-        subdirs = [d for d in os.listdir("") if os.path.isdir(d)]
+        # choose random directory with images
+        subdirs = [d for d in os.listdir(".") if os.path.isdir(d)]
         #subdirs = [x[0] for x in os.walk(".")]
         if len(subdirs) <= 1:
-            log = { "log": "gallery neobsahuje ziadne podadresare s obrazkami!" }
+            log = { "log": "gallery contains none subdirectory with images!" }
             self.pub_msg("log", log, "app_controller" )
             return
         d = random.choice(subdirs)
-        logging.info("[" + self.name + "] vyberam " + d)
+        # d = subdirs[4]
+        logging.info("[" + self.config.name + "] selecting " + d)
         self.folder = d
-        self.files = [os.path.join(d, f) for f in os.listdir(d) if os.path.isfile(os.path.join(d, f)) and (f.endswith(".png") or f.endswith(".jpg"))]
+        self.files = [os.path.join(d, f) for f in os.listdir(d) if os.path.isfile(os.path.join(d, f)) and (f.endswith(".png") or f.endswith(".jpg") or f.endswith(".mp4"))]
+        # self.files = [os.path.join(d, f) for f in os.listdir(d) if os.path.isfile(os.path.join(d, f)) and (f.endswith(".mp4"))]
         ssorted = os.path.join(d, SORTED_FILE)
         self.sorted = os.path.isfile(ssorted)
         if self.sorted and ssorted in self.files:
             self.files.remove(ssorted)
             self.files.sort()
-        self.current = 0                # ak sa obrazky budu zobrazovat sorted, musime si pamatat, ktory bol zobrazeny ako posledny
+        self.current = 0                # currently shown image (used when displaying images in order)
         snotitle = os.path.join(d, NOTITLE_FILE)
         self.notitle = os.path.isfile(snotitle)
         if self.notitle and snotitle in self.files:
             self.files.remove(snotitle)
 
-        # inicializacia SDL2
+        # initialize SDL2
         if sdl2.SDL_Init(sdl2.SDL_INIT_VIDEO) < 0:
             sys.exit(1)
 
@@ -124,19 +122,19 @@ class Galeria(base_app.BaseApp):
         if sdl2.sdlttf.TTF_Init() <0:
             sys.exit(1)
 
-        # vytvor a zobraz okno (full screen)
+        # create and show window (full screen)
         flags = sdl2.SDL_WINDOW_SHOWN | sdl2.SDL_WINDOW_FULLSCREEN_DESKTOP | sdl2.SDL_WINDOW_BORDERLESS
         self.window = sdl2.SDL_CreateWindow(b"Galeria", sdl2.SDL_WINDOWPOS_CENTERED, sdl2.SDL_WINDOWPOS_CENTERED, 1024, 768, flags)
 
-        # zisti a zapamataj rozmery vytvoreneho okna
+        # save size of the window
         w, h = ctypes.c_int(), ctypes.c_int()
         sdl2.SDL_GetWindowSize(self.window, ctypes.byref(w), ctypes.byref(h))
-        if self.screen_width is not None and self.screen_height is not None:
-            self.window_w, self.window_h = self.screen_width, self.screen_height
+        if self.args.screen_width is not None and self.args.screen_height is not None:
+            self.window_w, self.window_h = self.args.screen_width, self.args.screen_height
         else:
             self.window_w, self.window_h = w.value, h.value
 
-        # priprav pristup na kreslenie do okna
+        # prepare window renderer
         self.renderer = sdl2.SDL_CreateRenderer(self.window, -1, sdl2.SDL_RENDERER_SOFTWARE)
         self.windowsurface = sdl2.SDL_GetWindowSurface(self.window)
         self.font = sdl2.sdlttf.TTF_OpenFont(FONT_PATH.encode("ascii"), FONT_SIZE)
@@ -144,19 +142,19 @@ class Galeria(base_app.BaseApp):
         self.font_outlined = sdl2.sdlttf.TTF_OpenFont(FONT_PATH.encode("ascii"), FONT_SIZE)
         sdl2.sdlttf.TTF_SetFontOutline(self.font_outlined, FONT_OUTLINE); 
 
-        # vymaz okno
+        # clear window
         sdl2.SDL_SetRenderDrawColor(self.renderer, 0, 0, 0, 0)
         sdl2.SDL_RenderClear(self.renderer)
 
         # event loop
-        self.obrazok = None
+        self.image = None
         last_draw = time.time()
         self.running = True
         event = sdl2.SDL_Event()
         while self.running:
-            self.kresli_obrazok()
-            if time.time() - last_draw > self.delay_s:
-                self.dalsi_obrazok()
+            self.draw_image()
+            if time.time() - last_draw > self.config.delay_s:
+                self.next_image()
                 last_draw = time.time()
                 # TODO cas pauzy postupne skracovat
 
@@ -165,22 +163,22 @@ class Galeria(base_app.BaseApp):
                 if event.type == sdl2.SDL_QUIT:             # event: quit
                     self.running = False
                     break
-            sdl2.SDL_Delay(100)                             # v ms
+            sdl2.SDL_Delay(500)                             # in ms
 
-        # uvolni alokovane zdroje
+        # release resources
         sdl2.SDL_DestroyRenderer(self.renderer)
         sdl2.SDL_DestroyWindow(self.window)
         sdl2.SDL_Quit()
 
     def stop(self):
-        # zastav spracovanie mqtt
+        # stop processing mqtt
         super().stop()
-        # zastav spracovanie SDL eventov
+        # stop processing SDL events
         self.running = False
 
 
 if __name__ == '__main__':
-    app = Galeria()
+    app = Gallery()
     app.process_args(sys.argv)
     app.start()
 

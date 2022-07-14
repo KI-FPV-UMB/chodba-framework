@@ -1,6 +1,6 @@
 {
 	"enabled": false,
-	"name": "galeria",
+	"name": "gallery",
 	"type": "frontend",
 	"labels": ["demo"],
 	"demo_time": 15,
