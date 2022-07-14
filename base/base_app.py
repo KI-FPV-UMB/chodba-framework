@@ -101,17 +101,17 @@ class BaseApp:
             self.args.screen_width = int(args[4])
             self.args.screen_height = int(args[5])
 
-        if len(args) > 5:
+        if len(args) > 6:
             self.args.user_topic = args[6]
         else:
             self.args.user_topic = None
 
-        if len(args) > 6:
+        if len(args) > 7:
             self.args.nickname = args[7]
         else:
             self.args.nickname = None
 
-        if len(args) > 7:
+        if len(args) > 8:
             self.args.approbation = args[8]
         else:
             self.args.approbation = None
@@ -140,9 +140,18 @@ class BaseApp:
 
     def on_msg(self, client, userdata, message):
         """basic method for retrieving messages"""
-        msg = json.loads(message.payload.decode())
+        try:
+            msg = json.loads(message.payload.decode())
+        except Exception as e:
+            logging.exception("[" + self.config.name + "] message format error: " + repr(e))
+            log = {"name": self.config.name, "node": self.node, "level": "error",
+                   "log": "message format error: " + repr(e)}
+            self.pub_msg("log", log, app_utils.APP_CONTROLLER_TOPIC)
+            return
+
         if not "header" in msg or not app_utils.MSG_TYPE in msg["header"]:
-            log = { "log": "unsupported message type: " + str(msg) }
+            logging.warning("[" + self.config.name + "] unsupported message type: " + str(msg))
+            log = { "name": self.config.name, "node": self.node, "level": "warning", "log": "unsupported message type: " + str(msg) }
             self.pub_msg("log", log, app_utils.APP_CONTROLLER_TOPIC)
             return
 
@@ -156,18 +165,18 @@ class BaseApp:
                 # process specific application message
                 self.on_app_msg(msg)
             except Exception as e:
-                # zaloguj chybu
-                logging.exception("[" + self.config.name + "] message processing error " + msg_type)
-                log = { "log": "message processing error " + msg_type }
+                logging.exception("[" + self.config.name + "] error processing message '" + msg_type + "': " + repr(e))
+                log = { "name": self.config.name, "node": self.node, "level": "error", "log": "error processing message '" + msg_type + "': " + repr(e)}
                 self.pub_msg("log", log, app_utils.APP_CONTROLLER_TOPIC)
 
     def on_app_msg(self, msg):
         """Method for processing specific application messages (can be overloaded in child classes)"""
-        log = { "log": "unknown message type: " + str(msg) }
+        logging.warning("[" + self.config.name + "] unsupported message type: " + str(msg))
+        log = { "name": self.config.name, "node": self.node, "level": "warning", "log": "unknown message type: " + str(msg) }
         self.pub_msg("log", log, app_utils.APP_CONTROLLER_TOPIC)
 
-    def get_specific_topic(self, name: str, node: str) -> str:
-        return "node/" + node + "/" + name
+    def get_specific_topic(self, name: str, node: str) -> list:
+        return ["node/" + node + "/" + name]
 
     def start(self):
         # prepare client
@@ -180,9 +189,10 @@ class BaseApp:
         self.pub_lifecycle("starting")
 
         # list to incoming messages
-        logging.info("[" + self.config.name + "] binding to " + self.get_specific_topic(self.config.name, self.node) + " topic")
-        self.client.message_callback_add(self.get_specific_topic(self.config.name, self.node), self.on_msg)
-        self.client.subscribe(self.get_specific_topic(self.config.name, self.node))
+        for t in self.get_specific_topic(self.config.name, self.node):
+            logging.info("[" + self.config.name + "] binding to " + t + " topic")
+            self.client.message_callback_add(t, self.on_msg)
+            self.client.subscribe(t)
 
         # send lifecycle status 'running'
         logging.info("[" + self.config.name + "] running")
@@ -193,8 +203,8 @@ class BaseApp:
             self.run()
         except Exception as e:
             # log exception
-            logging.exception("[" + self.config.name + "] exception running application")     # repr(e)
-            log = { "log": "exception running application: " + repr(e) }
+            logging.exception("[" + self.config.name + "] exception running application: " + repr(e))
+            log = { "name": self.config.name, "node": self.node, "level": "error", "log": "exception running application: " + repr(e) }
             self.pub_msg("log", log, app_utils.APP_CONTROLLER_TOPIC)
             #traceback.print_exc()      #TODO malo by byt obsiahnute v logging.exception()
             # skonci

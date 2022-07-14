@@ -99,7 +99,7 @@ class AppController(base_app.BaseApp):
     def stop_app(self, app: App) -> None:
         """Stop specified application. The application is removed from list of applications only after message confirming
         stopping is retrieved."""
-        topic = super().get_specific_topic(app.name, app.node)
+        topic = super().get_specific_topic(app.name, app.node)[0]
         self.pub_msg("stop", {}, topic)
 
     def start_all_backends(self, node_managers: list):
@@ -210,8 +210,8 @@ class AppController(base_app.BaseApp):
         log_status(apps_back)
         log_status(apps_frnt)
 
-    def get_specific_topic(self, name: str, node: str) -> str:
-        return app_utils.APP_CONTROLLER_TOPIC
+    def get_specific_topic(self, name: str, node: str) -> list:
+        return [app_utils.APP_CONTROLLER_TOPIC]
 
     #def on_main_msg(self, client, userdata, message):
     def on_app_msg(self, msg):
@@ -227,6 +227,7 @@ class AppController(base_app.BaseApp):
             prevstat, app = self.update_app_lifecycle_status(msg)
             # process starting of node_manager
             if app.name == "node_manager" and prevstat == "starting" and app.status == "running":
+                logging.info("[" + self.config.name + "] node_manager started on " + app.node)
                 self.start_all_backends([app.node])
                 self.start_random_frontend_app(app.node)
             # process stopping of any application
@@ -234,6 +235,19 @@ class AppController(base_app.BaseApp):
                 self.running_apps.remove(app)
                 if not self.quitting and app.type == app_utils.APP_TYPE_FRONTEND:
                     self.start_random_frontend_app(app.node)
+
+        elif msg_type == "log":
+            text = "[" + msg["header"]["node"] + "." + msg["header"]["name"] + "] " + msg["body"]["log"]
+            if "level" in msg["body"]:
+                lvl = msg["body"]["level"]
+                if lvl == "error":
+                    logging.error(text)
+                elif lvl == "warning":
+                    logging.warning(text)
+                else:
+                    logging.info(text)
+            else:
+                logging.info(text)
 
         elif msg_type == "stat":
             # log current status
@@ -253,7 +267,7 @@ class AppController(base_app.BaseApp):
             for app in self.running_apps:
                 if app.name == self.config.name:
                     continue
-                topic = super().get_specific_topic(app.name, app.node)
+                topic = super().get_specific_topic(app.name, app.node)[0]
                 logging.info("[" + self.config.name + "] stopping " + topic)
                 self.pub_msg("stop", {}, topic)
 
@@ -274,7 +288,7 @@ class AppController(base_app.BaseApp):
                     if not "type" in msg.body or msg.body.type == app.type:
                         apps_list.append(app.__dict__)
             resp = { "applications": apps_list }
-            topic = super().get_specific_topic(msg.header.name, msg.header.node)
+            topic = super().get_specific_topic(msg.header.name, msg.header.node)[0]
             logging.debug(json.dumps(resp), topic)         #TODO
             self.pub_msg("applications", resp, topic)
 
@@ -292,14 +306,14 @@ class AppController(base_app.BaseApp):
                 wrkspcs_list.append(WORKSPACES_LAYOUT[k].__dict__)
             """
             resp = { "grid_width": "4", "grid_height": "2", "workspaces": wrkspcs_list }
-            topic = super().get_specific_topic(msg.header.name, msg.header.node)
+            topic = super().get_specific_topic(msg.header.name, msg.header.node)[0]
             logging.debug(json.dumps(resp), topic)         #TODO
             self.pub_msg("workspaces", resp, topic)
 
         elif msg_type == "approbations":
             apprs_list = [ "AI1", "AI2", "UIN1", "UIN2" ]
             resp = { "approbations": apprs_list }
-            topic = super().get_specific_topic(msg.header.name, msg.header.node)
+            topic = super().get_specific_topic(msg.header.name, msg.header.node)[0]
             logging.debug(json.dumps(resp), topic)         #TODO
             self.pub_msg("approbations", resp, topic)
 
@@ -339,7 +353,7 @@ class AppController(base_app.BaseApp):
                         # daj im este sancu - posli poziadavku na refresh
                         logging.info("[" + self.config.name + "] refresh stavu " + app.name + " na " + app.node)
                         app.status = "refreshing"
-                        topic = super().get_specific_topic(app.name, app.node)
+                        topic = super().get_specific_topic(app.name, app.node)[0]
                         self.pub_msg(app_utils.LIFECYCLE_STATUS, {}, topic)
 
     def run(self):

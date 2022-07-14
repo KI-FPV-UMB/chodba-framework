@@ -1,13 +1,12 @@
 #!/usr/bin/python3
 
-"""databaza.py: umoznuje perzistenciu udajov pre aplikacie."""
+"""mongo_storage.py: umoznuje perzistenciu udajov pre aplikacie."""
 __author__ = "Michal Vagac"
 __email__ = "michal.vagac@gmail.com"
 
 # apt-get install mongodb
-# je potrebna starsia verzia mongo: pip3 install pymongo==3.4.0
 
-# praca s db v shelli:
+# shell example:
 # mongo
 #   use chodbadb
 #   db.apps.find()
@@ -15,8 +14,7 @@ __email__ = "michal.vagac@gmail.com"
 #   db.apps.find().sort({ "timestamp" : -1 }).limit(5)
 #   db.apps.find({"name": "teplota_vlhkost"})
 
-
-# PYTHONPATH musi odkazovat na absolutnu cestu k .../chodba-framework/base
+# set PYTHONPATH to project root (chodba-framework)
 
 import sys
 import os
@@ -24,7 +22,8 @@ import logging
 import paho.mqtt.client as mqtt
 import json
 import pymongo
-import base_app
+from base import base_app
+from base import app_utils
 
 class Databaza(base_app.BaseApp):
 
@@ -32,7 +31,7 @@ class Databaza(base_app.BaseApp):
         msg = json.loads(message.payload.decode())
         if not "msg" in msg:
             log = { "log": "neznamy typ spravy: " + str(msg) }
-            self.pub_msg("log", log, "app_controller" )
+            self.pub_msg("log", log, app_utils.APP_CONTROLLER_TOPIC)
             return
 
         if msg["msg"] == "insert":
@@ -46,7 +45,7 @@ class Databaza(base_app.BaseApp):
             # vyber zaznamy z db
             if not "query" in msg:
                 log = { "log": "chyba parameter 'query'!" }
-                self.pub_msg("log", log, "app_controller" )
+                self.pub_msg("log", log, app_utils.APP_CONTROLLER_TOPIC)
                 return
             try:
                 q1 = { "name": msg["name"] }
@@ -79,8 +78,8 @@ class Databaza(base_app.BaseApp):
         #if "chodbadb" not in dblist:
         #      logging.info("Databaza neexistuje, vytvaram...")
 
-        self.client.message_callback_add("database", self.on_db_message)
-        self.client.subscribe("database")
+        self.client.message_callback_add("storage", self.on_db_message)
+        self.client.subscribe("storage")
         # spracovavaj mqtt spravy
         self.client.loop_forever()
 

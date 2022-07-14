@@ -53,7 +53,7 @@ class TeplotaVlhkost(base_app.BaseApp):
             temperature = np.mean(self.odstran_sum(temps))
             # zapis do db
             msg = { "humidity": humidity, "temperature": temperature }
-            self.pub_msg("insert", msg, "database")
+            self.pub_msg("insert", msg, "storage")
             # cakaj
             time.sleep(self.measurement_pause_s)
 

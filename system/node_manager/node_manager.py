@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-"""node_manager.py: spravuje konkretny uzol. tato aplikacia sa spusta priamo z os (najlepsie pri starte os), a to na kazdom uzle (1 instancia). este predtym musi byt na jednom uzle spusteny app_controller.py"""
+"""node_manager.py: This application is run directly from OS (using systemd), one instance on each node (computer). Should be started after AppController."""
 __author__ = "Michal Vagac"
 __email__ = "michal.vagac@gmail.com"
 
@@ -17,8 +17,8 @@ APPS_PATH = "../../apps/"
 
 class NodeManager(base_app.BaseApp):
 
-    def run_app(self, path, name, arg1=None, arg2=None, arg3=None, arg4=None, arg5=None):
-        p = os.path.join(path, name)
+    def run_app(self, name, arg1=None, arg2=None, arg3=None, arg4=None, arg5=None):
+        p = os.path.join(APPS_PATH, name)
         args = []
         if os.path.isfile(os.path.join(p, name) + ".py"):
             # python app
@@ -30,7 +30,7 @@ class NodeManager(base_app.BaseApp):
             args.append("-jar")
             args.append(name + ".jar")
         else:
-            raise Exception("aplikacia nebola najdena alebo neznamy typ aplikacie!")
+            raise Exception("the application " + name + " not found!")
         args.append(self.args.broker_host)
         args.append(self.args.broker_port)
         args.append(self.args.broker_transport)
@@ -49,29 +49,29 @@ class NodeManager(base_app.BaseApp):
             args.append(arg4)
         if arg5 is not None:
             args.append(arg5)
-        subprocess.Popen(args, cwd=p)
+        subprocess.Popen(args, cwd=p, stdout=sys.stdout, stderr=sys.stderr)
         return None
         # ... spusti a vrat vystup
         #result = subprocess.run([f, arg1], stdout=subprocess.PIPE)
         #return result.stdout.decode("utf-8").strip("\n")
 
-    def get_specific_topic(self, name: str, node: str) -> str:
-        return "node/" + node
+    def get_specific_topic(self, name: str, node: str) -> list:
+        return ["node/" + node]
 
     # def on_node_message(self, client, userdata, message):
     def on_app_msg(self, msg):
-        if msg.header[app_utils.MSG_TYPE] == "start":
+        if msg["header"][app_utils.MSG_TYPE] == "start":
             # start specified application
             try:
                 nick = msg["nickname"] if "nickname" in msg else None
                 approb = msg["approbation"] if "approbation" in msg else None
-                self.run_app(msg.type, msg["name"], self.screen_width, self.screen_height, nick, approb)
+                self.run_app(msg["body"]["name"], self.screen_width, self.screen_height, nick, approb)
             except Exception as e:
-                logging.exception("[" + self.name + "] chyba pri spustani " + msg["name"])
-                log = { "name": self.name, "node": self.node, "log": "chyba pri spustani " + msg["name"] + ": " + str(e) }
-                self.pub_msg("log", log, "app_controller" )
+                logging.exception("[" + self.config.name + "] error starting application " + msg["body"]["name"] + ": " + str(e))
+                log = { "name": self.config.name, "node": self.node, "level": "error", "log": "error starting application " + msg["body"]["name"] + ": " + str(e) }
+                self.pub_msg("log", log, app_utils.APP_CONTROLLER_TOPIC )
 
-        if msg.header[app_utils.MSG_TYPE] == "screen_size":
+        if msg["header"][app_utils.MSG_TYPE] == "screen_size":
             self.screen_width = msg["width"]
             self.screen_height = msg["height"]
 

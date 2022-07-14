@@ -1,7 +1,0 @@
-{
-	"enabled": true,
-	"name": "databaza",
-	"type": "backend",
-	"runon": "chodba-ki01",
-	"runon2": "mvagac-X230"
-}
