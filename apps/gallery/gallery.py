@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-"""galeria.py: Slideshow obrazkov z podadresarov. Po spusteni nahodne vyberie podadresar a spusti na nom slideshow."""
+"""gallery.py: Slideshow obrazkov z podadresarov. Po spusteni nahodne vyberie podadresar a spusti na nom slideshow."""
 __author__ = "Michal Vagac"
 __email__ = "michal.vagac@gmail.com"
 
@@ -96,7 +96,7 @@ class Galeria(base_app.BaseApp):
         subdirs = [d for d in os.listdir("") if os.path.isdir(d)]
         #subdirs = [x[0] for x in os.walk(".")]
         if len(subdirs) <= 1:
-            log = { "log": "galeria neobsahuje ziadne podadresare s obrazkami!" }
+            log = { "log": "gallery neobsahuje ziadne podadresare s obrazkami!" }
             self.pub_msg("log", log, "app_controller" )
             return
         d = random.choice(subdirs)
