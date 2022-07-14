@@ -58,9 +58,11 @@ class NodeManager(base_app.BaseApp):
     def get_specific_topic(self, name: str, node: str) -> list:
         return ["node/" + node]
 
-    # def on_node_message(self, client, userdata, message):
     def on_app_msg(self, msg):
-        if msg["header"][app_utils.MSG_TYPE] == "start":
+        """basic method for retrieving messages"""
+        msg_type = msg["header"][app_utils.MSG_TYPE]
+
+        if msg_type == "start":
             # start specified application
             try:
                 nick = msg["nickname"] if "nickname" in msg else None
@@ -71,17 +73,19 @@ class NodeManager(base_app.BaseApp):
                 log = { "name": self.config.name, "node": self.node, "level": "error", "log": "error starting application " + msg["body"]["name"] + ": " + str(e) }
                 self.pub_msg("log", log, app_utils.APP_CONTROLLER_TOPIC )
 
-        if msg["header"][app_utils.MSG_TYPE] == "screen_size":
+        elif msg_type == "screen_size":
             self.screen_width = msg["width"]
             self.screen_height = msg["height"]
+
+        else:
+            super().on_app_msg(msg)
 
 
     def run(self):
         self.screen_width = None
         self.screen_height = None
-        # self.client.message_callback_add("node/" + self.node, self.on_node_message)
-        # self.client.subscribe("node/" + self.node)
-        # spracovavaj mqtt spravy
+
+        # start processing of mqtt messages
         self.client.loop_forever()
 
 

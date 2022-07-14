@@ -17,34 +17,30 @@ __email__ = "michal.vagac@gmail.com"
 # set PYTHONPATH to project root (chodba-framework)
 
 import sys
-import os
 import logging
-import paho.mqtt.client as mqtt
-import json
 import pymongo
 from base import base_app
 from base import app_utils
 
-class Databaza(base_app.BaseApp):
+class MongoStorage(base_app.BaseApp):
 
-    def on_db_message(self, client, userdata, message):
-        msg = json.loads(message.payload.decode())
-        if not "msg" in msg:
-            log = { "log": "neznamy typ spravy: " + str(msg) }
-            self.pub_msg("log", log, app_utils.APP_CONTROLLER_TOPIC)
-            return
+    def get_specific_topic(self, name: str, node: str) -> list:
+        return super().get_specific_topic(name, node) + ["storage"]
 
-        if msg["msg"] == "insert":
+    def on_app_msg(self, msg):
+        msg_type = msg["header"][app_utils.MSG_TYPE]
+
+        if msg_type == "insert":
             # vloz zaznam do db
             del msg["msg"]
             x = self.col.insert_one(msg)
             resp = { "id": str(x.inserted_id) }
             self.pub_msg("insert-id", resp, msg["src"] )
 
-        elif msg["msg"] == "find":
+        elif msg_type == "find":
             # vyber zaznamy z db
             if not "query" in msg:
-                log = { "log": "chyba parameter 'query'!" }
+                log = { "log": "missing parameter 'query'!" }
                 self.pub_msg("log", log, app_utils.APP_CONTROLLER_TOPIC)
                 return
             try:
@@ -65,10 +61,10 @@ class Databaza(base_app.BaseApp):
                 resp = { "resp": l }
                 self.pub_msg("resultset", resp, msg["src"] )
             except Exception as e:
-                logging.exception("[" + self.name + "] chyba spustania dotazu " + str(msg["query"]))
+                logging.exception("[" + self.name + "] error executing query " + str(msg["query"]))
 
         else:
-            super.on_app_msg(msg)
+            super().on_app_msg(msg)
 
     def run(self):
         self.dbc = pymongo.MongoClient("mongodb://localhost:27017/")
@@ -76,16 +72,14 @@ class Databaza(base_app.BaseApp):
         self.col = self.db["apps"]
         #dblist = dbc.list_database_names()
         #if "chodbadb" not in dblist:
-        #      logging.info("Databaza neexistuje, vytvaram...")
+        #      logging.info("MongoStorage neexistuje, vytvaram...")
 
-        self.client.message_callback_add("storage", self.on_db_message)
-        self.client.subscribe("storage")
-        # spracovavaj mqtt spravy
+        # start processing of mqtt messages
         self.client.loop_forever()
 
 
 if __name__ == '__main__':
-    app = Databaza()
+    app = MongoStorage()
     app.process_args(sys.argv)
     app.start()
 

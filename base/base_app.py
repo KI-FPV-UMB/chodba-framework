@@ -190,7 +190,7 @@ class BaseApp:
 
         # list to incoming messages
         for t in self.get_specific_topic(self.config.name, self.node):
-            logging.info("[" + self.config.name + "] binding to " + t + " topic")
+            logging.info("[" + self.config.name + "] binding to topic: " + t)
             self.client.message_callback_add(t, self.on_msg)
             self.client.subscribe(t)
 

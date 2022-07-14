@@ -213,15 +213,10 @@ class AppController(base_app.BaseApp):
     def get_specific_topic(self, name: str, node: str) -> list:
         return [app_utils.APP_CONTROLLER_TOPIC]
 
-    #def on_main_msg(self, client, userdata, message):
     def on_app_msg(self, msg):
         """basic method for retrieving messages"""
-        # msg = json.loads(message.payload.decode())
-        # if not "header" in msg or not app_utils.MSG_TYPE in msg.header:
-        #     log = { "log": "unsupported message type: " + str(msg) }
-        #     return
-
         msg_type = msg["header"][app_utils.MSG_TYPE]
+
         if msg_type == app_utils.MSG_TYPE_LIFECYCLE:
             # update and process lifecycle of application
             prevstat, app = self.update_app_lifecycle_status(msg)
@@ -318,7 +313,7 @@ class AppController(base_app.BaseApp):
             self.pub_msg("approbations", resp, topic)
 
         else:
-            logging.warning("[" + self.config.name + "] neznamy typ spravy: " + str(msg))
+            super().on_app_msg(msg)
 
     def check_inactive_users(self):
         #TODO
@@ -357,9 +352,6 @@ class AppController(base_app.BaseApp):
                         self.pub_msg(app_utils.LIFECYCLE_STATUS, {}, topic)
 
     def run(self):
-        # self.client.on_message = self.on_main_msg
-        # self.client.subscribe(app_utils.APP_CONTROLLER_TOPIC)
-
         # create scheduler for checking inactive user applications
         """t = threading.Thread(target=self.check_inactive_users)
         t.daemon = True
