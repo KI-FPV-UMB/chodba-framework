@@ -56,7 +56,6 @@ class News(base_app.BaseApp):
 #        self.top.update_idletasks()
 #        self.top.overrideredirect(True)
 
-        # , "https://zive.aktuality.sk/rss/najnovsie/"
         feed = self.config.feeds[random.randint(0, len(self.config.feeds) - 1)]
         feed_entry = feedparser.parse(feed["url"]).entries[random.randint(0, self.config.no_feeds)]
         title = feed_entry['title']
