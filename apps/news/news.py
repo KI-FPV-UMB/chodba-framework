@@ -68,13 +68,13 @@ class News(base_app.BaseApp):
         # title row
         f_title = tkinter.Frame(self.top, bg=bgcol)
         f_title.pack(fill=tkinter.X)
-        l_title = tkinter.Label(f_title, text=title, font=('times', 50), bg=bgcol, justify=tkinter.LEFT)
+        l_title = tkinter.Label(f_title, text=title, font=('times', 60), bg=bgcol, justify=tkinter.LEFT)
         l_title.bind('<Configure>', lambda e: l_title.config(wraplength=l_title.winfo_width()))
         l_title.pack(padx=50, pady=10) # fill=tkinter.X, padx=5, expand=True
         # text row
         f_text = tkinter.Frame(self.top, bg=bgcol)
         f_text.pack(fill=tkinter.BOTH)
-        l_text = tkinter.Label(f_text, text=text, font=('Aerial', 35), bg=bgcol, justify=tkinter.LEFT)
+        l_text = tkinter.Label(f_text, text=text, font=('times', 45), bg=bgcol, justify=tkinter.LEFT)
         l_text.bind('<Configure>', lambda e: l_text.config(wraplength=l_text.winfo_width()))
         l_text.pack(padx=50, pady=10) # fill=tkinter.BOTH, padx=5, expand=True
 
