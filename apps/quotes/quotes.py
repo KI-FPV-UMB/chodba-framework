@@ -50,7 +50,7 @@ class Hlasky(base_app.BaseApp):
                     if not line.startswith("#"):
                         hlasky.append(line)
                     line = fp.readline()
-            #n = random.randint(0, len(hlasky)-1)
+            #n = random.randint(0, len(quotes)-1)
             hlaska = random.choice(hlasky)
 
         # window content
