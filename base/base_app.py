@@ -194,10 +194,6 @@ class BaseApp:
             self.client.message_callback_add(t, self.on_msg)
             self.client.subscribe(t)
 
-        # send lifecycle status 'running'
-        logging.info("[" + self.config.name + "] running")
-        self.pub_lifecycle("running")
-
         # run
         try:
             self.run()
@@ -211,7 +207,9 @@ class BaseApp:
             self.stop()
 
     def run(self):
-        raise NotImplementedError()
+        # send lifecycle status 'running' (only after this message will count demo_time)
+        logging.info("[" + self.config.name + "] running")
+        self.pub_lifecycle("running")
 
     def stop(self):
         # send lifecycle status 'stopping'

@@ -58,6 +58,8 @@ class Quotes(base_app.BaseApp):
         msg.config(font=('times', 70, 'italic'), bg=bgcol)
         msg.pack(expand=True)          # center vertically
 
+        super().run()
+
         # work
         self.top.mainloop()
 

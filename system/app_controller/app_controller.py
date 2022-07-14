@@ -35,6 +35,7 @@ class App:
         self.id = None
         self.node = None
         self.status = None
+        self.config = {}
     def __str__(self):
         ret = ""
         if self.name is not None:
@@ -150,9 +151,6 @@ class AppController(base_app.BaseApp):
         app = candidates[random.randint(0, len(candidates)-1)]
         app.node = node         # since it is loaded from offline apps, it has no node set
         self.start_app(app)
-        # since it is demo, schedule stopping of the application
-        t = threading.Timer(app.demo_time, self.stop_app, [app])
-        t.start()
 
     def update_app_lifecycle_status(self, msg: dict) -> App:
         """Update status (and all properties) of application instance."""
@@ -168,6 +166,8 @@ class AppController(base_app.BaseApp):
             app = App()
             app.id = msg["header"]["id"]
             app.status = None
+            app.name = msg["header"]["name"]
+            app.config = self.read_config(os.path.join(APPS_PATH, app.name))
 
         # update all fields
         prevstat = app.status
@@ -221,10 +221,16 @@ class AppController(base_app.BaseApp):
             # update and process lifecycle of application
             prevstat, app = self.update_app_lifecycle_status(msg)
             # process starting of node_manager
-            if app.name == "node_manager" and prevstat == "starting" and app.status == "running":
-                logging.info("[" + self.config.name + "] node_manager started on " + app.node)
-                self.start_all_backends([app.node])
-                self.start_random_frontend_app(app.node)
+            if prevstat == "starting" and app.status == "running":
+                if app.name == "node_manager":
+                    logging.info("[" + self.config.name + "] node_manager started on " + app.node)
+                    self.start_all_backends([app.node])
+                    self.start_random_frontend_app(app.node)
+                elif "demo_time" in app.config:
+                    # since it is demo, schedule stopping of the application (only now, after it is already running)
+                    t = threading.Timer(int(app.config["demo_time"]), self.stop_app, [app])
+                    t.start()
+
             # process stopping of any application
             if app.status == "stopping":
                 self.running_apps.remove(app)
@@ -352,6 +358,8 @@ class AppController(base_app.BaseApp):
                         self.pub_msg(app_utils.LIFECYCLE_STATUS, {}, topic)
 
     def run(self):
+        super().run()
+
         # create scheduler for checking inactive user applications
         """t = threading.Thread(target=self.check_inactive_users)
         t.daemon = True

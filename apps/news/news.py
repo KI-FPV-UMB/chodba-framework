@@ -78,6 +78,8 @@ class News(base_app.BaseApp):
         l_text.bind('<Configure>', lambda e: l_text.config(wraplength=l_text.winfo_width()))
         l_text.pack(padx=50, pady=10) # fill=tkinter.BOTH, padx=5, expand=True
 
+        super().run()
+
         # work
         self.top.mainloop()
 
