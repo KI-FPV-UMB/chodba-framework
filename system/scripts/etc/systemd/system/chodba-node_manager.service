@@ -1,7 +1,7 @@
 [Unit]
 Description=chodba node_manager service
-After=chodba-master.service
-Wants=chodba-master.service
+After=chodba-app_controller.service
+Wants=chodba-app_controller.service
 #After=network-online.target
 #Wants=network-online.target
 
@@ -9,12 +9,12 @@ Wants=chodba-master.service
 Type=simple
 Restart=always
 RestartSec=1
-Environment="DISPLAY=:0.0" "PYTHONPATH=/opt/chodba-framework/base"
+Environment="DISPLAY=:0.0" "PYTHONPATH=/opt/chodba-framework/"
 ExecStartPre=xset -display :0.0 -dpms
 ExecStartPre=xset -display :0.0 s off
 ExecStartPre=xset -display :0.0 s noblank
 WorkingDirectory=/opt/chodba-framework/system/node_manager
-ExecStart=/opt/chodba-framework/system/node_manager/node_manager.py
+ExecStart=./node_manager.py chodba-ki01 1883 tcp
 User=pi
 StandardOutput=file:/var/log/chodba/node_manager.log
 StandardError=file:/var/log/chodba/node_manager.err

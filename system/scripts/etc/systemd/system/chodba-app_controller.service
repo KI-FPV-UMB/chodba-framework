@@ -1,5 +1,5 @@
 [Unit]
-Description=chodba master service
+Description=chodba app_controller service
 After=mosquitto.service
 Wants=mosquitto.service
 
@@ -7,12 +7,12 @@ Wants=mosquitto.service
 Type=simple
 Restart=always
 RestartSec=1
-Environment="PYTHONPATH=/opt/chodba-framework/base"
-WorkingDirectory=/opt/chodba-framework/system/master
-ExecStart=/opt/chodba-framework/system/master/master.py
+Environment="PYTHONPATH=/opt/chodba-framework/"
+WorkingDirectory=/opt/chodba-framework/system/app_controller
+ExecStart=./app_controller.py chodba-ki01 1883 tcp
 User=pi
-StandardOutput=file:/var/log/chodba/master.log
-StandardError=file:/var/log/chodba/master.err
+StandardOutput=file:/var/log/chodba/app_controller.log
+StandardError=file:/var/log/chodba/app_controller.err
 
 [Install]
 WantedBy=multi-user.target
