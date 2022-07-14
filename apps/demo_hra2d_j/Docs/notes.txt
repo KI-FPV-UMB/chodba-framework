@@ -1,3 +1,0 @@
-nazov: DemoHra2D
-studenti: ?, ?
-
