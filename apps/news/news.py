@@ -6,6 +6,8 @@ __email__ = "michal.vagac@gmail.com"
 
 # set PYTHONPATH to project root (chodba-framework)
 
+# TODO {"url": "https://www.quark.sk/feed/", "stop_string": "&#8230;"}
+
 import sys
 import tkinter
 import tkinter.messagebox
@@ -41,13 +43,14 @@ class News(base_app.BaseApp):
 
         # choose random background color
         colors = ["white", "orange", "yellow", "green"]
-        bgcol = random.choice(colors)
+        bgcol1 = random.choice(colors)
+        bgcol2 = random.choice(colors)
 
         # show window
         self.top = tkinter.Tk()
         self.top.wm_attributes("-type", "splash")       # no decorations
         self.top.wm_attributes("-fullscreen", True)
-        self.top.configure(background=bgcol)
+        self.top.configure(background=bgcol1)
         if self.args.screen_width is not None and self.args.screen_height is not None:
             self.top.geometry("{0}x{1}+0+0".format(self.args.screen_width-3, self.args.screen_height-3))
         else:
@@ -63,20 +66,28 @@ class News(base_app.BaseApp):
         if "stop_string" in feed:
             text = text[0:text.find(feed["stop_string"])] + "&#8230;"
         text = self.clean_text(text)
+        text = text.strip()
 
         # window content
+        wrap_len = self.top.winfo_screenwidth()-70
+
         # title row
-        f_title = tkinter.Frame(self.top, bg=bgcol)
-        f_title.pack(fill=tkinter.X)
-        l_title = tkinter.Label(f_title, text=title, font=('times', 60), bg=bgcol, justify=tkinter.LEFT)
-        l_title.bind('<Configure>', lambda e: l_title.config(wraplength=l_title.winfo_width()))
-        l_title.pack(padx=50, pady=10) # fill=tkinter.X, padx=5, expand=True
+        f_title = tkinter.Frame(self.top, bg=bgcol1)
+        f_title.pack(fill=tkinter.X, ipadx=20, ipady=10)
+        if "logo" in feed:
+            img = tkinter.PhotoImage(file=feed["logo"])
+            wrap_len -= img.width()
+            canvas = tkinter.Canvas(f_title, width=img.width(), height=img.height(), bg=bgcol1, highlightthickness=0)
+            canvas.pack(side=tkinter.LEFT, padx=20)
+            canvas.create_image(0, 0, anchor=tkinter.NW, image=img)
+        l_title = tkinter.Label(f_title, text=title, font=('times', 55), bg=bgcol1, justify=tkinter.LEFT, wraplength=wrap_len)
+        # l_title.bind('<Configure>', lambda e: l_title.config(wraplength=l_title.winfo_width()))
+        l_title.pack(side=tkinter.LEFT, padx=20, pady=10)
+
         # text row
-        f_text = tkinter.Frame(self.top, bg=bgcol)
-        f_text.pack(fill=tkinter.BOTH)
-        l_text = tkinter.Label(f_text, text=text, font=('times', 45), bg=bgcol, justify=tkinter.LEFT)
-        l_text.bind('<Configure>', lambda e: l_text.config(wraplength=l_text.winfo_width()))
-        l_text.pack(padx=50, pady=10) # fill=tkinter.BOTH, padx=5, expand=True
+        l_text = tkinter.Label(self.top, text=text, font=('times', 40), bg=bgcol2, justify=tkinter.LEFT, wraplength=wrap_len)
+        # l_text.bind('<Configure>', lambda e: l_text.config(wraplength=l_text.winfo_width()))
+        l_text.pack(side=tkinter.LEFT, fill=tkinter.BOTH, ipadx=20, ipady=20, expand=True)
 
         super().run()
 

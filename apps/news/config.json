@@ -5,9 +5,9 @@
 	"labels": ["fun", "demo"],
 	"demo_time": 15,
 	"feeds": [
-		{"url": "https://www.quark.sk/feed/", "stop_string": "&#8230;"},
-		{"url": "https://www.root.cz/rss/zpravicky/"},
-		{"url": "https://zive.aktuality.sk/rss/najnovsie/"}
+		{"url": "https://www.root.cz/rss/zpravicky/", "logo": "logo-root.png"},
+		{"url": "https://zive.aktuality.sk/rss/najnovsie/", "logo": "logo-zive.png"},
+		{"url":  "https://www.chip.cz/rss/feed.php", "logo": "logo-chip.png"}
 	],
 	"no_feeds": 5
 }
