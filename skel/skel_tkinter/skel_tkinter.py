@@ -6,6 +6,8 @@ __email__ = "michal.vagac@gmail.com"
 
 # PYTHONPATH musi odkazovat na absolutnu cestu k .../chodba-framework/base
 
+# https://www.pythontutorial.net/tkinter/tkinter-pack/
+
 import sys
 import os
 import paho.mqtt.client as mqtt

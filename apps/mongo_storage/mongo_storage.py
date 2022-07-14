@@ -12,7 +12,7 @@ __email__ = "michal.vagac@gmail.com"
 #   db.apps.find()
 #   db.apps.find().sort({ "timestamp" : 1 }).limit(5)
 #   db.apps.find().sort({ "timestamp" : -1 }).limit(5)
-#   db.apps.find({"name": "teplota_vlhkost"})
+#   db.apps.find({"name": "temp_humi"})
 
 # set PYTHONPATH to project root (chodba-framework)
 

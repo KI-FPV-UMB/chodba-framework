@@ -1,7 +1,7 @@
 
 TODO
 ****
--appky: casopis (root, quark, zive, chip); hw status (cpu, mem, ipcka!)
+-hw status (cpu, mem, ipcka!)
 -dokumentaciu updatnut; dorobit. ake spravy poslat na tie bezne veci (spustenie, vypnutie). spisat ako to startuje
  vsetko si pripomenut a v ramci toho to spisat
 -wiki: zhrnut podmienky na appku (na ake spravy ma ako reagovat); quickstart ze ako to cele rozchodit
