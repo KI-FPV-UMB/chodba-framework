@@ -50,7 +50,7 @@ class TempHumi(base_app.BaseApp):
             msg = { "humidity": humidity, "temperature": temperature }
             self.pub_msg("insert", msg, "storage")
             # wait
-            time.sleep(self.measurement_pause_s)
+            time.sleep(self.config.measurement_pause_s)
 
     def stop(self):
         # stop processing mqtt messages

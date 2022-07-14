@@ -1,7 +1,7 @@
 {
 	"enabled": false,
-	"name": "temp_humi",
+	"name": "hw_monitor",
 	"type": "backend",
-	"runon": "chodba-ki01",
+	"runon": "*",
 	"measurement_pause_s": 900
 }
