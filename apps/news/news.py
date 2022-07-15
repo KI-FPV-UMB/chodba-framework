@@ -59,13 +59,14 @@ class HandleContent(threading.Thread):
         # change labels
         self.l_title['text'] = title
         self.l_text['text'] = text
+        return len(title) + len(text)
 
     def run(self):
         if not hasattr(self.app.config, 'demo_time') or int(self.app.config.demo_time) <= 0:
             # display all entries and end
             for i in range(self.no_feeds+1 if self.no_feeds > 0 else len(self.entries)):
-                self.set_entry(self.entries[i])
-                time.sleep(3.5)     # TODO calculate sleep according to text length
+                poc = self.set_entry(self.entries[i])
+                time.sleep(poc / 20)     # wait accordingly to text length
             self.app.stop()
         else:
             # choose one random entry and wait for scheduled end
