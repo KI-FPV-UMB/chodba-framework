@@ -3,10 +3,12 @@
 if [ $# -lt 1 ]
 then
 	echo "supported arguments:"
-	echo "  stat"
+	echo "  stat - show overall status in AppController log"
 	echo "  start <name> <node>"
 	echo "  stop <name> <node>"
 	echo "  debug <name> <node> on|off"
+	echo "  start_backends - start all required backends"
+	echo "  stop_all - stop all applications (as well as NodeManagers)"
 	exit
 fi
 
@@ -34,6 +36,12 @@ case $ARG in
 		STATE=$4
 		MSG='{"header": {"msg": "debug"},"body": {"state": "'$STATE'"}}'
 		mosquitto_pub -t "node/$NODE/$NAME" -m "$MSG"
+		;;
+	start_backends)
+		mosquitto_pub -t app_controller -m '{"header":{"msg": "start_backends"}}'
+		;;
+	stop_all)
+		mosquitto_pub -t app_controller -m '{"header":{"msg": "stop_all"}}'
 		;;
 	*)
 		echo "unsupported argument $ARG"
