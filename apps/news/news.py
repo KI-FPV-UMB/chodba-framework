@@ -66,6 +66,8 @@ class HandleContent(threading.Thread):
             # display all entries and end
             for i in range(self.no_feeds+1 if self.no_feeds > 0 else len(self.entries)):
                 poc = self.set_entry(self.entries[i])
+                if poc > 700:
+                    poc = 700
                 time.sleep(poc / 20)     # wait accordingly to text length
             self.app.stop()
         else:
