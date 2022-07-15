@@ -10,6 +10,7 @@ __email__ = "michal.vagac@gmail.com"
 
 import sys
 import threading
+import time
 import tkinter
 import tkinter.messagebox
 import random
@@ -33,22 +34,22 @@ class MLStripper(HTMLParser):
 
 
 class HandleContent(threading.Thread):
-    def __init__(self, feed, no_feeds, stop_string, l_title, l_text):
+    def __init__(self, feed, no_feeds, stop_string, l_title, l_text, app):
         super().__init__()
         self.entries = feedparser.parse(feed["url"]).entries
         self.no_feeds = no_feeds
         self.stop_string = stop_string
         self.l_title = l_title
         self.l_text = l_text
+        self.app = app
 
     def clean_text(self, t):
         s = MLStripper()
         s.feed(t)
         return s.get_data()
 
-    def run(self):
+    def set_entry(self, feed_entry):
         # read content
-        feed_entry = self.entries[random.randint(0, self.no_feeds if self.no_feeds != -1 else len(self.entries)-1)]
         title = feed_entry['title']
         text = feed_entry['summary']
         if self.stop_string is not None:
@@ -58,6 +59,17 @@ class HandleContent(threading.Thread):
         # change labels
         self.l_title['text'] = title
         self.l_text['text'] = text
+
+    def run(self):
+        if not hasattr(self.app.config, 'demo_time') or int(self.app.config.demo_time) <= 0:
+            # display all entries and end
+            for i in range(len(self.entries)):
+                self.set_entry(self.entries[i])
+                time.sleep(3.5)     # TODO calculate sleep according to text length
+            self.app.stop()
+        else:
+            # choose one random entry and wait for scheduled end
+            self.set_entry(self.entries[random.randint(0, self.no_feeds if self.no_feeds != -1 else len(self.entries)-1)])
 
 class News(base_app.BaseApp):
 
@@ -108,7 +120,7 @@ class News(base_app.BaseApp):
         # handle content
         hc = HandleContent(feed, self.config.no_feeds,
                            feed["stop_string"] if "stop_string" in feed else None,
-                           l_title, l_text)
+                           l_title, l_text, self)
         hc.start()
 
         super().run()
