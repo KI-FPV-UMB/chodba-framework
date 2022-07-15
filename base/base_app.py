@@ -220,7 +220,7 @@ class BaseApp:
         logging.info("[" + self.config.name + "] running")
         self.pub_lifecycle("running")
 
-        if hasattr(self.config, 'demo_time'):
+        if hasattr(self.config, 'demo_time') and int(self.config.demo_time) > 0:
             # since it is demo, schedule stopping of the application (only now, after it is already running)
             t = threading.Timer(int(self.config.demo_time), self.stop, [])
             t.start()
