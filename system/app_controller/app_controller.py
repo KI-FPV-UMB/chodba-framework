@@ -138,13 +138,12 @@ class AppController(base_app.BaseApp):
                 logging.exception("[" + self.config.name + "] error starting " + app.name)
 
     def start_random_frontend_app(self, node: str):
-        """Choose a random application and run it. Only frontend applications with label 'demo' and config demo_time > 0 are considered."""
+        """Choose a random application and run it. Only frontend applications with label 'demo' are considered."""
         # build a list of candidate applications
         apps_list = self.list_offline_apps(app_utils.APP_TYPE_FRONTEND, ["demo"], False)
         candidates = []
         for app in apps_list:
-            if app.demo_time > 0:
-                candidates.append(app)
+            candidates.append(app)
         if len(candidates) == 0:
             logging.warning("[" + self.config.name + "] no demo applications was found, there is nothing to run on node " + node)
             return
