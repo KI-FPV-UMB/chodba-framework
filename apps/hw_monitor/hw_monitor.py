@@ -9,6 +9,7 @@ __email__ = "michal.vagac@gmail.com"
 import sys
 import time
 import subprocess
+import logging
 
 from base import base_app
 
@@ -65,6 +66,7 @@ class HwMonitor(base_app.BaseApp):
             msg["memory"] = self.read_memory()
             msg["disks"] = self.read_disks()
             # send to storage
+            logging.debug("[" + self.config.name + "]   " + str(msg))
             self.pub_msg("insert", msg, "storage")
             # wait
             time.sleep(self.config.measurement_pause_s)
