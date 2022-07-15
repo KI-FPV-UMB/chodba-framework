@@ -6,8 +6,6 @@ __email__ = "michal.vagac@gmail.com"
 
 # set PYTHONPATH to project root (chodba-framework)
 
-# TODO {"url": "https://www.quark.sk/feed/", "stop_string": "&#8230;"}
-
 import sys
 import threading
 import time
@@ -38,6 +36,8 @@ class HandleContent(threading.Thread):
         super().__init__()
         self.entries = feedparser.parse(feed["url"]).entries
         self.no_feeds = no_feeds
+        if self.no_feeds <= 0 or self.no_feeds > len(self.entries):
+            self.no_feeds = len(self.entries)
         self.stop_string = stop_string
         self.l_title = l_title
         self.l_text = l_text
@@ -64,7 +64,7 @@ class HandleContent(threading.Thread):
     def run(self):
         if not hasattr(self.app.config, 'demo_time') or int(self.app.config.demo_time) <= 0:
             # display all entries and end
-            for i in range(self.no_feeds+1 if self.no_feeds > 0 else len(self.entries)):
+            for i in range(self.no_feeds):
                 poc = self.set_entry(self.entries[i])
                 if poc > 700:
                     poc = 700
@@ -72,7 +72,7 @@ class HandleContent(threading.Thread):
             self.app.stop()
         else:
             # choose one random entry and wait for scheduled end
-            self.set_entry(self.entries[random.randint(0, self.no_feeds if self.no_feeds > 0 else len(self.entries)-1)])
+            self.set_entry(self.entries[random.randint(0, self.no_feeds-1)])
 
 class News(base_app.BaseApp):
 

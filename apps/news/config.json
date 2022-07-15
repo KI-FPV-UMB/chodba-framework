@@ -8,7 +8,8 @@
 		{"url": "https://www.root.cz/rss/zpravicky/", "logo": "logo-root.png"},
 		{"url": "https://zive.aktuality.sk/rss/najnovsie/", "logo": "logo-zive.png"},
 		{"url": "https://www.chip.cz/rss/feed.php", "logo": "logo-chip.png"},
-		{"url": "https://dennikn.sk/minuta/feed/?cat=2386&ref=inc", "logo": "logo-dennikn.png"}
+		{"url": "https://dennikn.sk/minuta/feed/?cat=2386&ref=inc", "logo": "logo-dennikn.png"},
+		{"url": "https://www.quark.sk/feed/", "logo": "logo-quark.png", "stop_string": "&#8230;"}
 	],
 	"no_feeds": 10
 }
