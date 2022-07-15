@@ -2,6 +2,5 @@
 	"enabled": true,
 	"name": "mongo_storage",
 	"type": "backend",
-	"runon1": "chodba-ki01",
-	"runon": "mvagac-X1"
+	"runon": ["mvagac-X1","chodba-ki01"]
 }

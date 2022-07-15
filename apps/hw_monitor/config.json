@@ -2,7 +2,7 @@
 	"enabled": true,
 	"name": "hw_monitor",
 	"type": "backend",
-	"runon": "chodba-ki02",
+	"runon": ["chodba-ki02"],
 	"measurement_pause_s": 300,
 	"read_cpu": true,
 	"read_memory": true,

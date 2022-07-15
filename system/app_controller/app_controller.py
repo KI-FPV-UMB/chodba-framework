@@ -104,12 +104,12 @@ class AppController(base_app.BaseApp):
         self.pub_msg("stop", {}, topic)
 
     def start_all_backends(self, node_managers: list):
-        """Run all backend applications according to their runon configuration."""
+        """Run all backend applications according to their runon configuration. It will be started on ALL nodes in the list."""
         # iterate over list of all backend applications
         apps_list = self.list_offline_apps(app_utils.APP_TYPE_BACKEND, None, False)
         for app in apps_list:
             try:
-                if app.runon == "*":
+                if len(app.runon) == 1 and app.runon[0] == "*":
                     # start on each node
                     for node in node_managers:
                         if not self.is_app_running(app.name, node):
@@ -117,7 +117,7 @@ class AppController(base_app.BaseApp):
                             self.start_app(app)
                         else:
                             logging.warning("[" + self.config.name + "] app " + app.name + " is already running on node " + node + "!")
-                elif app.runon == "?":
+                elif len(app.runon) == 1 and app.runon[0] == "?":
                     # run on one (random node). only if it is not running anywhere yet
                     for nmapp in self.running_apps:
                         if nmapp.name == app.name:
@@ -128,11 +128,12 @@ class AppController(base_app.BaseApp):
                     self.start_app(app)
                 else:
                     # run on specified node
-                    if not self.is_app_running(app.name, app.runon):
-                        app.node = app.runon
-                        self.start_app(app)
-                    else:
-                        logging.warning("[" + self.config.name + "] app " + app.name + " is already running on node " + app.runon + "!")
+                    for r in app.runon:
+                        if not self.is_app_running(app.name, r):
+                            app.node = r
+                            self.start_app(app)
+                        else:
+                            logging.warning("[" + self.config.name + "] app " + app.name + " is already running on node " + r + "!")
             except Exception as e:
                 logging.exception("[" + self.config.name + "] error starting " + app.name)
 

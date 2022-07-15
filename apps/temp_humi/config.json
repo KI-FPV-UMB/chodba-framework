@@ -2,6 +2,6 @@
 	"enabled": false,
 	"name": "temp_humi",
 	"type": "backend",
-	"runon": "chodba-ki01",
+	"runon": ["chodba-ki01"],
 	"measurement_pause_s": 900
 }
