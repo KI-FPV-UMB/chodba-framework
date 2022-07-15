@@ -168,7 +168,10 @@ class AppController(base_app.BaseApp):
             app.id = msg["header"]["id"]
             app.status = None
             app.name = msg["header"]["name"]
-            app.config = self.read_config(os.path.join(APPS_PATH, app.name))
+            if msg["header"]["type"] == "system":
+                app.config = self.read_config(os.path.join(SYSTEM_APPS_PATH, app.name))
+            else:
+                app.config = self.read_config(os.path.join(APPS_PATH, app.name))
 
         # update all fields
         prevstat = app.status

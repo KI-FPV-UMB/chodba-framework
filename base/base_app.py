@@ -168,7 +168,7 @@ class BaseApp:
                 self.debug = True
             else:
                 self.debug = False
-            logging.info("[" + self.config.name + "] changing debugging state to " + self.debug)
+            logging.info("[" + self.config.name + "] changing debugging state to " + str(self.debug))
         else:
             try:
                 # process specific application message
