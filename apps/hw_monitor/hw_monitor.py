@@ -10,8 +10,8 @@ import sys
 import time
 import subprocess
 import logging
-
 from base import base_app
+from base import app_utils
 
 class HwMonitor(base_app.BaseApp):
 
@@ -85,6 +85,13 @@ class HwMonitor(base_app.BaseApp):
             self.pub_msg("insert", msg, "storage")
             # wait
             time.sleep(self.config.measurement_pause_s)
+
+    def on_app_msg(self, msg):
+        msg_type = msg["header"][app_utils.MSG_TYPE]
+        if msg_type == "insert-id":
+            pass        # ignore
+        else:
+            super().on_app_msg(msg)
 
     def stop(self):
         # stop processing mqtt messages
