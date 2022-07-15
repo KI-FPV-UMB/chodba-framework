@@ -68,8 +68,8 @@ class BaseApp:
         # start
         logging.info("[" + self.config.name + "] starting on node " + self.node)
         logging.info("[" + self.config.name + "]   id = " + self.id)
-        for k in conf.keys():
-            logging.debug("[" + self.config.name + "]   " + k + " = " + str(conf[k]))
+        # for k in conf.keys():
+        #     logging.debug("[" + self.config.name + "]   " + k + " = " + str(conf[k]))
 
     def read_config(self, path: str):
         cf = os.path.join(path, "config.json")
