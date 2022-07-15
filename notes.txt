@@ -1,7 +1,6 @@
 
 TODO
 ****
--dlhobeziace appky; napr. typ news ktora bude vkuse 5 minut; alebo kym neprecita vsetky a az potom skonci
 -galeriu skusit spravit tkinter verziu; aj s videami
  problem: Záverečné práce/Michal Brozman - Vyuzitie kniznice OMPL - trasa.png
 -dokumentaciu updatnut; dorobit. ake spravy poslat na tie bezne veci (spustenie, vypnutie). spisat ako to startuje

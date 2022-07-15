@@ -80,15 +80,22 @@ class News(base_app.BaseApp):
         # start processing of mqtt messages
         self.client.loop_start()
 
-        # choose random background color
-        colors = [["white","orange"], ["orange", "white"], ["yellow", "cyan"], ["cyan", "yellow"]]
-        bgcol = random.choice(colors)
+        # choose random color (foreground, background)
+        colors = [
+            ["#000", "#81b29a"], ["#000", "#f2cc8f"],
+            ["#fff", "#3d405b"], ["#000", "#81b29a"],
+            ["#fff", "#e07a5f"], ["#fff", "#3d405b"],
+            ["#000", "#f4f1de"], ["#fff", "#e07a5f"],
+        ]
+        col1 = random.choice(colors)
+        colors.remove(col1)
+        col2 = random.choice(colors)
 
         # show window
         self.top = tkinter.Tk()
         self.top.wm_attributes("-type", "splash")       # no decorations
         self.top.wm_attributes("-fullscreen", True)
-        self.top.configure(background=bgcol[0])
+        self.top.configure(background=col1[1])
         if self.args.screen_width is not None and self.args.screen_height is not None:
             self.top.geometry("{0}x{1}+0+0".format(self.args.screen_width-3, self.args.screen_height-3))
         else:
@@ -102,20 +109,20 @@ class News(base_app.BaseApp):
         feed = self.config.feeds[random.randint(0, len(self.config.feeds) - 1)]
 
         # title row
-        f_title = tkinter.Frame(self.top, bg=bgcol[0])
+        f_title = tkinter.Frame(self.top, bg=col1[1])
         f_title.pack(fill=tkinter.X, ipadx=20, ipady=10)
         if "logo" in feed:
             img = tkinter.PhotoImage(file=feed["logo"])
             wrap_len -= img.width()
-            canvas = tkinter.Canvas(f_title, width=img.width(), height=img.height(), bg=bgcol[0], highlightthickness=0)
+            canvas = tkinter.Canvas(f_title, width=img.width(), height=img.height(), bg=col1[1], highlightthickness=0)
             canvas.pack(side=tkinter.LEFT, padx=20)
             canvas.create_image(0, 0, anchor=tkinter.NW, image=img)
-        l_title = tkinter.Label(f_title, font=('times', 50), bg=bgcol[0], justify=tkinter.LEFT, wraplength=wrap_len)
+        l_title = tkinter.Label(f_title, font=('times', 50), fg=col1[0], bg=col1[1], justify=tkinter.LEFT, wraplength=wrap_len)
         # l_title.bind('<Configure>', lambda e: l_title.config(wraplength=l_title.winfo_width()))
         l_title.pack(side=tkinter.LEFT, padx=20, pady=10)
 
         # text row
-        l_text = tkinter.Label(self.top, font=('times', 35), bg=bgcol[1], justify=tkinter.LEFT, wraplength=self.top.winfo_screenwidth()-30)
+        l_text = tkinter.Label(self.top, font=('times', 35), fg=col2[0], bg=col2[1], justify=tkinter.LEFT, wraplength=self.top.winfo_screenwidth()-30)
         # l_text.bind('<Configure>', lambda e: l_text.config(wraplength=l_text.winfo_width()))
         l_text.pack(side=tkinter.LEFT, fill=tkinter.BOTH, ipadx=15, ipady=20, expand=True)
 
