@@ -34,7 +34,7 @@ class MongoStorage(base_app.BaseApp):
             # vloz zaznam do db
             x = self.col.insert_one(msg["body"])
             resp = { "id": str(x.inserted_id) }
-            self.pub_msg("insert-id", resp, self.get_specific_topic(msg.header.name, msg.header.node)[0])
+            self.pub_msg("insert-id", resp, self.get_specific_topic(msg["header"]["name"], msg["header"]["node"])[0])
 
         elif msg_type == "find":
             # vyber zaznamy z db
@@ -61,7 +61,7 @@ class MongoStorage(base_app.BaseApp):
                     del doc["_id"]
                     l.append(doc)
                 resp = { "resp": l }
-                self.pub_msg("resultset", resp, self.get_specific_topic(msg.header.name, msg.header.node)[0])
+                self.pub_msg("resultset", resp, self.get_specific_topic(msg["header"]["name"], msg["header"]["node"])[0])
             except Exception as e:
                 logging.exception("[" + self.config.name + "] error executing query '" + str(msg["query"]) + "': " + repr(e))
                 log = { "name": self.config.name, "node": self.node, "level": "error", "log": "error executing query '" + str(msg["query"]) + "': " + repr(e)}
