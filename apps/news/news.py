@@ -61,7 +61,7 @@ class News(base_app.BaseApp):
 
         feed = self.config.feeds[random.randint(0, len(self.config.feeds) - 1)]
         entries = feedparser.parse(feed["url"]).entries
-        feed_entry = entries[random.randint(0, self.config.no_feeds if self.config.no_feeds != -1 else len(entries))]
+        feed_entry = entries[random.randint(0, self.config.no_feeds if self.config.no_feeds != -1 else len(entries)-1)]
         title = feed_entry['title']
         text = feed_entry['summary']
         if "stop_string" in feed:
