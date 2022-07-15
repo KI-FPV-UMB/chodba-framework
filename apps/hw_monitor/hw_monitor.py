@@ -20,7 +20,16 @@ class HwMonitor(base_app.BaseApp):
         if not line:
             return
         m = line.split()
-        return {"load1": m[9], "load5": m[10], "load15": m[11]}
+
+        idx = None
+        for i in range(len(m)):
+            if m[i] == "average:":
+                idx = i
+                break
+        load1 = m[idx+1][:-1] if m[idx+1].endswith(',') else m[idx+1]
+        load5 = m[idx+2][:-1] if m[idx+2].endswith(',') else m[idx+2]
+        load15 = m[idx+3][:-1] if m[idx+3].endswith(',') else m[idx+3]
+        return {"load1": float(load1), "load5": float(load5), "load15": float(load15)}
 
     def read_memory(self):
         proc = subprocess.Popen(['free'], stdout=subprocess.PIPE)
@@ -41,7 +50,7 @@ class HwMonitor(base_app.BaseApp):
                 break
             if line.startswith("/dev/"):
                 m = line.split()
-                ret[m[0]] = {"total": m[1], "used": m[2], "free": m[3]}
+                ret[m[5]] = {"total": m[1], "used": m[2], "free": m[3], "dev": m[0]}
         return ret
 
     def run(self):
