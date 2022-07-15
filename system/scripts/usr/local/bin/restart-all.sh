@@ -8,6 +8,7 @@ NODES=$(cat /etc/hosts | grep chodba | grep -v $HOSTNAME | sort | awk '{ print $
 # stop all nodes
 for NODE in $NODES
 do
+  echo "stopping $NODE"
   ssh $NODE 'sudo systemctl stop chodba-node_manager.service'
 done
 
@@ -15,5 +16,6 @@ done
 # start all nodes
 for NODE in $NODES
 do
+  echo "starting $NODE"
   ssh $NODE 'sudo systemctl start chodba-node_manager.service'
 done
