@@ -59,7 +59,7 @@ class HwMonitor(base_app.BaseApp):
         line = proc.stdout.readline().decode('utf-8')
         if not line or not line.startswith("temp="):
             return
-        line = line[5:-2]
+        line = line[5:-3]
         return {"temperature": float(line)}
 
     def run(self):
