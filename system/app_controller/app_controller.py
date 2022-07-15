@@ -226,11 +226,6 @@ class AppController(base_app.BaseApp):
                     logging.info("[" + self.config.name + "] node_manager started on " + app.node)
                     self.start_all_backends([app.node])
                     self.start_random_frontend_app(app.node)
-                elif "demo_time" in app.config:
-                    #TODO bude si riesit sama appka
-                    # since it is demo, schedule stopping of the application (only now, after it is already running)
-                    t = threading.Timer(int(app.config["demo_time"]), self.stop_app, [app])
-                    t.start()
 
             # process stopping of any application
             if app.status == "stopping":

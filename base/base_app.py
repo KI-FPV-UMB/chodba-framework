@@ -12,6 +12,7 @@ import json
 import random
 import datetime
 import logging
+import threading
 import traceback
 from base import app_utils
 
@@ -218,6 +219,11 @@ class BaseApp:
         # send lifecycle status 'running' (only after this message will count demo_time)
         logging.info("[" + self.config.name + "] running")
         self.pub_lifecycle("running")
+
+        if hasattr(self.config, 'demo_time'):
+            # since it is demo, schedule stopping of the application (only now, after it is already running)
+            t = threading.Timer(int(self.config.demo_time), self.stop, [])
+            t.start()
 
     def stop(self):
         # send lifecycle status 'stopping'

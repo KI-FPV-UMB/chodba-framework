@@ -26,7 +26,7 @@ Further, it provides methods for handling messages and starting and stopping the
   * _on_msg_ - method for handling all application messages. Several specific messages (quit, info, status) are handled immediately. For all other (unknown) messages the method *on_app_msg* is called.
   * _on_app_msg_ - method for handling specific application messages (extended by offspring class)
   * _start_ - initializes mqtt client and connects to configured MQTT broker. Immediately it sends lifecycle message 'starting'. Then it subscribes to ```node/<node_name>/<app_name>``` topics. After initialization, it sends lifecycle message 'running'.
-  * _run_ - method with implementation of application business logic
+  * _run_ - method with implementation of application business logic. This (parent's) method should be invoked after start completion.
   * _stop_ - Sends lifecycle message 'stopping' and disconnects from MQTT broker.
 
 Each application reacts to following message types:
