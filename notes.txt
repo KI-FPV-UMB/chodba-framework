@@ -1,6 +1,7 @@
 
 TODO
 ****
+-farebne schemy - ten zoznam farieb nebude napevno v aplikacii, ale bude sa rozposielat centralne - vsetky appky tak budu moct byt v rovnakej scheme
 -galeriu skusit spravit tkinter verziu; aj s videami
  problem: Záverečné práce/Michal Brozman - Vyuzitie kniznice OMPL - trasa.png
 -dokumentaciu updatnut; dorobit. ake spravy poslat na tie bezne veci (spustenie, vypnutie). spisat ako to startuje

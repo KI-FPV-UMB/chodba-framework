@@ -20,14 +20,19 @@ class Quotes(base_app.BaseApp):
         self.client.loop_start()
 
         # choose random background color
-        colors = ["white", "orange", "yellow", "green"]
-        bgcol = random.choice(colors)
+        colors = [
+            ["#000", "#81b29a"], ["#000", "#f2cc8f"],
+            ["#fff", "#3d405b"], ["#000", "#81b29a"],
+            ["#fff", "#e07a5f"], ["#fff", "#3d405b"],
+            ["#000", "#f4f1de"], ["#fff", "#e07a5f"],
+        ]
+        col = random.choice(colors)
 
         # show window
         self.top = tkinter.Tk()
         self.top.wm_attributes("-type", "splash")       # no decorations
         self.top.wm_attributes("-fullscreen", True)
-        self.top.configure(background=bgcol)
+        self.top.configure(background=col[1])
         if self.args.screen_width is not None and self.args.screen_height is not None:
             self.top.geometry("{0}x{1}+0+0".format(self.args.screen_width-3, self.args.screen_height-3))
         else:
@@ -55,7 +60,7 @@ class Quotes(base_app.BaseApp):
 
         # window content
         msg = tkinter.Message(self.top, text=quote)
-        msg.config(font=('times', 70, 'italic'), bg=bgcol)
+        msg.config(font=('times', 70, 'italic'), fg=col[0], bg=col[1])
         msg.pack(expand=True)          # center vertically
 
         super().run()
