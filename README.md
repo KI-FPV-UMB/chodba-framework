@@ -29,6 +29,13 @@ Further, it provides methods for handling messages and starting and stopping the
   * _run_ - method with implementation of application business logic
   * _stop_ - Sends lifecycle message 'stopping' and disconnects from MQTT broker.
 
+Each application reacts to following message types:
+  * _stop_ - stops the application (and send information about stopping)
+  * _lifecycle_ - publish current lifecycle (default always send 'running' state)
+  * _debug_ - turn debugging on/off
+
+If message type is other than any of the listed types, processing is moved to _on_app_msg_ method.
+
 Each application needs minimal configuration containing:
   * _name_ - application name
   * _type_ - one of: system / backend / frontend

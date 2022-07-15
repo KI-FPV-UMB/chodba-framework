@@ -62,6 +62,8 @@ class BaseApp:
         for k in conf.keys():
             setattr(self.config, k, conf[k])
 
+        self.debug = False
+
         # start
         logging.info("[" + self.config.name + "] starting on node " + self.node)
         logging.info("[" + self.config.name + "]   id = " + self.id)
@@ -160,6 +162,12 @@ class BaseApp:
             self.stop()
         elif msg_type == app_utils.LIFECYCLE_STATUS:
             self.pub_lifecycle("running")
+        elif msg_type == "debug":
+            if msg["body"]["state"] == "on" or msg["body"]["state"] == "true":
+                self.debug = True
+            else:
+                self.debug = False
+            logging.info("[" + self.config.name + "] changing debugging state to " + self.debug)
         else:
             try:
                 # process specific application message

@@ -40,12 +40,15 @@ class MongoStorage(base_app.BaseApp):
         elif msg_type == "find":
             # vyber zaznamy z db
             if not "query" in msg:
-                log = { "log": "missing parameter 'query'!" }
+                logging.error("[" + self.config.name + "] missing parameter 'query'!")
+                log = { "name": self.config.name, "node": self.node, "level": "error", "log": "missing parameter 'query'!"}
                 self.pub_msg("log", log, app_utils.APP_CONTROLLER_TOPIC)
                 return
             try:
                 q1 = { "name": msg["name"] }
                 q2 = msg["query"]
+                if self.debug:
+                    logging.debug("[" + self.config.name + "]  query: " + str(q2))
                 q = { **q1, **q2 }
                 if "sort" in msg:
                     if "limit" in msg:
@@ -61,7 +64,9 @@ class MongoStorage(base_app.BaseApp):
                 resp = { "resp": l }
                 self.pub_msg("resultset", resp, msg["src"] )
             except Exception as e:
-                logging.exception("[" + self.name + "] error executing query " + str(msg["query"]))
+                logging.exception("[" + self.config.name + "] error executing query '" + str(msg["query"]) + "': " + repr(e))
+                log = { "name": self.config.name, "node": self.node, "level": "error", "log": "error executing query '" + str(msg["query"]) + "': " + repr(e)}
+                self.pub_msg("log", log, app_utils.APP_CONTROLLER_TOPIC)
 
         else:
             super().on_app_msg(msg)

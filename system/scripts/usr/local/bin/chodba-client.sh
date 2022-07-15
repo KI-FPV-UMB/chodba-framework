@@ -6,6 +6,7 @@ then
 	echo "  stat"
 	echo "  start <name> <node>"
 	echo "  stop <name> <node>"
+	echo "  debug <name> <node> on|off"
 	exit
 fi
 
@@ -18,7 +19,6 @@ case $ARG in
 	start)
 		NAME=$2
 		NODE=$3
-		#MSG="{'header': {'msg': 'start'},'body': {'type': '$TYPE', 'name': '$NAME'}}"
 		MSG='{"header": {"msg": "start"},"body": {"name": "'$NAME'"}}'
 		mosquitto_pub -t node/$NODE -m "$MSG"
 		;;
@@ -26,7 +26,13 @@ case $ARG in
 		NAME=$2
 		NODE=$3
 		MSG='{"header": {"msg": "stop"}}'
-		echo "stopping node/$NODE/$NAME"
+		mosquitto_pub -t "node/$NODE/$NAME" -m "$MSG"
+		;;
+	debug)
+		NAME=$2
+		NODE=$3
+		STATE=$4
+		MSG='{"header": {"msg": "debug"},"body": {"state": "'$STATE'"}}'
 		mosquitto_pub -t "node/$NODE/$NAME" -m "$MSG"
 		;;
 	*)
