@@ -9,31 +9,34 @@ __email__ = "michal.vagac@gmail.com"
 import sys
 import os
 import logging
+import threading
 import subprocess
 from base import base_app
 from base import app_utils
 
 APPS_PATH = "../../apps/"
 
-class NodeManager(base_app.BaseApp):
-
-    def run_app(self, name, arg1=None, arg2=None, arg3=None, arg4=None, arg5=None):
-        p = os.path.join(APPS_PATH, name)
-        args = []
-        if os.path.isfile(os.path.join(p, name) + ".py"):
+class AppRunner(threading.Thread):
+    def __init__(self, name, broker_host, broker_port, broker_transport, arg1=None, arg2=None, arg3=None, arg4=None, arg5=None):
+        super().__init__()
+        self.app_name = name
+        # process arguments
+        p = os.path.join(APPS_PATH, self.app_name)
+        self.pargs = []
+        if os.path.isfile(os.path.join(p, self.app_name) + ".py"):
             # python app
-            args.append("/usr/bin/python3")
-            args.append(name + ".py")
-        elif os.path.isfile(os.path.join(p, name) + ".jar"):
+            self.pargs.append("/usr/bin/python3")
+            self.pargs.append(self.app_name + ".py")
+        elif os.path.isfile(os.path.join(p, self.app_name) + ".jar"):
             # java app
-            args.append("/usr/bin/java")
-            args.append("-jar")
-            args.append(name + ".jar")
+            self.pargs.append("/usr/bin/java")
+            self.pargs.append("-jar")
+            self.pargs.append(self.app_name + ".jar")
         else:
-            raise Exception("the application " + name + " not found!")
-        args.append(self.args.broker_host)
-        args.append(self.args.broker_port)
-        args.append(self.args.broker_transport)
+            raise Exception("the application " + self.app_name + " not found!")
+        self.pargs.append(broker_host)
+        self.pargs.append(broker_port)
+        self.pargs.append(broker_transport)
 
         if arg1 is None or arg2 is None:
             arg1 = "-"
@@ -41,15 +44,26 @@ class NodeManager(base_app.BaseApp):
         else:
             arg1 = str(arg1)
             arg2 = str(arg2)
-        args.append(arg1)
-        args.append(arg2)
+        self.pargs.append(arg1)
+        self.pargs.append(arg2)
         if arg3 is not None:
-            args.append(arg3)
+            self.pargs.append(arg3)
         if arg4 is not None:
-            args.append(arg4)
+            self.pargs.append(arg4)
         if arg5 is not None:
-            args.append(arg5)
-        subprocess.Popen(args, cwd=p, stdout=sys.stdout, stderr=sys.stderr)
+            self.pargs.append(arg5)
+
+        # start in thread (to wait to result to avoid a zombie process)
+        threading.Thread.__init__(self)
+
+    def run(self):
+        p = os.path.join(APPS_PATH, self.app_name)
+        p = subprocess.Popen(self.pargs, cwd=p, stdout=sys.stdout, stderr=sys.stderr)
+        p.wait()
+
+class NodeManager(base_app.BaseApp):
+
+    def run_app(self, name, arg1=None, arg2=None, arg3=None, arg4=None, arg5=None):
         return None
         # ... spusti a vrat vystup
         #result = subprocess.run([f, arg1], stdout=subprocess.PIPE)
@@ -71,7 +85,9 @@ class NodeManager(base_app.BaseApp):
                     if app_config["enabled"]:
                         nick = msg["nickname"] if "nickname" in msg else None
                         approb = msg["approbation"] if "approbation" in msg else None
-                        self.run_app(name, self.screen_width, self.screen_height, nick, approb)
+                        app_runner = AppRunner(name, self.args.broker_host, self.args.broker_port, self.args.broker_transport,
+                                               self.screen_width, self.screen_height, nick, approb)
+                        app_runner.start()
                     else:
                         logging.warning("[" + self.config.name + "] application " + name + " is disabled")
                         log = {"name": self.config.name, "node": self.node, "level": "warning", "log": "application " + name + " is disabled"}
