@@ -22,12 +22,14 @@ case $ARG in
 		NAME=$2
 		NODE=$3
 		MSG='{"header": {"msg": "start"},"body": {"name": "'$NAME'"}}'
+		echo "sending $MSG to node/$NODE"
 		mosquitto_pub -t node/$NODE -m "$MSG"
 		;;
 	stop)
 		NAME=$2
 		NODE=$3
 		MSG='{"header": {"msg": "stop"}}'
+		echo "sending $MSG to node/$NODE/$NAME"
 		mosquitto_pub -t "node/$NODE/$NAME" -m "$MSG"
 		;;
 	debug)
@@ -35,6 +37,7 @@ case $ARG in
 		NODE=$3
 		STATE=$4
 		MSG='{"header": {"msg": "debug"},"body": {"state": "'$STATE'"}}'
+		echo "sending $MSG to node/$NODE/$NAME"
 		mosquitto_pub -t "node/$NODE/$NAME" -m "$MSG"
 		;;
 	start_backends)
