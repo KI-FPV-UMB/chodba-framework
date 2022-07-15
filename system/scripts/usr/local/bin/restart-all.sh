@@ -11,6 +11,7 @@ do
   ssh $NODE 'sudo systemctl stop chodba-node_manager.service'
 done
 
+
 # start all nodes
 for NODE in $NODES
 do
