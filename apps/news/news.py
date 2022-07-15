@@ -60,7 +60,8 @@ class News(base_app.BaseApp):
 #        self.top.overrideredirect(True)
 
         feed = self.config.feeds[random.randint(0, len(self.config.feeds) - 1)]
-        feed_entry = feedparser.parse(feed["url"]).entries[random.randint(0, self.config.no_feeds)]
+        entries = feedparser.parse(feed["url"]).entries
+        feed_entry = entries[random.randint(0, self.config.no_feeds if self.config.no_feeds != -1 else len(entries))]
         title = feed_entry['title']
         text = feed_entry['summary']
         if "stop_string" in feed:

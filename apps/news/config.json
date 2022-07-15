@@ -9,5 +9,5 @@
 		{"url": "https://zive.aktuality.sk/rss/najnovsie/", "logo": "logo-zive.png"},
 		{"url":  "https://www.chip.cz/rss/feed.php", "logo": "logo-chip.png"}
 	],
-	"no_feeds": 5
+	"no_feeds": -1
 }
