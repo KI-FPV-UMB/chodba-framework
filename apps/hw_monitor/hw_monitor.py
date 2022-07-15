@@ -54,6 +54,14 @@ class HwMonitor(base_app.BaseApp):
                 ret[m[5]] = {"total": m[1], "used": m[2], "free": m[3], "dev": m[0]}
         return ret
 
+    def read_temperature(self):
+        proc = subprocess.Popen(['vcgencmd', 'measure_temp'], stdout=subprocess.PIPE)
+        line = proc.stdout.readline().decode('utf-8')
+        if not line or not line.startswith("temp="):
+            return
+        line = line[5:-2]
+        return {"temperature": float(line)}
+
     def run(self):
         super().run()
         # start processing of mqtt messages
@@ -62,9 +70,14 @@ class HwMonitor(base_app.BaseApp):
         while self.running:
             msg = { "node": self.node }
             # gather hw information
-            msg["cpu"] = self.read_cpu()
-            msg["memory"] = self.read_memory()
-            msg["disks"] = self.read_disks()
+            if self.config.read_cpu:
+                msg["cpu"] = self.read_cpu()
+            if self.config.read_memory:
+                msg["memory"] = self.read_memory()
+            if self.config.read_disks:
+                msg["disks"] = self.read_disks()
+            if self.config.read_temperature:
+                msg["temperature"] = self.read_temperature()
             # send to storage
             if self.debug:
                 logging.debug("[" + self.config.name + "]   " + str(msg))
