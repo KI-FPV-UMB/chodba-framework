@@ -94,7 +94,7 @@ class AppController(base_app.BaseApp):
 
     def start_app(self, app: App):
         """Send a message to node_manager to run selected application on specified node"""
-        logging.info("[" + self.config.name + "] starting " + app.name + " on " + app.node)
+        #logging.info("[" + self.config.name + "] starting " + app.name + " on " + app.node)
         self.pub_msg("start", { "type": app.type, "name": app.name }, "node/" + app.node)
 
     def stop_app(self, app: App) -> None:
