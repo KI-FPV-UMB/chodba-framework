@@ -81,7 +81,7 @@ class News(base_app.BaseApp):
         self.client.loop_start()
 
         # choose random background color
-        colors = [["white","orange"], ["orange", "white"], ["yellow", "green"], ["green", "yellow"]]
+        colors = [["white","orange"], ["orange", "white"], ["yellow", "cyan"], ["magenta", "yellow"]]
         bgcol = random.choice(colors)
 
         # show window
