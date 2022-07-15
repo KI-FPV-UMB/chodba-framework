@@ -40,7 +40,7 @@ class HwMonitor(base_app.BaseApp):
                 break
             if line.startswith("Mem:"):
                 m = line.split()
-                return {"total": m[1], "used": m[2], "free": m[3]}
+                return {"total": int(m[1]), "used": int(m[2]), "free": int(m[3])}
 
     def read_disks(self):
         proc = subprocess.Popen(['df'], stdout=subprocess.PIPE)
@@ -51,7 +51,7 @@ class HwMonitor(base_app.BaseApp):
                 break
             if line.startswith("/dev/"):
                 m = line.split()
-                ret[m[5]] = {"total": m[1], "used": m[2], "free": m[3], "dev": m[0]}
+                ret[m[5]] = {"total": int(m[1]), "used": int(m[2]), "free": int(m[3]), "dev": m[0]}
         return ret
 
     def read_temperature(self):
