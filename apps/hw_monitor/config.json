@@ -2,6 +2,6 @@
 	"enabled": false,
 	"name": "hw_monitor",
 	"type": "backend",
-	"runon": "*",
-	"measurement_pause_s": 900
+	"runon": "chodba-ki02",
+	"measurement_pause_s": 300
 }
