@@ -32,29 +32,28 @@ class MongoStorage(base_app.BaseApp):
 
         if msg_type == "insert":
             # vloz zaznam do db
-            del msg["msg"]
-            x = self.col.insert_one(msg)
+            x = self.col.insert_one(msg["body"])
             resp = { "id": str(x.inserted_id) }
-            self.pub_msg("insert-id", resp, msg["src"] )
+            self.pub_msg("insert-id", resp, self.get_specific_topic(msg.header.name, msg.header.node)[0])
 
         elif msg_type == "find":
             # vyber zaznamy z db
-            if not "query" in msg:
+            if not "query" in msg["body"]:
                 logging.error("[" + self.config.name + "] missing parameter 'query'!")
                 log = { "name": self.config.name, "node": self.node, "level": "error", "log": "missing parameter 'query'!"}
                 self.pub_msg("log", log, app_utils.APP_CONTROLLER_TOPIC)
                 return
             try:
-                q1 = { "name": msg["name"] }
-                q2 = msg["query"]
+                q1 = { "name": msg["header"]["name"] }
+                q2 = msg["body"]["query"]
                 if self.debug:
                     logging.debug("[" + self.config.name + "]  query: " + str(q2))
                 q = { **q1, **q2 }
-                if "sort" in msg:
-                    if "limit" in msg:
-                        cur = self.col.find(q).sort(msg["sort"]).limit(int(msg["limit"]))
+                if "sort" in msg["body"]:
+                    if "limit" in msg["body"]:
+                        cur = self.col.find(q).sort(msg["body"]["sort"]).limit(int(msg["body"]["limit"]))
                     else:
-                        cur = self.col.find(q).sort(msg["sort"])
+                        cur = self.col.find(q).sort(msg["body"]["sort"])
                 else:
                     cur = self.col.find(q)
                 l = []
@@ -62,7 +61,7 @@ class MongoStorage(base_app.BaseApp):
                     del doc["_id"]
                     l.append(doc)
                 resp = { "resp": l }
-                self.pub_msg("resultset", resp, msg["src"] )
+                self.pub_msg("resultset", resp, self.get_specific_topic(msg.header.name, msg.header.node)[0])
             except Exception as e:
                 logging.exception("[" + self.config.name + "] error executing query '" + str(msg["query"]) + "': " + repr(e))
                 log = { "name": self.config.name, "node": self.node, "level": "error", "log": "error executing query '" + str(msg["query"]) + "': " + repr(e)}

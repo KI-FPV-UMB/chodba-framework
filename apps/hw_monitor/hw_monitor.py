@@ -55,6 +55,7 @@ class HwMonitor(base_app.BaseApp):
         return ret
 
     def read_temperature(self):
+        # apt install libraspberrypi-bin
         proc = subprocess.Popen(['vcgencmd', 'measure_temp'], stdout=subprocess.PIPE)
         line = proc.stdout.readline().decode('utf-8')
         if not line or not line.startswith("temp="):
