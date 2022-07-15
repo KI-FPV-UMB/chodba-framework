@@ -33,7 +33,7 @@ class MongoStorage(base_app.BaseApp):
         if msg_type == "insert":
             # vloz zaznam do db
             if self.debug:
-                logging.debug("[" + self.config.name + "]  data: " + msg["body"])
+                 logging.debug("[" + self.config.name + "]  data: " + str(msg["body"]))
             x = self.col.insert_one(msg["body"])
             resp = { "id": str(x.inserted_id) }
             self.pub_msg("insert-id", resp, self.get_specific_topic(msg["header"]["name"], msg["header"]["node"])[0])
