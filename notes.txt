@@ -1,13 +1,12 @@
 
 TODO
 ****
+-galeriu skusit spravit tkinter verziu; aj s videami
+ problem: Záverečné práce/Michal Brozman - Vyuzitie kniznice OMPL - trasa.png
 -dokumentaciu updatnut; dorobit. ake spravy poslat na tie bezne veci (spustenie, vypnutie). spisat ako to startuje
  vsetko si pripomenut a v ramci toho to spisat
--wiki: zhrnut podmienky na appku (na ake spravy ma ako reagovat); quickstart ze ako to cele rozchodit
-	aj detailne opisat vsetky "sluzby" - s prikladmi sprav
--umoznit spustanie appiek aj bez frameworku (aspon obmedzene)
--skontrolovat reagovanie na chyby - skusit napr. vyhodit daky import a ze ked to padne, ci to pekne uvidim v err
--app_type nastavovat rovno podla adresara
+-wiki: zhrnut podmienky na appku (na ake spravy ma ako reagovat); quickstart ze ako to cele rozchodit aj detailne opisat vsetky "sluzby" - s prikladmi sprav
+
 -ukladat dake statistiky (db backend) - ktora aplikacia sa ako casto spustila, ako dlho s nou niekto robil, ...
  potom na mobile, ked sa bude nieco spustat, tak defaultne to bude triedit podla oblubenosti
  dako tak to organizovat, ze aj po rokoch. cize napr. ak kazdy rok budu ziaci robit na grafike arkanoid, tak v zozname to bude ako
@@ -16,9 +15,6 @@ TODO
  nahradenia aplikacie. vysledkom bude, ze budu naraz 2 frontend aplikacie. mozno to spravit tak, ze v tej kontrole na pozadi stale aj
  zistovat, ci aj napriek vsetkemu nie su na 1 uzle naraz 2 frontend aplikacie - ak ano, tak jednu zrusit (tu, ktora nie je user app - t.j.
  ta s nickom). tato kontrola sa moze robit aj relativne casto (kazdych par sekund); nemala by byt draha
--moze byt, ze sa strati sprava? akoby sa stalo, ze master posle quit a client to nedostane. master si mysli, ze skoncil a spusti tam nieco dalsie
- to by sa ale asi nemalo stat; master asi caka kym pride potvrdenie quit-u
--Galeria problem: Záverečné práce/Michal Brozman - Vyuzitie kniznice OMPL - trasa.png
 
 
 TEMY
