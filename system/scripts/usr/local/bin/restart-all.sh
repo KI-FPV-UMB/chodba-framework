@@ -16,6 +16,7 @@ done
 
 # handle current (main) node
 echo "stopping $HOSTNAME"
+sudo systemctl daemon-reload
 sudo systemctl stop chodba-node_manager.service
 sudo systemctl stop chodba-app_controller.service
 
