@@ -11,8 +11,8 @@ Environment="PYTHONPATH=/opt/chodba-framework/"
 WorkingDirectory=/opt/chodba-framework/system/app_controller
 ExecStart=/opt/chodba-framework/system/app_controller/app_controller.py chodba-ki01 1883 tcp
 User=pi
-StandardOutput=file:/var/log/chodba/app_controller.log
-StandardError=file:/var/log/chodba/app_controller.err
+StandardOutput=append:/var/log/chodba/app_controller.log
+StandardError=append:/var/log/chodba/app_controller.err
 
 [Install]
 WantedBy=multi-user.target

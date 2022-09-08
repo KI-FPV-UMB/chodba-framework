@@ -16,8 +16,8 @@ ExecStartPre=xset -display :0.0 s noblank
 WorkingDirectory=/opt/chodba-framework/system/node_manager
 ExecStart=/opt/chodba-framework/system/node_manager/node_manager.py chodba-ki01 1883 tcp
 User=pi
-StandardOutput=file:/var/log/chodba/node_manager.log
-StandardError=file:/var/log/chodba/node_manager.err
+StandardOutput=append:/var/log/chodba/node_manager.log
+StandardError=append:/var/log/chodba/node_manager.err
 
 [Install]
 WantedBy=multi-user.target
