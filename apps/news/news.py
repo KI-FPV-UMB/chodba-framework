@@ -9,6 +9,7 @@ __email__ = "michal.vagac@gmail.com"
 import sys
 import threading
 import time
+import logging
 import tkinter
 import tkinter.messagebox
 import random
@@ -34,7 +35,9 @@ class MLStripper(HTMLParser):
 class HandleContent(threading.Thread):
     def __init__(self, feed, no_feeds, stop_string, l_title, l_text, app):
         super().__init__()
+        logging.info("NEWS FETCH START")
         self.entries = feedparser.parse(feed["url"]).entries
+        logging.info("NEWS FETCH STOP")
         self.no_feeds = no_feeds
         if self.no_feeds <= 0 or self.no_feeds > len(self.entries):
             self.no_feeds = len(self.entries)
@@ -42,6 +45,7 @@ class HandleContent(threading.Thread):
         self.l_title = l_title
         self.l_text = l_text
         self.app = app
+        logging.info("NEWS DONE")
 
     def clean_text(self, t):
         s = MLStripper()
