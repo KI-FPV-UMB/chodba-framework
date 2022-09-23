@@ -94,10 +94,10 @@ class HwMonitor(base_app.BaseApp):
             super().on_app_msg(msg)
 
     def stop(self):
-        # stop processing mqtt messages
-        super().stop()
         # stop measure loop
         self.running = False
+        # stop processing mqtt and exit the app
+        super().stop()
 
 
 if __name__ == '__main__':

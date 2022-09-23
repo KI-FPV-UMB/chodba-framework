@@ -171,10 +171,10 @@ class Gallery(base_app.BaseApp):
         sdl2.SDL_Quit()
 
     def stop(self):
-        # stop processing mqtt
-        super().stop()
         # stop processing SDL events
         self.running = False
+        # stop processing mqtt and exit the app
+        super().stop()
 
 
 if __name__ == '__main__':

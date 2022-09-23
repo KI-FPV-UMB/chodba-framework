@@ -69,10 +69,10 @@ class Quotes(base_app.BaseApp):
         self.top.mainloop()
 
     def stop(self):
-        # stop processing mqtt
-        super().stop()
         # close window
-        self.top.quit()
+        self.top.destroy()  # quit()
+        # stop processing mqtt and exit the app
+        super().stop()
 
 if __name__ == '__main__':
     app = Quotes()

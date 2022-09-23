@@ -53,10 +53,10 @@ class TempHumi(base_app.BaseApp):
             time.sleep(self.config.measurement_pause_s)
 
     def stop(self):
-        # stop processing mqtt messages
-        super().stop()
         # stop measure loop
         self.running = False
+        # stop processing mqtt and exit the app
+        super().stop()
 
 
 if __name__ == '__main__':

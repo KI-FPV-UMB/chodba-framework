@@ -230,5 +230,5 @@ class BaseApp:
         logging.info("[" + self.config.name + "] stopping on node " + self.node)
         self.pub_lifecycle("stopping")
         self.client.disconnect()
-
+        os._exit(0)
 
