@@ -141,9 +141,12 @@ class News(base_app.BaseApp):
 
     def stop(self):
         # stop processing mqtt
-        super().stop()
+        super().stop_mqtt()
         # close window
         self.top.destroy()  # quit()
+        # exit the app
+        #sys.exit(0)
+        #os._exit(0)
 
 if __name__ == '__main__':
     app = News()

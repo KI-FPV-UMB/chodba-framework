@@ -70,7 +70,7 @@ class Quotes(base_app.BaseApp):
 
     def stop(self):
         # stop processing mqtt
-        super().stop()
+        super().stop_mqtt()
         # close window
         self.top.destroy()  # quit()
 

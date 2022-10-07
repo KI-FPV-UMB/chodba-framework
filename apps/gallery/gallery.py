@@ -174,7 +174,7 @@ class Gallery(base_app.BaseApp):
 
     def stop(self):
         # stop processing mqtt
-        super().stop()
+        super().stop_mqtt()
         # stop processing SDL events
         self.running = False
 

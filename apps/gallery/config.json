@@ -4,5 +4,5 @@
 	"type": "frontend",
 	"labels": ["demo"],
 	"demo_time": 15,
-	"delay_s": 2.5
+	"delay_s": 3.5
 }

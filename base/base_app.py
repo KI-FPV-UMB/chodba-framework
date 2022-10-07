@@ -225,11 +225,9 @@ class BaseApp:
             t = threading.Timer(int(self.config.demo_time), self.stop, [])
             t.start()
 
-    def stop(self):
+    def stop_mqtt(self):
         # send lifecycle status 'stopping'
         logging.info("[" + self.config.name + "] stopping on node " + self.node)
         self.pub_lifecycle("stopping")
         self.client.disconnect()
-        #sys.exit(0)
-        #os._exit(0)
 

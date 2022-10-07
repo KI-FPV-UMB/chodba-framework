@@ -54,7 +54,7 @@ class TempHumi(base_app.BaseApp):
 
     def stop(self):
         # stop processing mqtt
-        super().stop()
+        super().stop_mqtt()
         # stop measure loop
         self.running = False
 
