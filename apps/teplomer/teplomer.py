@@ -191,10 +191,10 @@ class Teplomer(base_app.BaseApp):
 
 
     def stop(self):
+        # stop processing mqtt
+        super().stop()
         # skonci
         self.running = False
-        # stop processing mqtt and exit the app
-        super().stop()
 
 if __name__ == '__main__':
     app = Teplomer()

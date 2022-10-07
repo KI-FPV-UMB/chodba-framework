@@ -43,10 +43,12 @@ class Gallery(base_app.BaseApp):
             # randomly
             n = self.current = random.randint(0, len(self.files)-1)
         logging.info("[" + self.config.name + "]   drawing " + str(n) + ": " + self.files[n])
+        if self.image is not None:
+            sdl2.SDL_FreeSurface(self.image)
         self.image = sdl2.sdlimage.IMG_Load(str.encode(self.files[n]))
 
     def draw_image(self):
-        #logging.error("[" + self.config.name + "]   kreslim : " + self.files[self.current])
+        #logging.info("[" + self.config.name + "]   kreslim : " + self.files[self.current])
         if self.image is None or self.image.contents is None:
             self.next_image()
         # clear background
@@ -171,10 +173,10 @@ class Gallery(base_app.BaseApp):
         sdl2.SDL_Quit()
 
     def stop(self):
+        # stop processing mqtt
+        super().stop()
         # stop processing SDL events
         self.running = False
-        # stop processing mqtt and exit the app
-        super().stop()
 
 
 if __name__ == '__main__':

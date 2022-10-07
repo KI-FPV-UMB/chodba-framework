@@ -9,6 +9,7 @@ __email__ = "michal.vagac@gmail.com"
 import sys
 import threading
 import time
+import logging
 import tkinter
 import tkinter.messagebox
 import random
@@ -139,10 +140,10 @@ class News(base_app.BaseApp):
         self.top.mainloop()
 
     def stop(self):
+        # stop processing mqtt
+        super().stop()
         # close window
         self.top.destroy()  # quit()
-        # stop processing mqtt and exit the app
-        super().stop()
 
 if __name__ == '__main__':
     app = News()
