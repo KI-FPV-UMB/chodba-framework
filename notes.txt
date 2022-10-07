@@ -188,3 +188,15 @@ ssh pi@194.160.41.39 -p 1194
 ssh pi@194.160.41.64 -p 1194
 ssh pi@194.160.41.90 -p 1194
 
+
+
+pip3 install pyrasite
+
+pyrasite-shell 12345
+
+import sys, traceback
+for thread_id, frame in sys._current_frames().items():
+    print('Stack for thread {}'.format(thread_id))
+    traceback.print_stack(frame)
+    print('')
+
