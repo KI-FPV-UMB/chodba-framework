@@ -16,9 +16,6 @@ from base import base_app
 class Quotes(base_app.BaseApp):
 
     def run(self):
-        # start processing of mqtt messages
-        super().run_mqtt()
-
         # choose random background color
         colors = [
             ["#000", "#81b29a"], ["#000", "#f2cc8f"],
@@ -63,6 +60,7 @@ class Quotes(base_app.BaseApp):
         msg.config(font=('times', 70, 'italic'), fg=col[0], bg=col[1])
         msg.pack(expand=True)          # center vertically
 
+        # start processing of mqtt messages
         super().run()
 
         # work
@@ -70,7 +68,7 @@ class Quotes(base_app.BaseApp):
 
     def stop(self):
         # stop processing mqtt
-        super().stop_mqtt()
+        super().stop()
         # close window
         self.top.destroy()  # quit()
 

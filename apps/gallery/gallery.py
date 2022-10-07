@@ -87,9 +87,6 @@ class Gallery(base_app.BaseApp):
         #sdl2.SDL_FreeSurface(nazov)
 
     def run(self):
-        # start processing of mqtt messages
-        super().run_mqtt()
-
         # choose random directory with images
         subdirs = [d for d in os.listdir(".") if os.path.isdir(d)]
         #subdirs = [x[0] for x in os.walk(".")]
@@ -148,6 +145,9 @@ class Gallery(base_app.BaseApp):
         sdl2.SDL_SetRenderDrawColor(self.renderer, 0, 0, 0, 0)
         sdl2.SDL_RenderClear(self.renderer)
 
+        # start processing of mqtt messages
+        super().run()
+
         # event loop
         self.image = None
         last_draw = time.time()
@@ -174,7 +174,7 @@ class Gallery(base_app.BaseApp):
 
     def stop(self):
         # stop processing mqtt
-        super().stop_mqtt()
+        super().stop()
         # stop processing SDL events
         self.running = False
 

@@ -65,7 +65,7 @@ class HwMonitor(base_app.BaseApp):
 
     def run(self):
         # start processing of mqtt messages
-        super().run_mqtt()
+        super().run()
 
         self.running = True
         while self.running:
@@ -95,7 +95,7 @@ class HwMonitor(base_app.BaseApp):
 
     def stop(self):
         # stop processing mqtt
-        super().stop_mqtt()
+        super().stop()
         # stop measure loop
         self.running = False
 

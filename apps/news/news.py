@@ -79,9 +79,6 @@ class HandleContent(threading.Thread):
 class News(base_app.BaseApp):
 
     def run(self):
-        # start processing of mqtt messages
-        super().run_mqtt()
-
         # choose random color (foreground, background)
         colors = [
             ["#000", "#81b29a"], ["#000", "#f2cc8f"],
@@ -134,6 +131,7 @@ class News(base_app.BaseApp):
                            l_title, l_text, self)
         hc.start()
 
+        # start processing of mqtt messages
         super().run()
 
         # work
@@ -141,7 +139,7 @@ class News(base_app.BaseApp):
 
     def stop(self):
         # stop processing mqtt
-        super().stop_mqtt()
+        super().stop()
         # close window
         self.top.destroy()  # quit()
         # exit the app

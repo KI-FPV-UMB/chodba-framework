@@ -357,7 +357,7 @@ class AppController(base_app.BaseApp):
                         self.pub_msg(app_utils.LIFECYCLE_STATUS, {}, topic)
 
     def run(self):
-        super().run()
+        super().run(False)
 
         # create scheduler for checking inactive user applications
         """t = threading.Thread(target=self.check_inactive_users)

@@ -106,7 +106,7 @@ class NodeManager(base_app.BaseApp):
 
 
     def run(self):
-        super().run()
+        super().run(False)
 
         self.screen_width = None
         self.screen_height = None

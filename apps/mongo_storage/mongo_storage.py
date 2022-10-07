@@ -73,7 +73,8 @@ class MongoStorage(base_app.BaseApp):
             super().on_app_msg(msg)
 
     def run(self):
-        super().run_mqtt(False)
+        # start processing of mqtt messages
+        super().run(False)
 
         self.dbc = pymongo.MongoClient("mongodb://localhost:27017/")
         self.db = self.dbc["chodbadb"]
