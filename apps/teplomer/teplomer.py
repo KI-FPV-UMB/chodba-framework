@@ -105,8 +105,8 @@ class Teplomer(base_app.BaseApp):
 
 
     def run(self):
-        # spusti spracovanie mqtt
-        self.client.loop_start()
+        # start processing of mqtt messages
+        super().run_mqtt()
 
         # inicializacia SDL2
         if sdl2.SDL_Init(sdl2.SDL_INIT_VIDEO) < 0:

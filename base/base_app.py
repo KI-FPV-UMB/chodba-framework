@@ -215,7 +215,7 @@ class BaseApp:
             # skonci
             self.stop()
 
-    def run(self):
+    def run_mqtt(self, with_loop_start=True):
         # send lifecycle status 'running' (only after this message will count demo_time)
         logging.info("[" + self.config.name + "] running")
         self.pub_lifecycle("running")
@@ -224,6 +224,9 @@ class BaseApp:
             # since it is demo, schedule stopping of the application (only now, after it is already running)
             t = threading.Timer(int(self.config.demo_time), self.stop, [])
             t.start()
+
+        if with_loop_start:
+            self.client.loop_start()
 
     def stop_mqtt(self):
         # send lifecycle status 'stopping'

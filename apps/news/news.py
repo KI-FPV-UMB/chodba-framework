@@ -80,7 +80,7 @@ class News(base_app.BaseApp):
 
     def run(self):
         # start processing of mqtt messages
-        self.client.loop_start()
+        super().run_mqtt()
 
         # choose random color (foreground, background)
         colors = [

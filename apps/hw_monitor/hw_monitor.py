@@ -64,9 +64,9 @@ class HwMonitor(base_app.BaseApp):
         return {"temperature": float(line)}
 
     def run(self):
-        super().run()
         # start processing of mqtt messages
-        self.client.loop_start()
+        super().run_mqtt()
+
         self.running = True
         while self.running:
             msg = { "node": self.node }

@@ -31,9 +31,9 @@ class TempHumi(base_app.BaseApp):
         return result
 
     def run(self):
-        super().run()
         # start processing of mqtt messages
-        self.client.loop_start()
+        super().run_mqtt()
+
         self.running = True
         while self.running:
             # measure temperature and humidity
