@@ -123,7 +123,7 @@ class Gallery(base_app.BaseApp):
 
         # create and show window (full screen)
         flags = sdl2.SDL_WINDOW_SHOWN | sdl2.SDL_WINDOW_FULLSCREEN_DESKTOP | sdl2.SDL_WINDOW_BORDERLESS
-        self.window = sdl2.SDL_CreateWindow(b"Galeria", sdl2.SDL_WINDOWPOS_CENTERED, sdl2.SDL_WINDOWPOS_CENTERED, 1024, 768, flags)
+        self.window = sdl2.SDL_CreateWindow(b"Gallery", sdl2.SDL_WINDOWPOS_CENTERED, sdl2.SDL_WINDOWPOS_CENTERED, 1024, 768, flags)
 
         # save size of the window
         w, h = ctypes.c_int(), ctypes.c_int()
@@ -161,7 +161,7 @@ class Gallery(base_app.BaseApp):
                 # TODO cas pauzy postupne skracovat
 
             while sdl2.SDL_PollEvent(ctypes.byref(event)) != 0:
-                # spracuvaj eventy
+                # process events
                 if event.type == sdl2.SDL_QUIT:             # event: quit
                     self.running = False
                     break
