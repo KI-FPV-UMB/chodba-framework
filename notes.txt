@@ -1,6 +1,7 @@
 
 TODO
 ****
+-do readme doplnit instalaciu python3-paho-mqtt
 -farebne schemy - ten zoznam farieb nebude napevno v aplikacii, ale bude sa rozposielat centralne - vsetky appky tak budu moct byt v rovnakej scheme
 -galeriu skusit spravit tkinter verziu; aj s videami
  problem: Záverečné práce/Michal Brozman - Vyuzitie kniznice OMPL - trasa.png

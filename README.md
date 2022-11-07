@@ -57,9 +57,9 @@ Example of main system application configuration:
 ```
 
 When starting the application, several command line arguments are expected:
-  * _broker_host_
-  * _broker_port_
-  * _broker_transport_
+  * _broker_host_ - e.g. localhost
+  * _broker_port_ - e.g. 1883
+  * _broker_transport_ - e.g. tcp
   * _screen_width_ or -
   * _screen_height_ or -
   * _[user_topic]_ - optional argument used when application is invoked manually by user
