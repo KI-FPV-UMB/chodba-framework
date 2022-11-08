@@ -14,32 +14,74 @@ FS_ENCODING = "utf-8"
 
 class BaseSdlApp(base_app.BaseApp):
 
-    def sdl_init_window(self):
+    def sdl_init_window(self, title):
+        if sdl2.SDL_Init(sdl2.SDL_INIT_VIDEO) < 0:
+            sys.exit(1)
+        if not sdl2.sdlimage.IMG_Init(sdl2.sdlimage.IMG_INIT_JPG | sdl2.sdlimage.IMG_INIT_PNG):
+            sys.exit(1)
+        if sdl2.sdlttf.TTF_Init() <0:
+            sys.exit(1)
+
+        # create and show window
+        if self.args.screen_width is not None and self.args.screen_height is not None:
+            self.window_w, self.window_h = self.args.screen_width, self.args.screen_height
+        else:
+            self.window_w, self.window_h = 640, 480
+        flags = sdl2.SDL_WINDOW_SHOWN | sdl2.SDL_WINDOW_FULLSCREEN_DESKTOP | sdl2.SDL_WINDOW_BORDERLESS
+        self.window = sdl2.SDL_CreateWindow(title, sdl2.SDL_WINDOWPOS_CENTERED, sdl2.SDL_WINDOWPOS_CENTERED,
+                                            self.window_w, self.window_h, flags)
+
+        # save size of the window
+        w, h = ctypes.c_int(), ctypes.c_int()
+        sdl2.SDL_GetWindowSize(self.window, ctypes.byref(w), ctypes.byref(h))
+        self.window_w, self.window_h = w.value, h.value
+
+        # prepare painting
+        self.renderer = sdl2.SDL_CreateRenderer(self.window, -1, sdl2.SDL_RENDERER_SOFTWARE)
+        self.windowsurface = sdl2.SDL_GetWindowSurface(self.window)
+
+    def sdl_ext_init_window(self, title):
         sdl2.ext.init()
         if sdl2.sdlttf.TTF_Init() < 0:
             sys.exit(1)
 
-        # create and show window (full screen)
-        #TODO asi podla args - ak su tam rozmery obrazovky, tak pouzit tie; ak nie tak fullscreen
+        # create and show window
+        if self.args.screen_width is not None and self.args.screen_height is not None:
+            self.window_w, self.window_h = self.args.screen_width, self.args.screen_height
+        else:
+            self.window_w, self.window_h = 640, 480
         flags = sdl2.SDL_WINDOW_SHOWN | sdl2.SDL_WINDOW_FULLSCREEN_DESKTOP | sdl2.SDL_WINDOW_BORDERLESS
-        self.window = sdl2.ext.Window("Quotes", size=(640, 480), position=(0, 0), flags=flags)
+        self.window = sdl2.ext.Window(title, size=(self.window_w, self.window_h), position=(0, 0), flags=flags)
         self.window.show()
+
+        # save size of the window
+        self.window_w, self.window_h = self.window.size
+
+        # prepare painting
         self.windowsurface = self.window.get_surface()
 
     def sdl_event_loop(self):
         self.running = True
         event = sdl2.SDL_Event()
         while self.running:
-            #TODO raspberry pi workaround (when reading events using get_events(), graphics stop to work)
-            # events = sdl2.ext.get_events()
-            # for event in events:
             while sdl2.SDL_PollEvent(ctypes.byref(event)) != 0:
                 # process events
                 if event.type == sdl2.SDL_QUIT:             # event: quit
                     self.running = False
                     break
-            self.window.refresh()
-            sdl2.SDL_Delay(1000)                            # in ms
+            sdl2.SDL_Delay(500)                             # in ms
+
+    def sdl_ext_event_loop(self):
+        self.running = True
+        event = sdl2.SDL_Event()
+        while self.running:
+            events = sdl2.ext.get_events()
+            for event in events:
+                # process events
+                if event.type == sdl2.SDL_QUIT:             # event: quit
+                    self.running = False
+                    break
+            sdl2.SDL_Delay(500)                            # in ms
 
     def hex_to_rgb(self, hex):
         return tuple(int(hex[i:i + 2], 16) for i in (0, 2, 4))

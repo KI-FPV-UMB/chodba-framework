@@ -53,20 +53,19 @@ class Quotes(base_sdl_app.BaseSdlApp):
             quote = random.choice(quotes)
 
         # sdl init
-        self.sdl_init_window()
+        self.sdl_ext_init_window('Quotes')
 
         # clear window and render text
         sdl2.ext.fill(self.windowsurface, sdl2.ext.Color(*self.hex_to_rgb(col[1][1:])))
         self.font = sdl2.sdlttf.TTF_OpenFont(FONT_PATH.encode("ascii"), FONT_SIZE)
-        window_w, window_h = self.window.size
-        self.sdl_render_text(quote, col, 0, 0, window_w, window_h, 15, 'c', 'm')
+        self.sdl_render_text(quote, col, 0, 0, self.window_w, self.window_h, 15, 'c', 'm')
         self.window.refresh()
 
         # start processing of mqtt messages
         super().run()
 
         # event loop
-        # self.sdl_event_loop()
+        # self.sdl_ext_event_loop()
         sdl2.SDL_Delay(self.config.demo_time*1000)  # in ms
 
         # release resources
