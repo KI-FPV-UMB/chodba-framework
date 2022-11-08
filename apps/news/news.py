@@ -5,19 +5,29 @@ __author__ = "Michal Vagac"
 __email__ = "michal.vagac@gmail.com"
 
 # set PYTHONPATH to project root (chodba-framework)
+# apt install python3-feedparser
 
 import sys
 import threading
 import time
 import logging
-import tkinter
-import tkinter.messagebox
 import random
 import feedparser
-from base import base_app
+
+import sdl2
+import sdl2.ext
+import sdl2.sdlttf          # libsdl2-ttf-2.0-0
+
+from base import base_sdl_app
 
 from io import StringIO
 from html.parser import HTMLParser
+
+FONT_PATH = "/usr/share/fonts/truetype/freefont/FreeSans.ttf"
+#FONT_PATH = "/usr/share/fonts/truetype/ttf-dejavu/DejaVuSans.ttf"
+#FONT_PATH = "/usr/share/fonts/truetype/ttf-liberation/LiberationSans-Regular.ttf"
+FONT_SIZE_TITLE = 50
+FONT_SIZE_TEXT = 35
 
 class MLStripper(HTMLParser):
     def __init__(self):
@@ -33,15 +43,13 @@ class MLStripper(HTMLParser):
 
 
 class HandleContent(threading.Thread):
-    def __init__(self, feed, no_feeds, stop_string, l_title, l_text, app):
+    def __init__(self, feed, stop_string, app):
         super().__init__()
         self.entries = feedparser.parse(feed["url"]).entries
-        self.no_feeds = no_feeds
+        self.no_feeds = app.config.no_feeds
         if self.no_feeds <= 0 or self.no_feeds > len(self.entries):
             self.no_feeds = len(self.entries)
         self.stop_string = stop_string
-        self.l_title = l_title
-        self.l_text = l_text
         self.app = app
 
     def clean_text(self, t):
@@ -50,7 +58,7 @@ class HandleContent(threading.Thread):
         return s.get_data()
 
     def set_entry(self, feed_entry):
-        # read content
+        # read title and text
         title = feed_entry['title']
         text = feed_entry['summary']
         if self.stop_string is not None:
@@ -58,9 +66,18 @@ class HandleContent(threading.Thread):
         text = self.clean_text(text)
         text = text.strip()
         test = text.replace("\n", " ")
-        # change labels
-        self.l_title['text'] = title
-        self.l_text['text'] = text
+
+        # display title
+        sdl2.ext.fill(self.app.windowsurface, sdl2.ext.Color(*self.app.hex_to_rgb(self.app.col1[1][1:])))
+        title_x = 0
+        # if self.app.logo is not None:
+        #     title_x = self.app.logo.contents.w
+        title_h = self.app.sdl_render_text(title, self.app.font_title, self.app.col1[0], title_x, 0, self.app.window_w-title_x, self.app.window_h, 15, 'l', 't')
+        title_h += 20
+        # display text
+        sdl2.ext.fill(self.app.windowsurface, sdl2.ext.Color(*self.app.hex_to_rgb(self.app.col2[1][1:])), (0, title_h, self.app.window_w, self.app.window_h-title_h))
+        self.app.sdl_render_text(text, self.app.font_text, self.app.col2[0], 0, title_h, self.app.window_w, self.app.window_h-title_h, 15, 'l', 't')
+        self.app.window.refresh()
         return len(title) + len(text)
 
     def run(self):
@@ -76,75 +93,59 @@ class HandleContent(threading.Thread):
             # choose one random entry and wait for scheduled end
             self.set_entry(self.entries[random.randint(0, self.no_feeds-1)])
 
-class News(base_app.BaseApp):
+class News(base_sdl_app.BaseSdlApp):
 
     def run(self):
         # choose random color (foreground, background)
         colors = [
-            ["#000", "#81b29a"], ["#000", "#f2cc8f"],
-            ["#fff", "#3d405b"], ["#000", "#81b29a"],
-            ["#fff", "#e07a5f"], ["#fff", "#3d405b"],
-            ["#000", "#f4f1de"], ["#fff", "#e07a5f"],
+            ["#000000", "#81b29a"], ["#000000", "#f2cc8f"],
+            ["#ffffff", "#3d405b"], ["#000000", "#81b29a"],
+            ["#ffffff", "#e07a5f"], ["#ffffff", "#3d405b"],
+            ["#000000", "#f4f1de"], ["#ffffff", "#e07a5f"],
         ]
-        col1 = random.choice(colors)
-        colors.remove(col1)
-        col2 = random.choice(colors)
+        self.col1 = random.choice(colors)
+        colors.remove(self.col1)
+        self.col2 = random.choice(colors)
 
-        # show window
-        self.top = tkinter.Tk()
-        self.top.wm_attributes("-type", "splash")       # no decorations
-        self.top.wm_attributes("-fullscreen", True)
-        self.top.configure(background=col1[1])
-        if self.args.screen_width is not None and self.args.screen_height is not None:
-            self.top.geometry("{0}x{1}+0+0".format(self.args.screen_width-3, self.args.screen_height-3))
-        else:
-            self.top.geometry("{0}x{1}+0+0".format(self.top.winfo_screenwidth()-3, self.top.winfo_screenheight()-3))    # fullscreen
-#        self.top.resizable(False, False)
-#        self.top.update_idletasks()
-#        self.top.overrideredirect(True)
+        # sdl init
+        self.sdl_ext_init_window('News')
+
+        # clear window and render text
+        sdl2.ext.fill(self.windowsurface, sdl2.ext.Color(*self.hex_to_rgb(self.col1[1][1:])))
+        self.font_title = sdl2.sdlttf.TTF_OpenFont(FONT_PATH.encode("ascii"), FONT_SIZE_TITLE)
+        self.font_text = sdl2.sdlttf.TTF_OpenFont(FONT_PATH.encode("ascii"), FONT_SIZE_TEXT)
 
         # window content
-        wrap_len = self.top.winfo_screenwidth()-70
         feed = self.config.feeds[random.randint(0, len(self.config.feeds) - 1)]
 
         # title row
-        f_title = tkinter.Frame(self.top, bg=col1[1])
-        f_title.pack(fill=tkinter.X, ipadx=20, ipady=10)
-        if "logo" in feed:
-            img = tkinter.PhotoImage(file=feed["logo"])
-            wrap_len -= img.width()
-            canvas = tkinter.Canvas(f_title, width=img.width(), height=img.height(), bg=col1[1], highlightthickness=0)
-            canvas.pack(side=tkinter.LEFT, padx=20)
-            canvas.create_image(0, 0, anchor=tkinter.NW, image=img)
-        l_title = tkinter.Label(f_title, font=('times', 50), fg=col1[0], bg=col1[1], justify=tkinter.LEFT, wraplength=wrap_len)
-        # l_title.bind('<Configure>', lambda e: l_title.config(wraplength=l_title.winfo_width()))
-        l_title.pack(side=tkinter.LEFT, padx=20, pady=10)
-
-        # text row
-        l_text = tkinter.Label(self.top, font=('times', 35), fg=col2[0], bg=col2[1], justify=tkinter.LEFT, wraplength=self.top.winfo_screenwidth()-30)
-        # l_text.bind('<Configure>', lambda e: l_text.config(wraplength=l_text.winfo_width()))
-        l_text.pack(side=tkinter.LEFT, fill=tkinter.BOTH, ipadx=15, ipady=20, expand=True)
+        self.logo = None
+        # if "logo" in feed:
+        #     self.logo = sdl2.sdlimage.IMG_Load(str.encode(feed["logo"]))
 
         # handle content
-        hc = HandleContent(feed, self.config.no_feeds,
-                           feed["stop_string"] if "stop_string" in feed else None,
-                           l_title, l_text, self)
+        hc = HandleContent(feed, feed["stop_string"] if "stop_string" in feed else None, self)
         hc.start()
+        self.window.refresh()
 
         # start processing of mqtt messages
         super().run()
 
-        # work
-        self.top.mainloop()
+        # event loop
+        # self.sdl_ext_event_loop()
+        #sdl2.SDL_Delay(self.config.demo_time*1000)  # in ms
+        self.running = True
+        while self.running:
+            sdl2.SDL_Delay(500)                             # in ms
+
+        # release resources
+        sdl2.ext.quit()
 
     def stop(self):
         # stop processing mqtt
         super().stop()
-        # close window
-        self.top.destroy()  # quit()
-        # exit the app
-        #sys.exit(0)
-        #os._exit(0)
+        # stop processing SDL events
+        self.running = False
 
 if __name__ == '__main__':
     app = News()

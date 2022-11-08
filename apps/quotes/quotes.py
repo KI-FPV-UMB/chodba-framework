@@ -10,6 +10,7 @@ __email__ = "michal.vagac@gmail.com"
 import sys
 import random
 import subprocess
+import logging
 
 import sdl2
 import sdl2.ext
@@ -58,7 +59,7 @@ class Quotes(base_sdl_app.BaseSdlApp):
         # clear window and render text
         sdl2.ext.fill(self.windowsurface, sdl2.ext.Color(*self.hex_to_rgb(col[1][1:])))
         self.font = sdl2.sdlttf.TTF_OpenFont(FONT_PATH.encode("ascii"), FONT_SIZE)
-        self.sdl_render_text(quote, col, 0, 0, self.window_w, self.window_h, 15, 'c', 'm')
+        self.sdl_render_text(quote, self.font, col[0], 0, 0, self.window_w, self.window_h, 15, 'c', 'm')
         self.window.refresh()
 
         # start processing of mqtt messages

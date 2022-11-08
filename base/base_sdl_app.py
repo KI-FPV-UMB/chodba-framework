@@ -86,9 +86,9 @@ class BaseSdlApp(base_app.BaseApp):
     def hex_to_rgb(self, hex):
         return tuple(int(hex[i:i + 2], 16) for i in (0, 2, 4))
 
-    def sdl_render_text(self, s, col, x, y, w, h, border = 0, align_h='l', align_v='t'):
+    def sdl_render_text(self, s, font, col, x, y, w, h, border = 0, align_h='l', align_v='t'):
         self.text = None
-        sdlCol = sdl2.SDL_Color(*self.hex_to_rgb(col[0][1:]))
+        sdlCol = sdl2.SDL_Color(*self.hex_to_rgb(col[1:]))
         st = s.split()
         # text analysis and preparation
         idx = 0
@@ -101,7 +101,7 @@ class BaseSdlApp(base_app.BaseApp):
                 pom += " " + st[idx]
                 if self.text is not None:
                     sdl2.SDL_FreeSurface(self.text)
-                self.text = sdl2.sdlttf.TTF_RenderUTF8_Blended(self.font, pom[1:].encode(FS_ENCODING), sdlCol)
+                self.text = sdl2.sdlttf.TTF_RenderUTF8_Blended(font, pom[1:].encode(FS_ENCODING), sdlCol)
                 if self.text.contents.w >= w - 2*border:
                     break
                 idx += 1
@@ -110,7 +110,7 @@ class BaseSdlApp(base_app.BaseApp):
                 pom = pom.rsplit(' ', 1)[0]
                 if self.text is not None:
                     sdl2.SDL_FreeSurface(self.text)
-                self.text = sdl2.sdlttf.TTF_RenderUTF8_Blended(self.font, pom[1:].encode(FS_ENCODING), sdlCol)
+                self.text = sdl2.sdlttf.TTF_RenderUTF8_Blended(font, pom[1:].encode(FS_ENCODING), sdlCol)
             lines.append(pom[1:])
             # next line
             maxh += self.text.contents.h
@@ -124,7 +124,7 @@ class BaseSdlApp(base_app.BaseApp):
         for l in lines:
             if self.text is not None:
                 sdl2.SDL_FreeSurface(self.text)
-            self.text = sdl2.sdlttf.TTF_RenderUTF8_Blended(self.font, l.encode(FS_ENCODING), sdlCol)
+            self.text = sdl2.sdlttf.TTF_RenderUTF8_Blended(font, l.encode(FS_ENCODING), sdlCol)
             r = sdl2.SDL_Rect()
             r.y = yt
             if align_h == 'l':
