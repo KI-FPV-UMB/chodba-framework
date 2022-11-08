@@ -19,6 +19,7 @@ class BaseSdlApp(base_app.BaseApp):
             sys.exit(1)
 
         # create and show window (full screen)
+        #TODO asi podla args - ak su tam rozmery obrazovky, tak pouzit tie; ak nie tak fullscreen
         flags = sdl2.SDL_WINDOW_SHOWN | sdl2.SDL_WINDOW_FULLSCREEN_DESKTOP | sdl2.SDL_WINDOW_BORDERLESS
         self.window = sdl2.ext.Window("Quotes", size=(640, 480), position=(0, 0), flags=flags)
         self.window.show()
@@ -34,7 +35,8 @@ class BaseSdlApp(base_app.BaseApp):
                 if event.type == sdl2.SDL_QUIT:             # event: quit
                     self.running = False
                     break
-            sdl2.SDL_Delay(500)                             # in ms
+            self.window.refresh()
+            sdl2.SDL_Delay(1000)                            # in ms
 
     def hex_to_rgb(self, hex):
         return tuple(int(hex[i:i + 2], 16) for i in (0, 2, 4))
@@ -94,3 +96,4 @@ class BaseSdlApp(base_app.BaseApp):
         if self.text is not None:
             sdl2.SDL_FreeSurface(self.text)
         self.text = None
+        return maxh
