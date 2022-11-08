@@ -6,6 +6,7 @@ __email__ = "michal.vagac@gmail.com"
 
 import sys
 import sdl2
+import ctypes
 
 from base import base_app
 
@@ -29,8 +30,10 @@ class BaseSdlApp(base_app.BaseApp):
         self.running = True
         event = sdl2.SDL_Event()
         while self.running:
-            events = sdl2.ext.get_events()
-            for event in events:
+            #TODO raspberry pi workaround (when reading events using get_events(), graphics stop to work)
+            # events = sdl2.ext.get_events()
+            # for event in events:
+            while sdl2.SDL_PollEvent(ctypes.byref(event)) != 0:
                 # process events
                 if event.type == sdl2.SDL_QUIT:             # event: quit
                     self.running = False
