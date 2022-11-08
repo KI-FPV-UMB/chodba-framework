@@ -66,7 +66,8 @@ class Quotes(base_sdl_app.BaseSdlApp):
         super().run()
 
         # event loop
-        self.sdl_event_loop()
+        # self.sdl_event_loop()
+        sdl2.SDL_Delay(self.config.demo_time*1000)  # in ms
 
         # release resources
         sdl2.ext.quit()
