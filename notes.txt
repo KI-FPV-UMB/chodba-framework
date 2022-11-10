@@ -1,6 +1,10 @@
-
 TODO
 ****
+-pomale vymienanie appiek
+-gallery prerobit na novy sdl skel
+-gallery pada
+-news ostavaju vysiet
+
 -do readme doplnit instalaciu python3-paho-mqtt
 -farebne schemy - ten zoznam farieb nebude napevno v aplikacii, ale bude sa rozposielat centralne - vsetky appky tak budu moct byt v rovnakej scheme
 -galeriu skusit spravit tkinter verziu; aj s videami
@@ -190,6 +194,10 @@ ssh pi@194.160.41.64 -p 1194
 ssh pi@194.160.41.90 -p 1194
 
 
+gdb python <pid>
+	py-bt
+	py-list
+	py-locals
 
 pip3 install pyrasite
 
