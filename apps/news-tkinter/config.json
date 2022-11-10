@@ -1,0 +1,16 @@
+{
+	"enabled": false,
+	"name": "news",
+	"type": "frontend",
+	"runon": ["mvagac-X1","chodba-ki02","chodba-ki03","chodba-ki04","chodba-ki05","chodba-ki06","chodba-ki07"],
+	"labels": ["fun", "demo"],
+	"demo_time": -15,
+	"feeds": [
+		{"url": "https://www.root.cz/rss/zpravicky/", "logo": "logo-root.png"},
+		{"url": "https://zive.aktuality.sk/rss/najnovsie/", "logo": "logo-zive.png"},
+		{"url": "https://www.chip.cz/rss/feed.php", "logo": "logo-chip.png"},
+		{"url": "https://dennikn.sk/minuta/feed/?cat=2386&ref=inc", "logo": "logo-dennikn.png"},
+		{"url": "https://www.quark.sk/feed/", "logo": "logo-quark.png", "stop_string": "&#8230;"}
+	],
+	"no_feeds": 10
+}
