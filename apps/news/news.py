@@ -26,8 +26,8 @@ from html.parser import HTMLParser
 FONT_PATH = "/usr/share/fonts/truetype/freefont/FreeSans.ttf"
 #FONT_PATH = "/usr/share/fonts/truetype/ttf-dejavu/DejaVuSans.ttf"
 #FONT_PATH = "/usr/share/fonts/truetype/ttf-liberation/LiberationSans-Regular.ttf"
-FONT_SIZE_TITLE = 100
-FONT_SIZE_TEXT = 65
+FONT_SIZE_TITLE = 85
+FONT_SIZE_TEXT = 50
 
 class MLStripper(HTMLParser):
     def __init__(self):
