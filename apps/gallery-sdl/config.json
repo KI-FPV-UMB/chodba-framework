@@ -1,6 +1,6 @@
 {
 	"enabled": true,
-	"name": "gallery",
+	"name": "gallery-sdl",
 	"type": "frontend",
 	"labels": ["demo"],
 	"demo_time": 15,

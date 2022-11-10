@@ -1,6 +1,6 @@
 {
 	"enabled": true,
-	"name": "quotes",
+	"name": "quotes-sdl",
 	"type": "frontend",
 	"labels": ["fun", "demo"],
 	"demo_time": 10

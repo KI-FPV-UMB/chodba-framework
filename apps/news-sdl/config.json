@@ -1,6 +1,6 @@
 {
 	"enabled": true,
-	"name": "news",
+	"name": "news-sdl",
 	"type": "frontend",
 	"runon": ["mvagac-X1","chodba-ki02","chodba-ki03","chodba-ki04","chodba-ki05","chodba-ki06","chodba-ki07"],
 	"labels": ["fun", "demo"],

@@ -1,6 +1,6 @@
 {
 	"enabled": false,
-	"name": "quotes",
+	"name": "quotes-tkinter",
 	"type": "frontend",
 	"labels": ["fun", "demo"],
 	"demo_time": 10
