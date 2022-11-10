@@ -171,8 +171,9 @@ class Gallery(base_app.BaseApp):
             sdl2.SDL_Delay(500)                             # in ms
 
         # release resources
-        sdl2.SDL_FreeSurface(self.nazov)
-        sdl2.SDL_FreeSurface(self.nazov_outlined)
+        if not self.notitle:
+            sdl2.SDL_FreeSurface(self.nazov)
+            sdl2.SDL_FreeSurface(self.nazov_outlined)
         sdl2.SDL_DestroyRenderer(self.renderer)
         sdl2.SDL_DestroyWindow(self.window)
         sdl2.SDL_Quit()
