@@ -70,7 +70,7 @@ class Quotes(base_app.BaseApp):
         # stop processing mqtt
         super().stop()
         # close window
-        self.top.destroy()  # quit()
+        self.top.after(0, self.top.destroy)
 
 if __name__ == '__main__':
     app = Quotes()
