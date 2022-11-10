@@ -26,8 +26,8 @@ from html.parser import HTMLParser
 FONT_PATH = "/usr/share/fonts/truetype/freefont/FreeSans.ttf"
 #FONT_PATH = "/usr/share/fonts/truetype/ttf-dejavu/DejaVuSans.ttf"
 #FONT_PATH = "/usr/share/fonts/truetype/ttf-liberation/LiberationSans-Regular.ttf"
-FONT_SIZE_TITLE = 50
-FONT_SIZE_TEXT = 35
+FONT_SIZE_TITLE = 100
+FONT_SIZE_TEXT = 65
 
 class MLStripper(HTMLParser):
     def __init__(self):
@@ -70,10 +70,18 @@ class HandleContent(threading.Thread):
         # display title
         sdl2.ext.fill(self.app.windowsurface, sdl2.ext.Color(*self.app.hex_to_rgb(self.app.col1[1][1:])))
         title_x = 0
-        # if self.app.logo is not None:
-        #     title_x = self.app.logo.contents.w
+        if self.app.logo is not None:
+            title_x = self.app.logo.contents.w
         title_h = self.app.sdl_render_text(title, self.app.font_title, self.app.col1[0], title_x, 0, self.app.window_w-title_x, self.app.window_h, 15, 'l', 't')
         title_h += 20
+        if self.app.logo is not None:
+            if self.app.logo.contents.h > title_h:
+                title_h = self.app.logo.contents.h
+            r = sdl2.SDL_Rect()
+            r.x, r.y = 0, title_h//2 - self.app.logo.contents.h//2
+            r.w = self.app.logo.contents.w
+            r.h = self.app.logo.contents.h
+            sdl2.SDL_BlitSurface(self.app.logo, None, self.app.windowsurface, r)
         # display text
         sdl2.ext.fill(self.app.windowsurface, sdl2.ext.Color(*self.app.hex_to_rgb(self.app.col2[1][1:])), (0, title_h, self.app.window_w, self.app.window_h-title_h))
         self.app.sdl_render_text(text, self.app.font_text, self.app.col2[0], 0, title_h, self.app.window_w, self.app.window_h-title_h, 15, 'l', 't')
@@ -120,8 +128,8 @@ class News(base_sdl_app.BaseSdlApp):
 
         # title row
         self.logo = None
-        # if "logo" in feed:
-        #     self.logo = sdl2.sdlimage.IMG_Load(str.encode(feed["logo"]))
+        if "logo" in feed:
+            self.logo = sdl2.sdlimage.IMG_Load(str.encode(feed["logo"]))
 
         # handle content
         hc = HandleContent(feed, feed["stop_string"] if "stop_string" in feed else None, self)
@@ -139,6 +147,9 @@ class News(base_sdl_app.BaseSdlApp):
             sdl2.SDL_Delay(500)                             # in ms
 
         # release resources
+        if self.logo is not None:
+            sdl2.SDL_FreeSurface(self.logo)
+
         sdl2.ext.quit()
 
     def stop(self):
