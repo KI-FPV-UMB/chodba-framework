@@ -68,23 +68,12 @@ class Gallery(base_app.BaseApp):
 
         # display name of directory
         if not self.notitle:
-            # draw with black color outlined text
-            nazov_outlined = sdl2.sdlttf.TTF_RenderUTF8_Blended(self.font_outlined, self.folder.encode(FS_ENCODING), sdl2.SDL_Color(0, 0, 0))
-            r = sdl2.SDL_Rect()
-            r.x, r.y = int(self.window_w/2 - nazov_outlined.contents.w / 2), int(self.window_h - nazov_outlined.contents.h - 10)
-            r.w, r.h = nazov_outlined.contents.w, nazov_outlined.contents.h
-            sdl2.SDL_BlitSurface(nazov_outlined, None, self.windowsurface, r)
-            # draw smaller text with white color
-            nazov = sdl2.sdlttf.TTF_RenderUTF8_Blended(self.font, self.folder.encode(FS_ENCODING), sdl2.SDL_Color(255, 255, 255))
-            r = sdl2.SDL_Rect()
-            r.x, r.y = int(self.window_w/2 - nazov.contents.w / 2 + FONT_OUTLINE / 2), int(self.window_h - nazov.contents.h - 10 + FONT_OUTLINE / 2)
-            r.w, r.h = nazov.contents.w, nazov.contents.h
-            sdl2.SDL_BlitSurface(nazov, None, self.windowsurface, r)
+            # draw with black color outlined text and smaller text with white color
+            sdl2.SDL_BlitSurface(self.nazov_outlined, None, self.windowsurface, self.r_outlined)
+            sdl2.SDL_BlitSurface(self.nazov, None, self.windowsurface, self.r)
 
         # display changes
         sdl2.SDL_RenderPresent(self.renderer)
-        #sdl2.SDL_FreeSurface(self.image)             # TODO s tymto to pada
-        #sdl2.SDL_FreeSurface(nazov)
 
     def run(self):
         # choose random directory with images
@@ -136,10 +125,24 @@ class Gallery(base_app.BaseApp):
         # prepare window renderer
         self.renderer = sdl2.SDL_CreateRenderer(self.window, -1, sdl2.SDL_RENDERER_SOFTWARE)
         self.windowsurface = sdl2.SDL_GetWindowSurface(self.window)
-        self.font = sdl2.sdlttf.TTF_OpenFont(FONT_PATH.encode("ascii"), FONT_SIZE)
-        sdl2.sdlttf.TTF_SetFontOutline(self.font, 0); 
-        self.font_outlined = sdl2.sdlttf.TTF_OpenFont(FONT_PATH.encode("ascii"), FONT_SIZE)
-        sdl2.sdlttf.TTF_SetFontOutline(self.font_outlined, FONT_OUTLINE); 
+
+        # prepare texts
+        if not self.notitle:
+            # draw with black color outlined text
+            self.font_outlined = sdl2.sdlttf.TTF_OpenFont(FONT_PATH.encode("ascii"), FONT_SIZE)
+            sdl2.sdlttf.TTF_SetFontOutline(self.font_outlined, FONT_OUTLINE); 
+            self.nazov_outlined = sdl2.sdlttf.TTF_RenderUTF8_Blended(self.font_outlined, self.folder.encode(FS_ENCODING), sdl2.SDL_Color(0, 0, 0))
+            self.r_outlined = sdl2.SDL_Rect()
+            self.r_outlined.x, self.r_outlined.y = int(self.window_w/2 - self.nazov_outlined.contents.w / 2), int(self.window_h - self.nazov_outlined.contents.h - 10)
+            self.r_outlined.w, self.r_outlined.h = self.nazov_outlined.contents.w, self.nazov_outlined.contents.h
+            # draw smaller text with white color
+            self.font = sdl2.sdlttf.TTF_OpenFont(FONT_PATH.encode("ascii"), FONT_SIZE)
+            sdl2.sdlttf.TTF_SetFontOutline(self.font, 0); 
+            self.nazov = sdl2.sdlttf.TTF_RenderUTF8_Blended(self.font, self.folder.encode(FS_ENCODING), sdl2.SDL_Color(255, 255, 255))
+            self.r = sdl2.SDL_Rect()
+            self.r.x, self.r.y = int(self.window_w/2 - self.nazov.contents.w / 2 + FONT_OUTLINE / 2), int(self.window_h - self.nazov.contents.h - 10 + FONT_OUTLINE / 2)
+            self.r.w, self.r.h = self.nazov.contents.w, self.nazov.contents.h
+
 
         # clear window
         sdl2.SDL_SetRenderDrawColor(self.renderer, 0, 0, 0, 0)
@@ -168,6 +171,8 @@ class Gallery(base_app.BaseApp):
             sdl2.SDL_Delay(500)                             # in ms
 
         # release resources
+        sdl2.SDL_FreeSurface(self.nazov)
+        sdl2.SDL_FreeSurface(self.nazov_outlined)
         sdl2.SDL_DestroyRenderer(self.renderer)
         sdl2.SDL_DestroyWindow(self.window)
         sdl2.SDL_Quit()
