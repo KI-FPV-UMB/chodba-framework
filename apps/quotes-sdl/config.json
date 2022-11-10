@@ -1,5 +1,5 @@
 {
-	"enabled": true,
+	"enabled": false,
 	"name": "quotes-sdl",
 	"type": "frontend",
 	"labels": ["fun", "demo"],
