@@ -10,11 +10,11 @@ import sys
 import threading
 import time
 import logging
-import tkinter
-import tkinter.messagebox
 import random
+import tkinter
 import feedparser
-from base import base_app
+
+from base import base_tkinter_app
 
 from io import StringIO
 from html.parser import HTMLParser
@@ -76,7 +76,7 @@ class HandleContent(threading.Thread):
             # choose one random entry and wait for scheduled end
             self.set_entry(self.entries[random.randint(0, self.no_feeds-1)])
 
-class News(base_app.BaseApp):
+class News(base_tkinter_app.BaseTkinterApp):
 
     def run(self):
         # choose random color (foreground, background)
@@ -91,14 +91,16 @@ class News(base_app.BaseApp):
         col2 = random.choice(colors)
 
         # show window
-        self.top = tkinter.Tk()
-        self.top.wm_attributes("-type", "splash")       # no decorations
-        self.top.wm_attributes("-fullscreen", True)
-        self.top.configure(background=col1[1])
-        if self.args.screen_width is not None and self.args.screen_height is not None:
-            self.top.geometry("{0}x{1}+0+0".format(self.args.screen_width-3, self.args.screen_height-3))
-        else:
-            self.top.geometry("{0}x{1}+0+0".format(self.top.winfo_screenwidth()-3, self.top.winfo_screenheight()-3))    # fullscreen
+        self.tkinter_init_window("Gallery", col1[1])
+
+        # self.top = tkinter.Tk()
+        # self.top.wm_attributes("-type", "splash")       # no decorations
+        # self.top.wm_attributes("-fullscreen", True)
+        # self.top.configure(background=col1[1])
+        # if self.args.screen_width is not None and self.args.screen_height is not None:
+        #     self.top.geometry("{0}x{1}+0+0".format(self.args.screen_width-3, self.args.screen_height-3))
+        # else:
+        #     self.top.geometry("{0}x{1}+0+0".format(self.top.winfo_screenwidth()-3, self.top.winfo_screenheight()-3))    # fullscreen
 #        self.top.resizable(False, False)
 #        self.top.update_idletasks()
 #        self.top.overrideredirect(True)

@@ -11,18 +11,16 @@ import random
 import time
 import logging
 import sys
-import threading
 
 from PIL import Image, ImageTk
 import tkinter
-import tkinter.messagebox
 
-from base import base_app
+from base import base_tkinter_app
 
 SORTED_FILE = "sorted"
 NOTITLE_FILE = "notitle"
 
-class Gallery(base_app.BaseApp):
+class Gallery(base_tkinter_app.BaseTkinterApp):
 
     def next_image(self):
         # read an image
@@ -42,7 +40,7 @@ class Gallery(base_app.BaseApp):
         img = Image.open(str.encode(self.files[self.current]))
         # resize to window size
         imgWidth, imgHeight = img.size      # img.width(), img.height()
-        ratio = min(self.w / imgWidth, self.h / imgHeight)
+        ratio = min(self.window_w / imgWidth, self.window_h / imgHeight)
         img = img.resize((int(imgWidth*ratio), int(imgHeight*ratio)), Image.Resampling.LANCZOS)
         # return as Tkinter image
         return ImageTk.PhotoImage(img)
@@ -72,18 +70,7 @@ class Gallery(base_app.BaseApp):
             self.files.remove(snotitle)
 
         # show window
-        self.top = tkinter.Tk()
-        self.top.wm_attributes("-type", "splash")       # no decorations
-        self.top.wm_attributes("-fullscreen", True)
-        self.top.configure(background="#000")
-        self.w, self.h = self.top.winfo_screenwidth()-3, self.top.winfo_screenheight()-3
-        if self.args.screen_width is not None and self.args.screen_height is not None:
-            self.w, self.h = self.args.screen_width-3, self.args.screen_height-3
-        self.top.geometry("{0}x{1}+0+0".format(self.w, self.h))
-        self.top.focus_set()
-#        self.top.resizable(False, False)
-#        self.top.update_idletasks()
-#        self.top.overrideredirect(True)
+        self.tkinter_init_window("Gallery", "#000")
 
         # window content
         img = self.get_image()

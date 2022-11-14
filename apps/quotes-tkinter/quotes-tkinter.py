@@ -7,13 +7,14 @@ __email__ = "michal.vagac@gmail.com"
 # set PYTHONPATH to project root (chodba-framework)
 
 import sys
-import tkinter
-import tkinter.messagebox
+import logging
 import random
 import subprocess
-from base import base_app
+import tkinter
 
-class Quotes(base_app.BaseApp):
+from base import base_tkinter_app
+
+class Quotes(base_tkinter_app.BaseTkinterApp):
 
     def run(self):
         # choose random background color
@@ -26,17 +27,7 @@ class Quotes(base_app.BaseApp):
         col = random.choice(colors)
 
         # show window
-        self.top = tkinter.Tk()
-        self.top.wm_attributes("-type", "splash")       # no decorations
-        self.top.wm_attributes("-fullscreen", True)
-        self.top.configure(background=col[1])
-        if self.args.screen_width is not None and self.args.screen_height is not None:
-            self.top.geometry("{0}x{1}+0+0".format(self.args.screen_width-3, self.args.screen_height-3))
-        else:
-            self.top.geometry("{0}x{1}+0+0".format(self.top.winfo_screenwidth()-3, self.top.winfo_screenheight()-3))    # fullscreen
-#        self.top.resizable(False, False)
-#        self.top.update_idletasks()
-#        self.top.overrideredirect(True)
+        self.tkinter_init_window("Gallery", col[1])
 
         r = random.randrange(0, 3)
         if r < 2:
