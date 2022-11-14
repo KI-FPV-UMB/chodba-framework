@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-"""gallery.py: Slideshow of images from randomly selected subdirectory."""
+"""gallery-sdl.py: Slideshow of images from randomly selected subdirectory."""
 __author__ = "Michal Vagac"
 __email__ = "michal.vagac@gmail.com"
 

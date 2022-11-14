@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-"""quotes.py: news reader application"""
+"""news-sdl.py: news reader application"""
 __author__ = "Michal Vagac"
 __email__ = "michal.vagac@gmail.com"
 

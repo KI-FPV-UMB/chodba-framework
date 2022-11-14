@@ -22,17 +22,6 @@ from base import base_app
 SORTED_FILE = "sorted"
 NOTITLE_FILE = "notitle"
 
-# class HandleContent(threading.Thread):
-#     def __init__(self, app):
-#         super().__init__()
-#         self.app = app
-#
-#     def run(self):
-#         time.sleep(3)
-#         self.app.change_image()
-        # self.app.canvas.itemconfig(self.app.img_container, image=self.app.img2)
-
-
 class Gallery(base_app.BaseApp):
 
     def next_image(self):
@@ -58,24 +47,18 @@ class Gallery(base_app.BaseApp):
         # return as Tkinter image
         return ImageTk.PhotoImage(img)
 
-    def change_image(self):
-        self.next_image()
-        img = self.get_image()
-        self.canvas.itemconfig(self.img_container, image=img)
-
     def run(self):
         # choose random directory with images
         subdirs = [d for d in os.listdir(".") if os.path.isdir(d)]
         #subdirs = [x[0] for x in os.walk(".")]
-        if len(subdirs) <= 1:
+        if len(subdirs) < 1:
             log = { "log": "gallery contains none subdirectory with images!" }
             self.pub_msg("log", log, "app_controller" )
             return
         d = random.choice(subdirs)
-        # d = subdirs[4]
         logging.info("[" + self.config.name + "] selecting " + d)
         self.folder = d
-        self.files = [os.path.join(d, f) for f in os.listdir(d) if os.path.isfile(os.path.join(d, f)) and (f.endswith(".png") or f.endswith(".jpg") or f.endswith(".mp4"))]
+        self.files = [os.path.join(d, f) for f in os.listdir(d) if os.path.isfile(os.path.join(d, f)) and (f.endswith(".png") or f.endswith(".jpg"))] # or f.endswith(".mp4")
         # self.files = [os.path.join(d, f) for f in os.listdir(d) if os.path.isfile(os.path.join(d, f)) and (f.endswith(".mp4"))]
         ssorted = os.path.join(d, SORTED_FILE)
         self.sorted = os.path.isfile(ssorted)
@@ -103,20 +86,9 @@ class Gallery(base_app.BaseApp):
 #        self.top.overrideredirect(True)
 
         # window content
-        # self.canvas = tkinter.Canvas(self.top, width=self.w, height=self.h, bg="#000", highlightthickness=0)
-        # self.canvas.pack()
-
         img = self.get_image()
         self.label = tkinter.Label(self.top, image=img)
         self.label.pack()
-        # self.img_container = self.canvas.create_image(0, 0, anchor=tkinter.NW, image=img)
-
-        # self.top.after(1000, self.change_image)
-        # thread1 = threading.Thread(target=self.change_image)
-        # thread1.start()
-
-        # hc = HandleContent(self)
-        # hc.start()
 
         # start processing of mqtt messages
         super().run()
@@ -129,7 +101,6 @@ class Gallery(base_app.BaseApp):
             self.top.update()
 
             if time.time() - last_draw > self.config.delay_s:
-                # self.change_image()
                 self.next_image()
                 img = self.get_image()
                 self.label.configure(image=img)

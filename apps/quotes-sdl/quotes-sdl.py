@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-"""quotes.py: quotes application"""
+"""quotes-sdl.py: quotes application"""
 __author__ = "Michal Vagac"
 __email__ = "michal.vagac@gmail.com"
 
