@@ -41,7 +41,10 @@ class Gallery(base_tkinter_app.BaseTkinterApp):
         # resize to window size
         imgWidth, imgHeight = img.size      # img.width(), img.height()
         ratio = min(self.window_w / imgWidth, self.window_h / imgHeight)
-        img = img.resize((int(imgWidth*ratio), int(imgHeight*ratio)), Image.Resampling.LANCZOS)
+        if hasattr(Image, "Resampling"):
+            img = img.resize((int(imgWidth*ratio), int(imgHeight*ratio)), Image.Resampling.LANCZOS)
+        elif hasattr(Image, "ANTIALIAS"):
+            img = img.resize((int(imgWidth*ratio), int(imgHeight*ratio)), Image.ANTIALIAS)
         # return as Tkinter image
         return ImageTk.PhotoImage(img)
 
@@ -91,10 +94,10 @@ class Gallery(base_tkinter_app.BaseTkinterApp):
                 self.next_image()
                 img = self.get_image()
                 self.label.configure(image=img)
-                self.label.image = img
+                # self.label.image = img            # prevent garbage collection from deleting the image
                 last_draw = time.time()
 
-            time.sleep(1)
+            time.sleep(0.1)
 
         self.top.withdraw()
 
