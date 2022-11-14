@@ -17,7 +17,7 @@ import sdl2
 import sdl2.sdlimage
 import sdl2.sdlttf          # libsdl2-ttf-2.0-0
 
-from base import base_app
+from base import base_sdl_app
 
 SORTED_FILE = "sorted"
 NOTITLE_FILE = "notitle"
@@ -28,7 +28,7 @@ FONT_SIZE = 120
 FONT_OUTLINE = 3
 FS_ENCODING = "utf-8"
 
-class Gallery(base_app.BaseApp):
+class Gallery(base_sdl_app.BaseSdlApp):
 
     def next_image(self):
         #TODO aj z videi => ak sa vyberie video, tak to sa da cele prehrat; ked prehravanie skonci, tak stop
@@ -101,30 +101,7 @@ class Gallery(base_app.BaseApp):
             self.files.remove(snotitle)
 
         # initialize SDL2
-        if sdl2.SDL_Init(sdl2.SDL_INIT_VIDEO) < 0:
-            sys.exit(1)
-
-        if not sdl2.sdlimage.IMG_Init(sdl2.sdlimage.IMG_INIT_JPG | sdl2.sdlimage.IMG_INIT_PNG):
-            sys.exit(1)
-
-        if sdl2.sdlttf.TTF_Init() <0:
-            sys.exit(1)
-
-        # create and show window (full screen)
-        flags = sdl2.SDL_WINDOW_SHOWN | sdl2.SDL_WINDOW_FULLSCREEN_DESKTOP | sdl2.SDL_WINDOW_BORDERLESS
-        self.window = sdl2.SDL_CreateWindow(b"Gallery", sdl2.SDL_WINDOWPOS_CENTERED, sdl2.SDL_WINDOWPOS_CENTERED, 1024, 768, flags)
-
-        # save size of the window
-        w, h = ctypes.c_int(), ctypes.c_int()
-        sdl2.SDL_GetWindowSize(self.window, ctypes.byref(w), ctypes.byref(h))
-        if self.args.screen_width is not None and self.args.screen_height is not None:
-            self.window_w, self.window_h = self.args.screen_width, self.args.screen_height
-        else:
-            self.window_w, self.window_h = w.value, h.value
-
-        # prepare window renderer
-        self.renderer = sdl2.SDL_CreateRenderer(self.window, -1, sdl2.SDL_RENDERER_SOFTWARE)
-        self.windowsurface = sdl2.SDL_GetWindowSurface(self.window)
+        self.sdl_init_window(b"Gallery")
 
         # prepare texts
         if not self.notitle:
