@@ -58,7 +58,7 @@ class AppController(base_app.BaseApp):
         self.running_apps = []
         self.quitting = False
 
-    def list_offline_apps(self, type: str, labels: list, as_json: bool) -> list:
+    def list_offline_apps(self, type: str, node: str, labels: list, as_json: bool) -> list:
         """Build list of all available (offline) and enabled applications.
         If labels is specified, only applications with specified labels are returned."""
         ret = []
@@ -70,15 +70,35 @@ class AppController(base_app.BaseApp):
                 if app_config is None:
                     logging.warning("[" + self.config.name + "] skipping " + entry)
                     continue
+                has_runon = False
                 has_labels = False
                 for k in app_config.keys():
                     setattr(app, k, app_config[k])
+                    if k == "runon":
+                        has_runon = True
                     if k == "labels":
                         has_labels = True
                 if type is not None and app.type != type:
                     continue
+
+                # test runon
+                runon_ok = False
+                if not has_runon or node is None:
+                    runon_ok = True
+                else:
+                    if len(app.runon) == 1 and app.runon[0] == "*":
+                        runon_ok = True
+                    elif node in app.runon:
+                        runon_ok = True
+
+                # test labels
+                labels_ok = False
                 if app.enabled and (labels is None or (has_labels and (set(labels) & set(app.labels)))):
                     # the application is enabled and has corresponding labels (if required)
+                    labels_ok = True
+
+                # if everything is ok, add to the list
+                if runon_ok and labels_ok:
                     if as_json:
                         ret.append(app.__dict__)       # return as dictionary -> to enable json serialization
                     else:
@@ -106,7 +126,7 @@ class AppController(base_app.BaseApp):
     def start_all_backends(self, node_managers: list):
         """Run all backend applications according to their runon configuration. It will be started on ALL nodes in the list."""
         # iterate over list of all backend applications
-        apps_list = self.list_offline_apps(app_utils.APP_TYPE_BACKEND, None, False)
+        apps_list = self.list_offline_apps(app_utils.APP_TYPE_BACKEND, None, None, False)
         for app in apps_list:
             try:
                 if len(app.runon) == 1 and app.runon[0] == "*":
@@ -140,7 +160,7 @@ class AppController(base_app.BaseApp):
     def start_random_frontend_app(self, node: str):
         """Choose a random application and run it. Only frontend applications with label 'demo' are considered."""
         # build a list of candidate applications
-        apps_list = self.list_offline_apps(app_utils.APP_TYPE_FRONTEND, ["demo"], False)
+        apps_list = self.list_offline_apps(app_utils.APP_TYPE_FRONTEND, node, ["demo"], False)
         candidates = []
         for app in apps_list:
             candidates.append(app)
@@ -278,11 +298,11 @@ class AppController(base_app.BaseApp):
             apps_list = []
             if not "state" in msg.body or msg.body.state == "all":
                 if not "type" in msg.body or msg.body.type == app_utils.APP_TYPE_SYSTEM:
-                    apps_list += self.list_offline_apps(SYSTEM_APPS_PATH, msg.get("labels", None), True)
+                    apps_list += self.list_offline_apps(SYSTEM_APPS_PATH, None, msg.get("labels", None), True)
                 if not "type" in msg.body or msg.body.type == app_utils.APP_TYPE_BACKEND:
-                    apps_list += self.list_offline_apps(app_utils.APP_TYPE_BACKEND, msg.get("labels", None), True)
+                    apps_list += self.list_offline_apps(app_utils.APP_TYPE_BACKEND, None, msg.get("labels", None), True)
                 if not "type" in msg.body or msg.body.type == app_utils.APP_TYPE_FRONTEND:
-                    apps_list += self.list_offline_apps(app_utils.APP_TYPE_FRONTEND, msg.get("labels", None), True)
+                    apps_list += self.list_offline_apps(app_utils.APP_TYPE_FRONTEND, None, msg.get("labels", None), True)
             elif msg.state == "running":
                 for app in self.running_apps:
                     if not "type" in msg.body or msg.body.type == app.type:
@@ -364,7 +384,7 @@ class AppController(base_app.BaseApp):
         t.daemon = True
         t.start()"""        #TODO
 
-        self.log_apps_status("all available apps:", self.list_offline_apps(None, None, False))
+        self.log_apps_status("all available apps:", self.list_offline_apps(None, None, None, False))
 
         # start processing of mqtt messages
         self.client.loop_forever()
