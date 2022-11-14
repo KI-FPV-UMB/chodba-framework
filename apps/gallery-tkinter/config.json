@@ -1,0 +1,8 @@
+{
+	"enabled": true,
+	"name": "gallery-tkinter",
+	"type": "frontend",
+	"labels": ["demo"],
+	"demo_time": 15,
+	"delay_s": 3.5
+}
