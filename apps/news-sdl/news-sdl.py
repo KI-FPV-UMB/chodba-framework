@@ -65,7 +65,7 @@ class HandleContent(threading.Thread):
             text = text[0:text.find(self.stop_string)] + "&#8230;"
         text = self.clean_text(text)
         text = text.strip()
-        test = text.replace("\n", " ")
+        text = text.replace("\n", " ")
 
         # display title
         sdl2.ext.fill(self.app.windowsurface, sdl2.ext.Color(*self.app.hex_to_rgb(self.app.col1[1][1:])))

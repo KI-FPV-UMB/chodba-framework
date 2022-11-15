@@ -57,7 +57,7 @@ class HandleContent(threading.Thread):
             text = text[0:text.find(self.stop_string)] + "&#8230;"
         text = self.clean_text(text)
         text = text.strip()
-        test = text.replace("\n", " ")
+        text = text.replace("\n", " ")
         # change labels
         self.l_title['text'] = title
         self.l_text['text'] = text
